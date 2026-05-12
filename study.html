@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANS-C01 Training — Study Guide & Flashcards</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #FF9900; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3498db; --yellow: #f39c12; --purple: #9b59b6;
+    --d1: #60a5fa; --d2: #4ade80; --d3: #fbbf24; --d4: #f87171;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  /* ── Top Nav ── */
+  .top-nav {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 24px; display: flex; align-items: center; gap: 0; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-size: 13px; font-weight: 700; color: var(--accent); padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 4px; white-space: nowrap; }
+  .nav-tab {
+    padding: 16px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-bottom: 3px solid transparent; color: var(--muted); transition: color .15s, border-color .15s;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-spacer { flex: 1; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: color .15s, border-color .15s; }
+  .nav-link:hover { color: var(--text); border-color: var(--muted); }
+
+  /* ── Layout ── */
+  #app { max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Domain headers ── */
+  .domain-section { margin-bottom: 40px; }
+  .domain-header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 0 0;
+    cursor: pointer; user-select: none;
+  }
+  .domain-header:hover { border-color: var(--accent); }
+  .domain-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .domain-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .domain-pct { font-size: 12px; color: var(--muted); }
+  .chevron { color: var(--muted); transition: transform .2s; font-size: 12px; }
+  .domain-header.open .chevron { transform: rotate(180deg); }
+  .domain-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 24px; display: none; }
+  .domain-body.open { display: block; }
+
+  /* ── Concept cards ── */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .concept-card h4 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .concept-card ul { list-style: none; }
+  .concept-card li { font-size: 13px; color: var(--text); padding: 3px 0; padding-left: 14px; position: relative; }
+  .concept-card li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+  .concept-card .key { color: var(--accent); font-weight: 600; }
+
+  /* ── Trap boxes ── */
+  .trap-box { background: #1f1210; border: 1px solid #7f2020; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .trap-box .trap-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--red); margin-bottom: 6px; }
+  .tip-box  { background: #0e1f12; border: 1px solid #1f7f20; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .tip-box  .tip-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--green); margin-bottom: 6px; }
+
+  /* ── Comparison tables ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); font-weight: 700; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  td { padding: 9px 12px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: #1c1f2e; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no  { color: var(--red);   font-weight: 600; }
+  .val { color: var(--accent); font-weight: 600; }
+
+  /* ── Section heading ── */
+  .sg-heading { font-size: 14px; font-weight: 700; color: var(--text); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+  /* ── Flashcard tab ── */
+  .fc-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .fc-filter-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; cursor: pointer; background: var(--surface2);
+    color: var(--muted); transition: all .15s;
+  }
+  .fc-filter-btn:hover, .fc-filter-btn.active { color: #000; }
+  .fc-filter-btn.active.f-all { background: var(--accent); border-color: var(--accent); color: #000; }
+  .fc-filter-btn.active.f-d1  { background: var(--d1);    border-color: var(--d1);    color: #000; }
+  .fc-filter-btn.active.f-d2  { background: var(--d2);    border-color: var(--d2);    color: #000; }
+  .fc-filter-btn.active.f-d3  { background: var(--d3);    border-color: var(--d3);    color: #000; }
+  .fc-filter-btn.active.f-d4  { background: var(--d4);    border-color: var(--d4);    color: #000; }
+
+  .fc-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .fc-prog-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .fc-prog-fill { height: 100%; background: var(--green); transition: width .3s; }
+
+  /* flip card */
+  .fc-scene { width: 100%; perspective: 1000px; margin-bottom: 16px; cursor: pointer; }
+  .fc-card-wrap { position: relative; width: 100%; transition: transform 0.5s; transform-style: preserve-3d; min-height: 240px; }
+  .fc-card-wrap.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; width: 100%; min-height: 240px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fc-front { background: var(--surface); border: 1px solid var(--border); }
+  .fc-back  { background: #0e1f12;        border: 1px solid #2a5a2a; transform: rotateY(180deg); }
+  .fc-category { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+  .fc-q { font-size: 17px; font-weight: 600; line-height: 1.5; }
+  .fc-a { font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+  .fc-detail { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .fc-hint { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+  .fc-nav { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary   { background: var(--accent); color: #000; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-green     { background: var(--green);  color: #000; }
+  .btn-muted     { background: var(--border); color: var(--muted); }
+
+  .fc-stats { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 12px; }
+  .fc-stat  { text-align: center; }
+  .fc-stat-val { font-size: 20px; font-weight: 700; }
+  .fc-stat-lbl { color: var(--muted); font-size: 11px; }
+
+  .fc-done-screen { text-align: center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .fc-done-screen h2 { font-size: 22px; margin-bottom: 8px; }
+  .fc-done-screen p  { color: var(--muted); margin-bottom: 20px; }
+
+  @media(max-width:600px) { .fc-q { font-size: 15px; } .fc-a { font-size: 14px; } .fc-face { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">ANS-C01 Training</div>
+  <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
+  <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="index.html">← Practice Exam</a>
+</nav>
+
+<div id="app">
+
+<!-- ══════════════════════════════════════════════ STUDY GUIDE ══ -->
+<div id="tab-guide" class="tab-pane active">
+
+  <!-- D1 ─────────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header open" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:#60a5fa"></div>
+      <div class="domain-title">Domain 1 — Network Design</div>
+      <div class="domain-pct">30% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body open">
+
+      <div class="sg-heading">VPC Fundamentals</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>CIDR & Subnets</h4><ul>
+          <li>VPC size: <span class="key">/16 to /28</span></li>
+          <li>RFC 1918: 10.x, 172.16–31.x, 192.168.x</li>
+          <li>CGNAT <span class="key">100.64.0.0/10</span> valid for VPC</li>
+          <li>5 IPs reserved per subnet (network, router, DNS, future, broadcast)</li>
+          <li>/28 subnet → <span class="key">11 usable IPs</span></li>
+        </ul></div>
+        <div class="concept-card"><h4>Internet Access</h4><ul>
+          <li><span class="key">Internet Gateway</span> — bidirectional IPv4/IPv6</li>
+          <li><span class="key">NAT Gateway</span> — outbound-only IPv4 from private subnets</li>
+          <li><span class="key">Egress-Only IGW</span> — outbound-only IPv6 (no NAT)</li>
+          <li>NAT Gateway: one per AZ for HA; scales to 45 Gbps</li>
+          <li>NAT instance: must disable source/dest check</li>
+        </ul></div>
+        <div class="concept-card"><h4>MTU / Jumbo Frames</h4><ul>
+          <li>In-VPC (same VPC): <span class="key">9001 bytes</span></li>
+          <li>Through Transit Gateway: <span class="key">8500 bytes</span></li>
+          <li>Internet Gateway / VPN: <span class="key">1500 bytes</span></li>
+          <li>DX private VIF: <span class="key">9001 bytes</span></li>
+          <li>Set OS MTU to 9001 for in-VPC jumbo frames</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">VPC Peering</div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>VPC peering is <strong>non-transitive</strong> — traffic cannot flow through a peered VPC to reach a third VPC. Also requires <strong>non-overlapping CIDRs</strong> at the VPC level (subnet-level differences do not matter). Always requires route table updates AND Security Group rules in both VPCs.</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Peering Rules</h4><ul>
+          <li>Non-transitive — no hairpinning</li>
+          <li>No overlapping CIDRs (VPC level)</li>
+          <li>Works cross-account and cross-Region</li>
+          <li>Inter-Region: no SG ID referencing (use CIDR)</li>
+          <li>Traffic NOT encrypted at network layer</li>
+        </ul></div>
+        <div class="concept-card"><h4>Setup Steps</h4><ul>
+          <li>1. Create peering connection & accept</li>
+          <li>2. Add routes in BOTH VPC route tables</li>
+          <li>3. Update Security Groups to allow peer CIDR</li>
+          <li>4. (Optional) Enable DNS resolution</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Transit Gateway</div>
+      <div class="tip-box"><div class="tip-label">✓ Key Concept</div>TGW is a <strong>hub-and-spoke</strong> network transit hub. It is transitive — spoke VPCs can reach each other through TGW. Each attachment has its own entry in a TGW route table. Route propagation automatically adds attachment CIDRs.</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>TGW Routing</h4><ul>
+          <li>Multiple route tables for segmentation</li>
+          <li>Route propagation auto-adds VPC CIDRs</li>
+          <li>Blackhole routes block specific CIDRs</li>
+          <li>Appliance Mode: symmetric routing for stateful firewalls</li>
+          <li>ECMP: requires BGP + enabled on TGW</li>
+        </ul></div>
+        <div class="concept-card"><h4>TGW Attachment Types</h4><ul>
+          <li><span class="key">VPC</span> — up to 5 per VPC</li>
+          <li><span class="key">VPN</span> — Site-to-Site VPN</li>
+          <li><span class="key">Direct Connect Gateway</span> — via transit VIF</li>
+          <li><span class="key">Peering</span> — inter-Region TGW (AES-256 encrypted)</li>
+          <li><span class="key">Connect</span> — GRE+BGP for SD-WAN</li>
+        </ul></div>
+        <div class="concept-card"><h4>TGW Special Features</h4><ul>
+          <li>Multicast: must enable at <strong>creation time</strong></li>
+          <li>Connect: SD-WAN via GRE tunnel, BGP, up to 5 Gbps</li>
+          <li>Inter-region peering: <strong>auto-encrypted</strong> AES-256-GCM</li>
+          <li>Flow Logs: captures TGW-level drops invisible to VPC Flow Logs</li>
+          <li>Network Manager: global topology + Route Analyzer</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">AWS PrivateLink</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Interface Endpoints</h4><ul>
+          <li>ENI with private IP in your VPC subnet</li>
+          <li>Private DNS: standard hostname → endpoint IP</li>
+          <li>Endpoint policy restricts API actions</li>
+          <li>Works <strong>with overlapping CIDRs</strong></li>
+          <li>Charged per AZ + per GB</li>
+        </ul></div>
+        <div class="concept-card"><h4>Gateway Endpoints</h4><ul>
+          <li>S3 and DynamoDB only</li>
+          <li>Added to route table as a prefix list target</li>
+          <li>Free — no per-hour or per-GB cost</li>
+          <li>Does not use ENI — no private IP</li>
+          <li>Cannot be used across VPC peering/TGW</li>
+        </ul></div>
+        <div class="concept-card"><h4>Endpoint Services (PrivateLink)</h4><ul>
+          <li>Expose service behind NLB to other VPCs</li>
+          <li>Works with overlapping consumer CIDRs</li>
+          <li>Consumer creates Interface Endpoint to connect</li>
+          <li>Allowed principals: control who can connect</li>
+          <li>Manual acceptance optional</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Direct Connect</div>
+      <div class="table-wrap"><table>
+        <tr><th>Type</th><th>Who provisions</th><th>Bandwidth</th><th>VIF types</th></tr>
+        <tr><td>Dedicated</td><td>AWS</td><td>1G, 10G, 100G</td><td>Private, Public, Transit</td></tr>
+        <tr><td>Hosted</td><td>APN Partner</td><td>50M–10G</td><td>Private or Public (1 VIF)</td></tr>
+      </table></div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>VIF Types</h4><ul>
+          <li><span class="key">Private VIF</span> → VGW (one VPC) or DXGW</li>
+          <li><span class="key">Public VIF</span> → AWS public IP space (S3, DynamoDB public endpoints) — NOT internet</li>
+          <li><span class="key">Transit VIF</span> → DXGW only (connects to TGW)</li>
+          <li>Hosted connections: only one VIF per connection</li>
+        </ul></div>
+        <div class="concept-card"><h4>DX Gateway</h4><ul>
+          <li>Associates private or transit VIFs to VGWs/TGWs</li>
+          <li>Up to <span class="key">10 VGWs</span> or <span class="key">6 TGWs</span></li>
+          <li>Cross-account TGW association via RAM</li>
+          <li>Associated TGW CIDRs must be <strong>non-overlapping</strong></li>
+          <li>Default AWS BGP ASN: <span class="key">7224</span></li>
+        </ul></div>
+        <div class="concept-card"><h4>Resiliency Models</h4><ul>
+          <li><span class="key">Maximum</span>: 2 locations × 2 devices × 2 connections</li>
+          <li><span class="key">High</span>: 2 locations, 1 connection each</li>
+          <li><span class="key">Development</span>: 1 location, 1 connection + VPN backup</li>
+          <li>BFD: 300 ms interval × 3 = ~900 ms detection</li>
+          <li>LAG: up to 4 active connections, same location</li>
+        </ul></div>
+      </div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Transitive routing does NOT work through VPC peering over Direct Connect. On-premises → DX → VPC-A → peering → VPC-B is <strong>not supported</strong>. Use Transit Gateway with a transit VIF instead.</div>
+
+      <div class="sg-heading">BGP Routing Attributes</div>
+      <div class="table-wrap"><table>
+        <tr><th>Attribute</th><th>Who sets it</th><th>Purpose</th><th>Higher = ?</th></tr>
+        <tr><td>LOCAL_PREF</td><td>Customer (internal iBGP)</td><td>Prefer outbound path from customer network</td><td class="yes">More preferred</td></tr>
+        <tr><td>MED</td><td>Customer (advertised to AWS)</td><td>Influence AWS's outbound path choice</td><td class="no">Less preferred</td></tr>
+        <tr><td>AS_PATH length</td><td>Customer (prepending)</td><td>Make a path appear longer/less preferred</td><td class="no">Less preferred</td></tr>
+        <tr><td>Longest prefix match</td><td>Always wins first</td><td>/24 beats /16 regardless of other attrs</td><td class="yes">Always wins</td></tr>
+      </table></div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>DX BGP Communities</h4><ul>
+          <li><span class="key">7224:7100</span> → AWS LOCAL_PREF 100 (low — backup path)</li>
+          <li><span class="key">7224:7200</span> → AWS LOCAL_PREF 200 (default)</li>
+          <li><span class="key">7224:7300</span> → AWS LOCAL_PREF 300 (high — preferred)</li>
+          <li><span class="key">7224:9300</span> → do not re-advertise to other regions</li>
+          <li>Tag on routes <em>advertised to AWS</em> to control AWS's outbound preference</li>
+        </ul></div>
+      </div>
+
+    </div><!-- /domain-body -->
+  </div><!-- /domain-section -->
+
+  <!-- D2 ─────────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:#4ade80"></div>
+      <div class="domain-title">Domain 2 — Network Implementation</div>
+      <div class="domain-pct">26% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Load Balancer Comparison</div>
+      <div class="table-wrap"><table>
+        <tr><th>Feature</th><th>ALB</th><th>NLB</th><th>GWLB</th></tr>
+        <tr><td>Layer</td><td>7 (HTTP/HTTPS)</td><td>4 (TCP/UDP/TLS)</td><td>3 (IP)</td></tr>
+        <tr><td>Protocol</td><td>HTTP, HTTPS, gRPC</td><td>TCP, UDP, TLS, TCP_UDP</td><td>GENEVE (UDP 6081)</td></tr>
+        <tr><td>Cross-zone default</td><td class="yes">Enabled</td><td class="no">Disabled</td><td class="no">Disabled</td></tr>
+        <tr><td>Security Groups</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Yes</td></tr>
+        <tr><td>Static IP / EIP</td><td class="no">No (DNS only)</td><td class="yes">Yes (per AZ)</td><td class="no">No</td></tr>
+        <tr><td>Preserves client IP</td><td>X-Forwarded-For header</td><td class="yes">Yes (TCP/UDP targets)</td><td class="yes">Yes</td></tr>
+        <tr><td>Listener rules</td><td class="yes">Yes (path, host, header)</td><td class="no">No</td><td class="no">No</td></tr>
+        <tr><td>TLS termination</td><td class="yes">HTTPS listener</td><td class="yes">TLS listener (ACM)</td><td class="no">No</td></tr>
+        <tr><td>Use case</td><td>Web apps, microservices</td><td>High perf, gaming, IoT</td><td>Firewall appliances</td></tr>
+      </table></div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>NLB <strong>does not have Security Groups</strong>. Control inbound access via instance-level Security Groups. NLB cross-zone load balancing is <strong>off by default</strong> — unlike ALB. GWLB uses GENEVE encapsulation (UDP 6081) to preserve original packet headers for inspection.</div>
+
+      <div class="sg-heading">Route 53 Routing Policies</div>
+      <div class="table-wrap"><table>
+        <tr><th>Policy</th><th>Routes based on</th><th>Key facts</th></tr>
+        <tr><td>Simple</td><td>Single record (random if multiple values)</td><td>No health checks on the record</td></tr>
+        <tr><td>Weighted</td><td>Configured percentage weights</td><td>Weight 0 = never returned</td></tr>
+        <tr><td>Latency</td><td>Lowest measured latency to AWS Region</td><td>Supports health checks for failover</td></tr>
+        <tr><td>Failover</td><td>Health check status</td><td>Active/passive; primary → secondary on failure</td></tr>
+        <tr><td>Geolocation</td><td>DNS query geographic origin (country/continent)</td><td>Default record required for unmatched locations</td></tr>
+        <tr><td>Geoproximity</td><td>Geographic distance + bias (-99 to +99)</td><td>Traffic Flow only; bias shifts routing boundary</td></tr>
+        <tr><td>Multivalue</td><td>Returns up to 8 healthy records randomly</td><td>Not a substitute for a load balancer</td></tr>
+        <tr><td>IP-based</td><td>Client IP CIDR prefix</td><td>Map specific IP ranges to specific endpoints</td></tr>
+      </table></div>
+
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Route 53 Resolver</h4><ul>
+          <li><span class="key">Inbound Endpoint</span> — on-premises resolvers → VPC (resolve private zones)</li>
+          <li><span class="key">Outbound Endpoint</span> — VPC → on-premises DNS (forwarding rules)</li>
+          <li>Share forwarding rules via RAM across org</li>
+          <li>DNS Firewall: block/alert on domain queries (AWS managed threat lists)</li>
+        </ul></div>
+        <div class="concept-card"><h4>ALIAS vs CNAME</h4><ul>
+          <li>ALIAS works at <strong>zone apex</strong>; CNAME does not</li>
+          <li>ALIAS → ALB/NLB/CloudFront/S3 website: no extra query charge</li>
+          <li>CNAME cannot coexist with other records at same name</li>
+          <li>ALIAS returns A records to clients</li>
+        </ul></div>
+        <div class="concept-card"><h4>Health Checks</h4><ul>
+          <li>Endpoint, CloudWatch Alarm, or Calculated</li>
+          <li>Calculated: aggregate up to 256 child checks</li>
+          <li>Failure threshold: 1–10 consecutive failures</li>
+          <li>DNSSEC: protects against cache poisoning/spoofing</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">CloudFront</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Origin Access</h4><ul>
+          <li><span class="key">OAC</span> (Origin Access Control) — current recommended method for S3</li>
+          <li>OAI (Origin Access Identity) — legacy, still valid on exam</li>
+          <li>Custom header → restrict ALB to CloudFront only</li>
+          <li>CloudFront managed prefix list: secondary control</li>
+        </ul></div>
+        <div class="concept-card"><h4>Edge Compute</h4><ul>
+          <li><span class="key">CloudFront Functions</span>: &lt;1 ms, all PoPs, simple JS, header/URL manipulation</li>
+          <li><span class="key">Lambda@Edge</span>: 1–5 ms, Node.js/Python, network calls, complex logic</li>
+          <li>CF Functions: viewer request/response events only</li>
+          <li>Lambda@Edge: all 4 events (viewer req/res, origin req/res)</li>
+        </ul></div>
+        <div class="concept-card"><h4>High Availability</h4><ul>
+          <li><span class="key">Origin Groups</span>: primary + failover on 5xx or connection fail</li>
+          <li><span class="key">Origin Shield</span>: extra caching layer → reduces origin load</li>
+          <li>Signed URLs (custom policy): expiration + IP restriction</li>
+          <li>Signed cookies: multi-file access for authenticated users</li>
+          <li>Geo restriction: block/allow by country</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Site-to-Site VPN</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>VPN Basics</h4><ul>
+          <li>2 tunnels per connection (active/active capable)</li>
+          <li>Up to <span class="key">1.25 Gbps per tunnel</span></li>
+          <li>IKEv1 and IKEv2 supported (per tunnel)</li>
+          <li>IKEv2: fewer round trips, built-in NAT-T</li>
+          <li><span class="key">Accelerated VPN</span>: routes via Global Accelerator edge</li>
+        </ul></div>
+        <div class="concept-card"><h4>VPN + TGW ECMP</h4><ul>
+          <li>Enable ECMP on TGW</li>
+          <li>Customer GW advertises same BGP routes over both tunnels</li>
+          <li>TGW distributes flows across tunnels</li>
+          <li>Doubles effective throughput (~2.5 Gbps)</li>
+          <li>Requires BGP — not available with static routing</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- D3 ─────────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:#fbbf24"></div>
+      <div class="domain-title">Domain 3 — Network Management & Operations</div>
+      <div class="domain-pct">20% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">VPC Flow Logs</div>
+      <div class="table-wrap"><table>
+        <tr><th>Action value</th><th>Meaning</th></tr>
+        <tr><td><span class="val">ACCEPT</span></td><td>Packet permitted by Security Group and/or NACL — does NOT confirm TCP handshake or app response</td></tr>
+        <tr><td><span class="val">REJECT</span></td><td>Packet denied by Security Group (implicit deny) or NACL explicit DENY rule</td></tr>
+        <tr><td><span class="val">NODATA</span></td><td>No traffic to/from the ENI during the aggregation window — not an error</td></tr>
+        <tr><td><span class="val">SKIPDATA</span></td><td>Logging system internal capacity issue — some flow records were dropped</td></tr>
+      </table></div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Flow Log Levels</h4><ul>
+          <li>VPC level → all ENIs in all subnets</li>
+          <li>Subnet level → all ENIs in that subnet</li>
+          <li>ENI level → specific interface only</li>
+          <li>Default aggregation: 10 minutes; optional: 1 minute</li>
+        </ul></div>
+        <div class="concept-card"><h4>Custom Fields</h4><ul>
+          <li><span class="key">pkt-srcaddr</span> — original source IP (pre-NAT)</li>
+          <li><span class="key">pkt-dstaddr</span> — original dest IP (pre-NAT)</li>
+          <li>srcaddr/dstaddr show post-NAT IPs when NAT Gateway is in path</li>
+          <li>Deliver to S3, CloudWatch Logs, or Kinesis Data Firehose</li>
+        </ul></div>
+      </div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>ACCEPT in Flow Logs only confirms the network-layer security decision. It does <strong>not</strong> mean the TCP connection was established or data was transferred successfully. Application-layer issues (app crash, TLS mismatch) won't appear in Flow Logs.</div>
+
+      <div class="sg-heading">Monitoring & Troubleshooting Tools</div>
+      <div class="table-wrap"><table>
+        <tr><th>Tool</th><th>What it does</th><th>Generates traffic?</th></tr>
+        <tr><td>VPC Flow Logs</td><td>Captures traffic metadata (IP, port, bytes, action) per ENI</td><td class="no">No</td></tr>
+        <tr><td>VPC Traffic Mirroring</td><td>Copies actual packet payloads from ENI to monitoring target</td><td class="no">No (read-only copy)</td></tr>
+        <tr><td>Reachability Analyzer</td><td>Config-based path check between two specific endpoints</td><td class="no">No</td></tr>
+        <tr><td>Network Access Analyzer</td><td>Finds ALL paths matching an unintended-access pattern across VPC</td><td class="no">No</td></tr>
+        <tr><td>TGW Network Manager</td><td>Global topology, Route Analyzer, SD-WAN integration</td><td class="no">No</td></tr>
+        <tr><td>CloudWatch (ENA metrics)</td><td>Per-instance network performance including drop reasons</td><td class="no">No</td></tr>
+      </table></div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Key ENA Metrics</h4><ul>
+          <li><span class="key">bw_in/out_allowance_exceeded</span> — bandwidth limit drops</li>
+          <li><span class="key">pps_in/out_allowance_exceeded</span> — packet rate limit drops</li>
+          <li><span class="key">conntrack_allowance_exceeded</span> — connection tracking table full</li>
+          <li><span class="key">linklocal_allowance_exceeded</span> — metadata/DNS traffic throttled</li>
+          <li>ENA Express (SRD): improves tail latency (p99), not max bandwidth</li>
+        </ul></div>
+        <div class="concept-card"><h4>CloudTrail vs Config</h4><ul>
+          <li><span class="key">CloudTrail</span>: WHO made what API call, WHEN, from WHERE (identity, source IP, timestamp)</li>
+          <li><span class="key">AWS Config</span>: WHAT changed (before/after configuration state), continuous compliance</li>
+          <li>Use CloudTrail to find who changed a Security Group</li>
+          <li>Use Config to detect/remediate non-compliant SG rules</li>
+        </ul></div>
+        <div class="concept-card"><h4>NAT Gateway Timeouts</h4><ul>
+          <li>TCP idle timeout: <span class="key">350 seconds</span></li>
+          <li>UDP idle timeout: 30 seconds</li>
+          <li>Idle connections dropped after timeout → implement TCP keepalives</li>
+          <li>55,000 simultaneous connections per unique destination (IP:port)</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- D4 ─────────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:#f87171"></div>
+      <div class="domain-title">Domain 4 — Security, Compliance & Governance</div>
+      <div class="domain-pct">24% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Security Groups vs NACLs</div>
+      <div class="table-wrap"><table>
+        <tr><th>Feature</th><th>Security Groups</th><th>Network ACLs</th></tr>
+        <tr><td>Statefulness</td><td class="yes">Stateful — return traffic auto-allowed</td><td class="no">Stateless — return traffic must be explicitly allowed</td></tr>
+        <tr><td>Applied to</td><td>ENI / instance level</td><td>Subnet level (all ENIs in subnet)</td></tr>
+        <tr><td>DENY rules</td><td class="no">No — implicit deny only</td><td class="yes">Yes — explicit ALLOW and DENY</td></tr>
+        <tr><td>Rule evaluation</td><td>All rules evaluated, most permissive wins</td><td>Rules evaluated in number order; first match wins</td></tr>
+        <tr><td>Source reference</td><td>IP CIDR or another SG ID</td><td>IP CIDR only</td></tr>
+        <tr><td>Ephemeral ports</td><td>Handled automatically (stateful)</td><td>Must explicitly allow outbound 1024–65535 for return traffic</td></tr>
+      </table></div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>NACLs are <strong>stateless</strong>. Allowing inbound TCP 443 is not enough — you must also allow <strong>outbound ephemeral ports (1024–65535)</strong> for the server's response packets to leave the subnet. Security Groups handle this automatically.</div>
+
+      <div class="sg-heading">AWS WAF</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>WAF Scope</h4><ul>
+          <li><span class="key">CLOUDFRONT scope</span>: global, must create in us-east-1; attaches to CloudFront only</li>
+          <li><span class="key">REGIONAL scope</span>: created per Region; attaches to ALB, API Gateway, AppSync, Cognito</li>
+          <li>Cannot share a web ACL between CloudFront and a regional resource</li>
+        </ul></div>
+        <div class="concept-card"><h4>Rule Types</h4><ul>
+          <li>Rate-based rules: 1, 2, 5, or 10 minute window; per IP / forwarded IP / custom key</li>
+          <li>Geo match: block/allow by country</li>
+          <li>Managed rule groups: AWS or Marketplace (OWASP, SQLi, XSS, bot control)</li>
+          <li>Custom rules: IP sets, regex, label matching</li>
+        </ul></div>
+        <div class="concept-card"><h4>WAF vs Network Firewall</h4><ul>
+          <li>WAF: L7 HTTP/HTTPS inspection for web apps (CloudFront, ALB, API GW)</li>
+          <li>Network Firewall: VPC-level L3/L4/L7, stateful, IPS (Suricata), domain lists</li>
+          <li>Network Firewall: deployed in VPC subnets; traffic must route through it</li>
+          <li>Network Firewall: stateless rules first, then stateful rules</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">AWS Shield</div>
+      <div class="table-wrap"><table>
+        <tr><th>Feature</th><th>Shield Standard</th><th>Shield Advanced</th></tr>
+        <tr><td>Cost</td><td class="val">Free</td><td class="val">$3,000/month + data transfer</td></tr>
+        <tr><td>Protection layer</td><td>L3/L4 (SYN floods, UDP reflection)</td><td>L3/L4/L7 with WAF integration</td></tr>
+        <tr><td>DRT access</td><td class="no">No</td><td class="yes">Yes (24/7)</td></tr>
+        <tr><td>Proactive engagement</td><td class="no">No</td><td class="yes">Yes (when health checks unhealthy)</td></tr>
+        <tr><td>Cost protection</td><td class="no">No</td><td class="yes">Yes (DDoS-related scaling credits)</td></tr>
+        <tr><td>Real-time visibility</td><td class="no">No</td><td class="yes">Yes (CloudWatch metrics)</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Network Firewall — Rule Processing</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Rule Processing Order</h4><ul>
+          <li>1. <span class="key">Stateless rules</span> — per-packet, no state; PASS/DROP/FORWARD</li>
+          <li>2. <span class="key">Stateful rules</span> — connection-aware; flow-based inspection</li>
+          <li>Stateless DROP never reaches stateful engine</li>
+          <li>Stateless PASS goes to default stateless action</li>
+          <li>FORWARD sends to stateful engine</li>
+        </ul></div>
+        <div class="concept-card"><h4>Stateful Rule Types</h4><ul>
+          <li><span class="key">5-tuple</span>: src/dst IP, src/dst port, protocol</li>
+          <li><span class="key">Domain list</span>: SNI inspection + DNS query; allow/deny FQDNs</li>
+          <li><span class="key">Suricata IPS</span>: full Suricata rule syntax; header content matching</li>
+          <li>Domain lists use SNI for HTTPS, DNS for HTTP</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Governance at Scale</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Service Control Policies (SCPs)</h4><ul>
+          <li>Applied at AWS Organizations level</li>
+          <li>Cannot be overridden by IAM policies in member accounts</li>
+          <li>Preventive control (not detective)</li>
+          <li>Example: deny ec2:AttachInternetGateway, deny ec2:RunInstances with public IP</li>
+        </ul></div>
+        <div class="concept-card"><h4>AWS Firewall Manager</h4><ul>
+          <li>Centrally manage: WAF web ACLs, SG policies, Network Firewall, Shield Advanced, DNS Firewall</li>
+          <li>Automatically applies to new accounts/resources in org scope</li>
+          <li>Requires AWS Organizations + Config enabled</li>
+        </ul></div>
+        <div class="concept-card"><h4>AWS Config vs CloudTrail</h4><ul>
+          <li>Config: <strong>detective</strong> — what is the current/past config state?</li>
+          <li>CloudTrail: <strong>audit</strong> — who made which API call, when?</li>
+          <li>Config conformance packs: deploy rules org-wide via StackSets</li>
+          <li>Config aggregator: multi-account, multi-Region compliance view</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">VPC Endpoint Security Pattern</div>
+      <div class="tip-box"><div class="tip-label">✓ Defense in Depth</div>To restrict S3 access to VPC-only: (1) Create a <strong>VPC Gateway Endpoint for S3</strong> to route S3 traffic through the endpoint. (2) Add an <strong>S3 bucket policy with <code>aws:SourceVpc</code> condition</strong> denying access from outside the VPC. Both controls together provide defense-in-depth — the endpoint policy controls what actions are allowed through the endpoint, and the bucket policy blocks the public endpoint.</div>
+
+    </div>
+  </div>
+
+  <!-- Quick Reference ──────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--accent)"></div>
+      <div class="domain-title">Quick Reference — Numbers & Limits</div>
+      <div class="domain-pct">memorize these</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+      <div class="table-wrap"><table>
+        <tr><th>Item</th><th>Value</th></tr>
+        <tr><td>VPC CIDR range</td><td class="val">/16 to /28</td></tr>
+        <tr><td>Reserved IPs per subnet</td><td class="val">5</td></tr>
+        <tr><td>/28 subnet usable IPs</td><td class="val">11</td></tr>
+        <tr><td>In-VPC MTU (jumbo frames)</td><td class="val">9001 bytes</td></tr>
+        <tr><td>TGW MTU</td><td class="val">8500 bytes</td></tr>
+        <tr><td>Internet Gateway / VPN MTU</td><td class="val">1500 bytes</td></tr>
+        <tr><td>AWS default BGP ASN (DX)</td><td class="val">7224</td></tr>
+        <tr><td>DXGW max VGW associations</td><td class="val">10</td></tr>
+        <tr><td>DXGW max TGW associations</td><td class="val">6</td></tr>
+        <tr><td>LAG max active connections</td><td class="val">4</td></tr>
+        <tr><td>VPN tunnels per connection</td><td class="val">2</td></tr>
+        <tr><td>VPN bandwidth per tunnel</td><td class="val">~1.25 Gbps</td></tr>
+        <tr><td>BFD detection time (DX)</td><td class="val">300 ms × 3 = ~900 ms</td></tr>
+        <tr><td>NAT Gateway TCP idle timeout</td><td class="val">350 seconds</td></tr>
+        <tr><td>NAT Gateway max bandwidth</td><td class="val">45 Gbps</td></tr>
+        <tr><td>NACL ephemeral port range</td><td class="val">1024–65535</td></tr>
+        <tr><td>GWLB encapsulation protocol</td><td class="val">GENEVE / UDP port 6081</td></tr>
+        <tr><td>BGP community — LP 100 (backup)</td><td class="val">7224:7100</td></tr>
+        <tr><td>BGP community — LP 200 (default)</td><td class="val">7224:7200</td></tr>
+        <tr><td>BGP community — LP 300 (preferred)</td><td class="val">7224:7300</td></tr>
+        <tr><td>Shield Advanced monthly cost</td><td class="val">$3,000/month</td></tr>
+        <tr><td>WAF CloudFront scope: create in</td><td class="val">us-east-1 only</td></tr>
+        <tr><td>Geoproximity bias range</td><td class="val">-99 to +99</td></tr>
+        <tr><td>Route 53 Calculated HC max children</td><td class="val">256</td></tr>
+        <tr><td>TGW Connect max bandwidth</td><td class="val">5 Gbps per attachment</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+</div><!-- /tab-guide -->
+
+<!-- ══════════════════════════════════════════════ FLASHCARDS ══ -->
+<div id="tab-flash" class="tab-pane">
+
+  <div class="fc-controls">
+    <button class="fc-filter-btn active f-all" onclick="setFilter('all',this)">All</button>
+    <button class="fc-filter-btn f-d1" onclick="setFilter(1,this)">D1 Design</button>
+    <button class="fc-filter-btn f-d2" onclick="setFilter(2,this)">D2 Implementation</button>
+    <button class="fc-filter-btn f-d3" onclick="setFilter(3,this)">D3 Operations</button>
+    <button class="fc-filter-btn f-d4" onclick="setFilter(4,this)">D4 Security</button>
+    <button class="fc-filter-btn f-all" style="margin-left:auto" onclick="shuffleDeck()">🔀 Shuffle</button>
+  </div>
+
+  <div class="fc-progress">
+    <span id="fc-pos">1 / 0</span>
+    <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-fill" style="width:0%"></div></div>
+    <span id="fc-learned-count">0 learned</span>
+  </div>
+
+  <div class="fc-scene" onclick="flipCard()">
+    <div class="fc-card-wrap" id="fc-card">
+      <div class="fc-face fc-front">
+        <div class="fc-category" id="fc-cat"></div>
+        <div class="fc-q" id="fc-q"></div>
+        <div class="fc-hint">Click to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-category" id="fc-cat2"></div>
+        <div class="fc-a" id="fc-a"></div>
+        <div class="fc-detail" id="fc-detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-nav" id="fc-nav">
+    <button class="btn btn-secondary" onclick="prevCard()">← Prev</button>
+    <button class="btn btn-green"     onclick="markLearned()">✓ Learned</button>
+    <button class="btn btn-muted"     onclick="nextCard()">Skip →</button>
+    <button class="btn btn-primary"   onclick="nextCard()">Next →</button>
+  </div>
+
+  <div class="fc-stats" style="margin-top:16px;">
+    <div class="fc-stat"><div class="fc-stat-val" id="fc-total-count">0</div><div class="fc-stat-lbl">Total</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--green)" id="fc-learned">0</div><div class="fc-stat-lbl">Learned</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--yellow)" id="fc-remaining">0</div><div class="fc-stat-lbl">Remaining</div></div>
+  </div>
+
+</div><!-- /tab-flash -->
+
+</div><!-- /app -->
+
+<script>
+// ─────────────────────────────────────────────
+//  TAB SWITCHING
+// ─────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleDomain(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────
+//  FLASHCARD DATA
+// ─────────────────────────────────────────────
+const CARDS = [
+  // Domain 1 — Design
+  {d:1, cat:"VPC Design", q:"What is the valid CIDR prefix range for a VPC?", a:"/16 to /28", detail:"The primary VPC CIDR must be between /16 (65,536 IPs) and /28 (16 IPs). RFC 1918 ranges and 100.64.0.0/10 are supported."},
+  {d:1, cat:"VPC Design", q:"How many IP addresses are reserved per subnet, and why?", a:"5 IPs reserved", detail:"Network address, VPC router, DNS resolver, future use, and broadcast address. A /28 subnet has 16 total − 5 = 11 usable IPs."},
+  {d:1, cat:"VPC Design", q:"What is the maximum in-VPC MTU (jumbo frames)?", a:"9001 bytes", detail:"Intra-VPC instance-to-instance traffic supports up to 9001-byte MTU. Through TGW: 8500 bytes. Through IGW or VPN: 1500 bytes."},
+  {d:1, cat:"VPC Design", q:"What does the Egress-Only Internet Gateway do?", a:"Allows outbound-only IPv6 traffic — the IPv6 equivalent of a NAT Gateway", detail:"Instances can initiate IPv6 connections to the internet but cannot receive unsolicited inbound connections. IPv6 cannot be NATted."},
+  {d:1, cat:"VPC Design", q:"Can VPC peering route traffic transitively (A → B → C)?", a:"No — VPC peering is non-transitive", detail:"Traffic cannot pass through a peering connection to reach a third VPC. Use Transit Gateway for transitive routing."},
+  {d:1, cat:"VPC Peering", q:"What are the two most commonly missed setup steps after accepting a VPC peering connection?", a:"Route table entries in both VPCs + Security Group rules allowing the peer CIDR", detail:"The peering connection alone does not enable traffic. Routes must be added in both VPC route tables and SGs must allow the peer's CIDR."},
+  {d:1, cat:"VPC Peering", q:"Does inter-Region VPC peering support Security Group ID referencing in rules?", a:"No — use CIDR-based rules for inter-Region peering", detail:"SG ID referencing across VPCs is supported only for same-Region peering. For inter-Region, reference the peer VPC CIDR instead."},
+  {d:1, cat:"Transit Gateway", q:"What does TGW Appliance Mode solve?", a:"Asymmetric routing through stateful firewall appliances", detail:"Without Appliance Mode, TGW may route request and response through different AZ ENIs, breaking stateful firewall inspection. Appliance Mode ensures both directions use the same AZ endpoint."},
+  {d:1, cat:"Transit Gateway", q:"Is inter-Region TGW peering traffic encrypted?", a:"Yes — automatically encrypted with AES-256-GCM", detail:"AWS encrypts all inter-Region TGW peering traffic before it leaves the source Region, with no configuration required. Same-Region TGW routing is not encrypted at the network layer."},
+  {d:1, cat:"Transit Gateway", q:"TGW multicast — what must be enabled at creation time?", a:"Multicast support must be enabled when creating the TGW (cannot be added later)", detail:"Once enabled, create multicast domains and associate VPC subnets. EFA is not required. One TGW can host multiple multicast domains."},
+  {d:1, cat:"Transit Gateway", q:"What is the purpose of TGW Connect attachment?", a:"GRE tunnels with BGP for SD-WAN appliances — up to 5 Gbps per attachment", detail:"TGW Connect allows SD-WAN and network appliances to connect via GRE tunnels without IPsec overhead. BGP sessions run over the GRE tunnel for dynamic routing."},
+  {d:1, cat:"PrivateLink", q:"What is the key advantage of AWS PrivateLink over VPC peering for service exposure?", a:"Works with overlapping CIDRs and grants service-level access only (not full network access)", detail:"PrivateLink exposes a specific service through an NLB. Consumers connect via an Interface Endpoint. No VPC-level routing changes are needed, and overlapping CIDRs are not an issue."},
+  {d:1, cat:"PrivateLink", q:"What type of Gateway endpoint supports S3, and what is its cost?", a:"Gateway Endpoint for S3 (and DynamoDB) — free, no per-hour or per-GB charges", detail:"Gateway endpoints add a prefix list entry to route tables. They cannot be extended to peered VPCs or over TGW. Use Interface Endpoints for cross-VPC S3 access."},
+  {d:1, cat:"Direct Connect", q:"What is the default AWS BGP ASN for Direct Connect VIFs?", a:"7224", detail:"AWS uses ASN 7224 by default for the AWS side of DX connections. A custom ASN can be specified when creating a DXGW."},
+  {d:1, cat:"Direct Connect", q:"What are the three Direct Connect VIF types and their purposes?", a:"Private VIF → VGW/DXGW (private IPs); Public VIF → AWS public IP space; Transit VIF → DXGW only (for TGW)", detail:"Private VIF accesses VPC private IPs. Public VIF accesses S3/DynamoDB/etc. at their public endpoints — NOT the internet. Transit VIF must connect to a DXGW, which then connects to TGW."},
+  {d:1, cat:"Direct Connect", q:"How many VGWs and TGWs can a single DXGW support?", a:"Up to 10 VGWs or up to 6 TGWs", detail:"TGWs from different accounts can be associated via RAM. The critical constraint: associated TGW CIDRs must be non-overlapping."},
+  {d:1, cat:"Direct Connect", q:"What is Maximum Resiliency for Direct Connect?", a:"2 connections at 2 separate DX locations, each on separate AWS devices", detail:"Eliminates SPOF at connection, device, and location levels. High Resiliency = 2 locations, 1 connection each. Development = 1 location + VPN backup."},
+  {d:1, cat:"Direct Connect", q:"What BFD settings does AWS support on Direct Connect?", a:"Minimum interval 300 ms, multiplier 3 → ~900 ms failure detection", detail:"BFD detects link failures much faster than BGP timers. Enabling BFD on a DX VIF is the recommended way to achieve sub-second failover to a backup VPN."},
+  {d:1, cat:"BGP", q:"Which BGP community tag signals AWS to set LOCAL_PREF 300 (highest preference) on a DX route?", a:"7224:7300", detail:"7224:7100 = LP 100 (backup), 7224:7200 = LP 200 (default), 7224:7300 = LP 300 (preferred). Tag on routes advertised TO AWS to influence AWS's outbound path choice."},
+  {d:1, cat:"BGP", q:"Which BGP attribute does a customer use to influence AWS's outbound path selection between two DX connections?", a:"MED (Multi-Exit Discriminator) — lower MED is preferred by AWS", detail:"The customer advertises routes to AWS with a lower MED on the preferred connection. AWS honors MED when choosing between equal-length prefixes from the same AS."},
+  {d:1, cat:"BGP", q:"In BGP, what always wins before any other attribute comparison?", a:"Longest prefix match (/24 beats /16 regardless of LOCAL_PREF, MED, or AS_PATH)", detail:"BGP always selects the most specific matching route first. A /24 prefix beats a /16 covering the same range regardless of all other BGP attributes."},
+  {d:1, cat:"BGP", q:"A customer wants to make a VPN route less preferred than a DX route. Which BGP technique should they use on the VPN?", a:"AS_PATH prepending — add extra ASN hops to make the VPN route appear longer", detail:"AS_PATH length is compared after LOCAL_PREF. Prepending the customer's own ASN multiple times on the VPN advertisement makes it longer and less preferred than the DX route."},
+
+  // Domain 2 — Implementation
+  {d:2, cat:"Load Balancers", q:"Is cross-zone load balancing enabled by default on NLB?", a:"No — NLB cross-zone is disabled by default (unlike ALB which is enabled by default)", detail:"Without cross-zone, each AZ's NLB node sends traffic only to targets in its own AZ. This can cause unequal load if AZs have different target counts."},
+  {d:2, cat:"Load Balancers", q:"What protocol does Gateway Load Balancer use for encapsulation, and on which port?", a:"GENEVE encapsulation over UDP port 6081", detail:"GWLB uses GENEVE to preserve original packet headers while forwarding to firewall appliances. The appliance receives the full original packet for inspection."},
+  {d:2, cat:"Load Balancers", q:"Does NLB have Security Groups?", a:"No — NLB does not have Security Groups", detail:"Control access to NLB targets via instance-level Security Groups or NACLs. ALB has Security Groups. GWLB also has Security Groups."},
+  {d:2, cat:"Load Balancers", q:"How does NLB preserve client IP vs how ALB does it?", a:"NLB: preserves client IP natively (TCP/UDP targets). ALB: uses X-Forwarded-For header.", detail:"NLB passes the original client IP to the target. ALB replaces the source IP with its own and adds the client IP to X-Forwarded-For."},
+  {d:2, cat:"Load Balancers", q:"What ALB feature allows gradual canary deployments while keeping user sessions consistent?", a:"Weighted target groups with rule-level stickiness (ALB-generated cookie)", detail:"Rule-level stickiness ensures a user's session stays in the same target group (Blue or Green) for the cookie duration, preventing per-request version switching."},
+  {d:2, cat:"Route 53", q:"Which Route 53 routing policy is only available via Traffic Flow?", a:"Geoproximity routing (requires Traffic Flow for bias configuration)", detail:"Geoproximity routes based on geographic distance to resources, with bias to shift the routing boundary. Latency, Failover, Geolocation, Weighted etc. are available as standard record types."},
+  {d:2, cat:"Route 53", q:"What is the difference between Latency-based and Geoproximity routing?", a:"Latency: routes to lowest measured network latency. Geoproximity: routes by geographic distance (not latency) with optional bias.", detail:"Latency uses AWS-maintained latency data per Region. Geoproximity uses geographic location and allows shifting the routing boundary with bias values from -99 to +99."},
+  {d:2, cat:"Route 53", q:"Why can't a CNAME record be placed at the zone apex?", a:"The DNS specification forbids CNAME at the zone apex — use Route 53 ALIAS records instead", detail:"An ALIAS record at the zone apex (example.com) works like a CNAME — it resolves to the target's IPs dynamically — without violating the DNS spec."},
+  {d:2, cat:"Route 53", q:"What does a Route 53 Resolver Inbound Endpoint enable?", a:"On-premises DNS servers can forward queries INTO the VPC to resolve private hosted zone names", detail:"Inbound Endpoint = on-premises → VPC. Outbound Endpoint = VPC → on-premises. Both are needed for full bidirectional hybrid DNS resolution."},
+  {d:2, cat:"Route 53", q:"What does DNSSEC protect against?", a:"DNS cache poisoning and spoofed response injection", detail:"DNSSEC adds cryptographic signatures (RRSIG) to DNS records. Validating resolvers verify signatures against the zone's public key, detecting forged responses. Does not prevent DDoS or unauthorized API access."},
+  {d:2, cat:"CloudFront", q:"What is the difference between OAC and OAI for CloudFront-to-S3 access?", a:"OAC (Origin Access Control) is the current recommended method; OAI (Origin Access Identity) is legacy", detail:"OAC uses SigV4 signing and supports additional S3 features. Both restrict S3 bucket access to CloudFront only. New distributions should use OAC."},
+  {d:2, cat:"CloudFront", q:"What is CloudFront Origin Shield's primary purpose?", a:"An additional caching layer between regional edge caches and the origin — reduces origin requests and load", detail:"Origin Shield collapses requests from multiple regional edge caches into single origin fetches, improving cache hit ratio and reducing origin data transfer costs."},
+  {d:2, cat:"CloudFront", q:"CloudFront Functions vs Lambda@Edge — which has sub-millisecond latency with no cold starts?", a:"CloudFront Functions (<1 ms, all 400+ PoPs, no cold starts)", detail:"CloudFront Functions: simple JavaScript, header/URL manipulation, viewer events only. Lambda@Edge: Node.js/Python, network calls, all 4 events, ~1-5 ms, cold starts possible."},
+  {d:2, cat:"CloudFront", q:"How do you restrict an ALB so only CloudFront can send requests to it?", a:"CloudFront injects a secret custom header; ALB listener rule returns 403 if the header is missing or wrong", detail:"The secret is configured only in CloudFront and the ALB rule — unknown to clients. The CloudFront managed prefix list can be used as a secondary defense."},
+  {d:2, cat:"CloudFront", q:"What is the purpose of CloudFront Origin Groups?", a:"Automatic per-request failover from a primary origin to a failover origin on 5xx errors or connection failures", detail:"Origin Groups specify triggering HTTP status codes (e.g., 500, 502, 503, 504). Failover happens at the CloudFront layer without DNS TTL delays."},
+  {d:2, cat:"VPN", q:"What does Accelerated Site-to-Site VPN use under the hood?", a:"AWS Global Accelerator's anycast IP infrastructure", detail:"VPN traffic enters the AWS backbone at the nearest edge location instead of traversing the public internet to the AWS Region. Reduces latency and improves stability for international sites."},
+  {d:2, cat:"VPN", q:"What TWO things are required to enable ECMP across VPN tunnels on TGW?", a:"1. Enable ECMP on the TGW. 2. Customer GW advertises same BGP routes over both tunnels.", detail:"Both conditions are required. ECMP doubles effective VPN throughput (~2.5 Gbps across two 1.25 Gbps tunnels). Only available with BGP routing — not static."},
+  {d:2, cat:"VPN", q:"What is a key advantage of IKEv2 over IKEv1 for AWS Site-to-Site VPN?", a:"Fewer exchange round trips, built-in NAT-T (NAT Traversal), and faster reconnection", detail:"IKEv2 is configurable per tunnel. Migrating does not require deleting the VPN connection. Supported on both VGW and TGW VPN attachments."},
+  {d:2, cat:"Direct Connect", q:"After AWS issues an LOA-CFA, what must happen next?", a:"Customer (or colo provider) physically cross-connects to the AWS DX device using the LOA-CFA as authorization", detail:"AWS does not perform the physical fiber connection. The LOA-CFA authorizes the colocation facility to make the cross-connection. Only after this does the logical configuration (VIF, BGP) proceed."},
+  {d:2, cat:"Direct Connect", q:"What does a public VIF connect to, and what does it NOT reach?", a:"Connects to AWS public IP space (S3, DynamoDB public endpoints) — does NOT reach the general internet or VPC private IPs", detail:"Public VIF only reaches AWS-owned public CIDRs. For internet access, use a NAT Gateway. For VPC private access, use a private or transit VIF."},
+  {d:2, cat:"Interface Endpoints", q:"What happens when Private DNS is enabled on a VPC Interface Endpoint?", a:"The standard AWS service hostname (e.g., sqs.us-east-1.amazonaws.com) resolves to the endpoint's private IP instead of the public IP", detail:"Existing application code using default AWS SDK endpoints automatically routes through the VPC endpoint without code changes."},
+  {d:2, cat:"NLB", q:"What listener protocol does NLB use to terminate TLS (not available on CLB)?", a:"TLS listener (with ACM certificate) — distinct from HTTPS which is ALB-only", detail:"NLB TLS listener offloads TLS decryption to NLB and forwards decrypted TCP to targets. ALB uses HTTPS. NLB does not have HTTPS as a protocol."},
+
+  // Domain 3 — Operations
+  {d:3, cat:"Flow Logs", q:"What does SKIPDATA mean in VPC Flow Logs?", a:"The logging system dropped records due to internal capacity constraints — not a network event", detail:"SKIPDATA indicates the flow log aggregation infrastructure couldn't capture all records during that window. REJECT means a security control denied traffic. NODATA means no traffic occurred."},
+  {d:3, cat:"Flow Logs", q:"What do pkt-srcaddr and pkt-dstaddr capture that srcaddr/dstaddr do not?", a:"The original source/destination IP before NAT translation (when a NAT Gateway is in the path)", detail:"Standard srcaddr/dstaddr fields show the NAT Gateway's translated IP. The pkt-* fields reveal the true client IP before NAT, critical for client identification."},
+  {d:3, cat:"Flow Logs", q:"What does ACCEPT in VPC Flow Logs confirm?", a:"Only that the Security Group/NACL permitted the packet — NOT that the TCP connection was established or data was transferred", detail:"Application-layer issues (app crash, TLS mismatch, TCP RST) are not visible in Flow Logs. ACCEPT is a network-layer decision only."},
+  {d:3, cat:"Flow Logs", q:"At which levels can VPC Flow Logs be enabled?", a:"VPC level (all ENIs), subnet level (all ENIs in subnet), or individual ENI level", detail:"VPC-level logging covers all ENIs in all subnets. Finer control is possible at subnet or ENI level. Default aggregation interval is 10 minutes; 1 minute is optional."},
+  {d:3, cat:"Monitoring", q:"What does conntrack_allowance_exceeded indicate on an EC2 instance?", a:"The instance's connection tracking table is full — new connections are being dropped", detail:"Each instance type has a fixed conntrack table limit. Remediations: scale to a larger instance type, or use a managed NAT Gateway which has no per-instance conntrack limits."},
+  {d:3, cat:"Monitoring", q:"What is the difference between VPC Reachability Analyzer and Network Access Analyzer?", a:"Reachability Analyzer: checks path between two SPECIFIC endpoints. Network Access Analyzer: finds ALL paths matching an unintended-access pattern across the VPC.", detail:"Both analyze configuration without generating traffic. Reachability Analyzer is for debugging a specific path. NAA is for audit/compliance — finding any EC2 reachable from the internet, for example."},
+  {d:3, cat:"Monitoring", q:"Which tool captures actual packet payloads (not just metadata) from EC2 network interfaces?", a:"VPC Traffic Mirroring", detail:"Traffic Mirroring copies packet data from a source ENI to a monitoring target (another ENI or NLB). Flow Logs only capture metadata — source/dest IP, port, bytes, action."},
+  {d:3, cat:"Monitoring", q:"What does bw_in_allowance_exceeded on an ENA metric indicate?", a:"The instance is hitting its inbound bandwidth limit, causing packets to be dropped", detail:"ENA driver metrics expose the reason for packet drops: bandwidth limit (bw), packet-per-second limit (pps), connection tracking limit (conntrack), or linklocal (metadata/DNS) throttling."},
+  {d:3, cat:"CloudTrail", q:"Which service records WHO made an API call, WHEN, and from WHERE?", a:"AWS CloudTrail (Management Events)", detail:"CloudTrail logs API calls including caller IAM identity, source IP, timestamp, and request parameters. Config records configuration state changes but not the caller identity as a primary field."},
+  {d:3, cat:"Connectivity", q:"What is the NAT Gateway TCP idle timeout, and what problem does it cause?", a:"350 seconds — idle connections drop after timeout, causing subsequent packet REJECT (visible in Flow Logs as ACCEPT then silence)", detail:"If a long-lived TCP connection sends no traffic for 350 seconds, the NAT Gateway drops the connection state. Implement TCP keepalives to prevent this."},
+  {d:3, cat:"BGP", q:"After an engineer updates Security Group rules, which tool provides the FASTEST verification of the resulting network path — without generating live traffic?", a:"VPC Reachability Analyzer — configuration-based analysis in seconds", detail:"Reachability Analyzer runs a configuration analysis and shows the exact path or blocker without launching instances or sending test packets. Much faster than live testing or manual inspection."},
+
+  // Domain 4 — Security
+  {d:4, cat:"Security Groups", q:"Security Groups are stateful. What does this mean for return traffic?", a:"Return traffic is automatically allowed — no explicit outbound rule is needed for responses to allowed inbound connections", detail:"Once a connection is established (SG allowed inbound), the response traffic is automatically permitted regardless of outbound rules. NACLs are stateless and require explicit return rules."},
+  {d:4, cat:"Security Groups", q:"Do Security Groups support explicit DENY rules?", a:"No — Security Groups only support ALLOW rules; unmatched traffic is implicitly denied", detail:"If you need to block specific IPs, use NACLs (which support explicit DENY rules) or WAF. SGs cannot deny a subset of traffic that a broader rule allows."},
+  {d:4, cat:"NACLs", q:"A NACL allows inbound TCP 443. Why are HTTPS responses still being dropped?", a:"NACLs are stateless — an outbound rule for ephemeral ports (1024–65535) is also required for response traffic", detail:"Servers respond to clients on the client's ephemeral source port (random 1024–65535). Without an outbound NACL rule allowing these ports, responses are dropped."},
+  {d:4, cat:"NACLs", q:"How are NACL rules evaluated?", a:"In ascending rule number order — the first matching rule wins (ALLOW or DENY)", detail:"Unlike Security Groups (all rules evaluated, most permissive wins), NACLs stop at the first match. Place DENY rules with lower numbers than conflicting ALLOW rules."},
+  {d:4, cat:"WAF", q:"In which AWS Region must a WAF web ACL with CLOUDFRONT scope be created?", a:"us-east-1 — CloudFront WAF web ACLs are always created in us-east-1 (global scope)", detail:"REGIONAL scope web ACLs are created in the same Region as their resource (ALB, API Gateway, etc.). A CLOUDFRONT-scope ACL cannot be attached to a regional resource and vice versa."},
+  {d:4, cat:"WAF", q:"What evaluation windows does WAF rate-based rule support?", a:"1, 2, 5, or 10 minutes", detail:"Set the rate limit as a total count over the chosen window. Rate-based rules can aggregate by IP, forwarded IP, custom header, query argument, or HTTP method."},
+  {d:4, cat:"WAF", q:"What does a WAF geo match condition do?", a:"Blocks or allows requests based on the client's country of origin (determined by IP geolocation)", detail:"Geo match is implemented as a WAF rule statement. Attach the web ACL to CloudFront or API Gateway to evaluate before the request reaches the origin."},
+  {d:4, cat:"Shield", q:"What additional capabilities does Shield Advanced provide vs Shield Standard?", a:"DRT access, proactive engagement, real-time attack visibility, cost protection (credits), and enhanced DDoS detection", detail:"Shield Standard is free and protects against L3/L4 attacks automatically. Shield Advanced adds $3,000/month for DRT, financial protection, and proactive mitigation during active attacks."},
+  {d:4, cat:"Shield", q:"What does Shield Advanced Proactive Engagement do?", a:"DRT proactively contacts you and can apply mitigations when Route 53 health checks are unhealthy during a DDoS event", detail:"Without proactive engagement, you must open a support case to engage DRT during an attack. Proactive engagement requires associating Route 53 health checks with protected resources."},
+  {d:4, cat:"Network Firewall", q:"In what order does Network Firewall process stateless vs stateful rules?", a:"Stateless rules first — packets that pass go to stateful inspection. Stateless DROPs never reach stateful rules.", detail:"Stateless rules match every packet individually (no state). Stateful rules track connection state. This allows fast stateless filtering before more expensive stateful inspection."},
+  {d:4, cat:"Network Firewall", q:"Which Network Firewall rule type can block traffic to specific FQDNs like *.malware.com?", a:"Stateful domain list rules (using SNI inspection for HTTPS and DNS query inspection for HTTP)", detail:"Domain list rules are a higher-level abstraction for FQDN filtering. For arbitrary HTTP header content (e.g., User-Agent), use Suricata-compatible IPS rules instead."},
+  {d:4, cat:"Network Firewall", q:"Which Network Firewall rule type supports matching on HTTP User-Agent header content?", a:"Suricata-compatible IPS stateful rules with http.user_agent content keyword", detail:"Suricata rules give full L7 inspection capabilities. Example: alert http any any -> any any (http.user_agent; content:\"python-requests\"; sid:1;)"},
+  {d:4, cat:"Governance", q:"What type of control are SCPs (Service Control Policies) — preventive or detective?", a:"Preventive — SCPs cannot be overridden by IAM policies in member accounts", detail:"SCPs set the maximum permissions in an account. An SCP denying an action blocks it regardless of what IAM policies allow. AWS Config rules are detective (find violations after the fact)."},
+  {d:4, cat:"Governance", q:"What does AWS Firewall Manager centrally manage across an AWS Organization?", a:"WAF web ACLs, Security Group policies, Network Firewall policies, Shield Advanced, and Route 53 DNS Firewall", detail:"Firewall Manager auto-applies policies to new accounts/resources in scope. Requires AWS Organizations and AWS Config enabled in all accounts."},
+  {d:4, cat:"VPC Endpoints", q:"What two controls together provide the strongest enforcement that S3 is only accessible from within a VPC?", a:"VPC Gateway Endpoint for S3 + S3 bucket policy with aws:SourceVpc or aws:SourceVpce condition", detail:"The endpoint routes S3 traffic through the VPC without hitting the public endpoint. The bucket policy denies access from outside the VPC even if other credentials exist. Defense-in-depth."},
+  {d:4, cat:"VPC Endpoints", q:"Which field in VPC Endpoint Service controls who can create endpoints to your service?", a:"Allowed principals (account IDs, IAM users, or IAM roles)", detail:"You can also require manual acceptance for each endpoint creation request, giving the service provider explicit control over which consumers can connect."},
+  {d:4, cat:"Route 53 DNS Firewall", q:"What is the purpose of Route 53 Resolver DNS Firewall?", a:"Block EC2 instances from resolving domains associated with malware, C2 servers, or policy violations at the DNS layer", detail:"DNS Firewall supports custom domain lists and AWS-managed threat intelligence lists. Actions: BLOCK (return NXDOMAIN or custom response), ALERT, or ALLOW. Attached to VPCs."},
+  {d:4, cat:"Managed Prefix Lists", q:"How do Customer-Managed Prefix Lists simplify Security Group management at scale?", a:"SG rules reference the prefix list ID; updating the prefix list automatically applies to all SGs referencing it — no per-SG edits", detail:"Without prefix lists, changing an IP allow-list requires updating every SG individually. Prefix lists are versioned CIDR collections that can be referenced in SG and route table rules."},
+  {d:4, cat:"Encryption", q:"Is VPC peering traffic encrypted at the network layer?", a:"No — VPC peering provides logical isolation but not cryptographic network-layer encryption", detail:"For compliance requiring encrypted data in transit, use application-layer TLS or an IPsec VPN overlay between the instances. This applies to both same-Region and inter-Region peering."},
+  {d:4, cat:"VPC Sharing", q:"In VPC sharing (RAM), can participant accounts reference Security Groups from OTHER participant accounts in their SG rules?", a:"No — participant accounts can only reference their own SGs or the VPC owner account's SGs", detail:"VPC sharing lets multiple accounts use subnets from one shared VPC. Each account's Security Groups are isolated — only owner-account SGs can be cross-referenced."},
+];
+
+// ─────────────────────────────────────────────
+//  FLASHCARD LOGIC
+// ─────────────────────────────────────────────
+let deck      = [];
+let filtered  = [];
+let deckIdx   = 0;
+let learned   = new Set();
+let flipped   = false;
+let filterVal = 'all';
+
+function initDeck() {
+  deck     = [...CARDS];
+  filtered = deck.filter(c => filterVal === 'all' || c.d === filterVal);
+  deckIdx  = 0;
+  learned.clear();
+  flipped  = false;
+  showCard();
+}
+
+function setFilter(val, btn) {
+  filterVal = val;
+  document.querySelectorAll('.fc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filtered = deck.filter(c => val === 'all' || c.d === val);
+  // remove already learned from filtered view
+  filtered = filtered.filter(c => !learned.has(c));
+  deckIdx  = 0;
+  flipped  = false;
+  showCard();
+}
+
+function shuffleDeck() {
+  for (let i = filtered.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+  }
+  deckIdx = 0;
+  flipped = false;
+  showCard();
+}
+
+function showCard() {
+  const card = document.getElementById('fc-card');
+  card.classList.remove('flipped');
+  flipped = false;
+
+  const remaining = filtered.filter(c => !learned.has(c));
+  const total     = deck.filter(c => filterVal === 'all' || c.d === c.d).length;
+
+  updateStats();
+
+  if (remaining.length === 0) {
+    showDone();
+    return;
+  }
+
+  // find next unlearned
+  while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++;
+  if (deckIdx >= filtered.length) { deckIdx = 0; while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++; }
+  if (deckIdx >= filtered.length) { showDone(); return; }
+
+  const c = filtered[deckIdx];
+  const domainLabel = {1:'Domain 1 — Network Design', 2:'Domain 2 — Implementation', 3:'Domain 3 — Operations', 4:'Domain 4 — Security'}[c.d];
+
+  document.getElementById('fc-cat').textContent     = c.cat + ' · ' + domainLabel;
+  document.getElementById('fc-cat2').textContent    = c.cat + ' · ' + domainLabel;
+  document.getElementById('fc-q').textContent       = c.q;
+  document.getElementById('fc-a').textContent       = c.a;
+  document.getElementById('fc-detail').textContent  = c.detail || '';
+  document.getElementById('fc-nav').style.display   = 'flex';
+
+  const pos = remaining.indexOf(c) + 1;
+  document.getElementById('fc-pos').textContent = pos + ' / ' + remaining.length;
+  const pct = remaining.length > 0 ? ((1 - (remaining.length / (filtered.length || 1))) * 100) : 100;
+  document.getElementById('fc-fill').style.width = pct + '%';
+}
+
+function updateStats() {
+  const domainFiltered = deck.filter(c => filterVal === 'all' || c.d === filterVal);
+  const learnedInFilter = domainFiltered.filter(c => learned.has(c)).length;
+  document.getElementById('fc-total-count').textContent  = domainFiltered.length;
+  document.getElementById('fc-learned').textContent      = learnedInFilter;
+  document.getElementById('fc-remaining').textContent    = domainFiltered.length - learnedInFilter;
+  document.getElementById('fc-learned-count').textContent = learnedInFilter + ' learned';
+}
+
+function flipCard() {
+  const card = document.getElementById('fc-card');
+  flipped = !flipped;
+  if (flipped) card.classList.add('flipped');
+  else card.classList.remove('flipped');
+}
+
+function markLearned() {
+  if (filtered[deckIdx]) { learned.add(filtered[deckIdx]); }
+  nextCard();
+}
+
+function nextCard() {
+  deckIdx++;
+  // skip learned
+  while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++;
+  if (deckIdx >= filtered.length) {
+    // wrap
+    deckIdx = 0;
+    while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++;
+  }
+  flipped = false;
+  showCard();
+}
+
+function prevCard() {
+  deckIdx--;
+  if (deckIdx < 0) deckIdx = filtered.length - 1;
+  while (deckIdx >= 0 && learned.has(filtered[deckIdx])) deckIdx--;
+  if (deckIdx < 0) deckIdx = 0;
+  flipped = false;
+  showCard();
+}
+
+function showDone() {
+  document.getElementById('fc-nav').style.display = 'none';
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-back" style="position:relative;transform:none;backface-visibility:visible;">
+      <div class="fc-a">🎉 All cards learned!</div>
+      <div class="fc-detail" style="margin-top:8px;">You've gone through all cards in this filter.</div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="resetDeck()">Reset & Repeat</button>
+    </div>`;
+}
+
+function resetDeck() {
+  learned.clear();
+  deckIdx = 0;
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front">
+      <div class="fc-category" id="fc-cat"></div>
+      <div class="fc-q" id="fc-q"></div>
+      <div class="fc-hint">Click to reveal answer</div>
+    </div>
+    <div class="fc-face fc-back">
+      <div class="fc-category" id="fc-cat2"></div>
+      <div class="fc-a" id="fc-a"></div>
+      <div class="fc-detail" id="fc-detail"></div>
+    </div>`;
+  document.getElementById('fc-card').onclick = flipCard;
+  document.getElementById('fc-nav').style.display = 'flex';
+  showCard();
+}
+
+// Boot
+document.addEventListener('DOMContentLoaded', () => { initDeck(); shuffleDeck(); });
+</script>
+</body>
+</html>
