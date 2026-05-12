@@ -703,6 +703,362 @@ const QUESTIONS = [
 
 ,
 // ═══════════════════════════════════════
+//  EXTENDED QUESTION BANK  (Q76–Q125)
+// ═══════════════════════════════════════
+{
+  id:76, domain:2,
+  q:"A media company restricts premium downloads to authenticated subscribers. Each link must expire after 24 hours AND be restricted to the subscriber's IP address. Which CloudFront feature satisfies BOTH requirements simultaneously?",
+  opts:["CloudFront signed URL with a canned policy","CloudFront signed URL with a custom policy","CloudFront signed cookies with domain restriction","CloudFront geo restriction combined with S3 pre-signed URLs"],
+  correct:[1],
+  exp:"Signed URLs with a custom policy support expiration time, IP address restriction (IpAddress condition), and a specific URL path — all in one token. Canned policies only support a single URL and expiration with no IP restriction. Signed cookies are better for multi-file access but don't bind to a per-user IP the same way."
+},
+{
+  id:77, domain:4,
+  q:"A company enables DNSSEC signing on their Route 53 public hosted zone. Which attack does DNSSEC directly prevent?",
+  opts:["DNS amplification DDoS attacks using the zone as a reflector","Unauthorized changes to Route 53 hosted zone records via the console","DNS cache poisoning and spoofed response injection","Zone transfer of DNS records to unauthorized resolvers"],
+  correct:[2],
+  exp:"DNSSEC adds cryptographic signatures (RRSIG records) to DNS responses. Validating resolvers verify these signatures against the zone's public key, detecting forged or modified responses — directly preventing cache poisoning. DNSSEC does not prevent DDoS amplification (it can slightly worsen it due to larger responses), unauthorized API access, or zone transfers."
+},
+{
+  id:78, domain:2,
+  q:"A multinational company's overseas offices experience high latency and unstable Site-to-Site VPN connections traversing the public internet. They cannot use Direct Connect due to budget constraints. Which AWS feature improves VPN performance by routing traffic over the AWS global backbone?",
+  opts:["AWS Global Accelerator with an NLB in front of the VPN endpoint","Transit Gateway inter-Region peering to the nearest Region","Accelerated Site-to-Site VPN (using AWS Global Accelerator anycast endpoints)","CloudFront with VPN protocol support at edge locations"],
+  correct:[2],
+  exp:"Accelerated Site-to-Site VPN uses AWS Global Accelerator's anycast IPs so traffic enters the AWS backbone at the nearest edge location rather than traversing the full public internet to the AWS Region. This reduces latency and improves connection stability. It is enabled per-VPN-connection at creation or modification time."
+},
+{
+  id:79, domain:3,
+  q:"An engineer troubleshoots poor throughput between two EC2 instances in the same VPC — TCP is fragmenting at 1500 bytes. Both instances support jumbo frames. What is the correct maximum MTU for in-VPC instance-to-instance traffic?",
+  opts:["1500 bytes — standard Ethernet MTU is the ceiling in all AWS networking","8500 bytes — set the OS MTU to 8500 for intra-VPC traffic","9001 bytes — set the OS MTU to 9001 for intra-VPC instance-to-instance traffic","65535 bytes — AWS supports full IPv6 jumbograms within a VPC"],
+  correct:[2],
+  exp:"AWS VPCs support jumbo frames up to 9001 bytes MTU for instance-to-instance traffic within the same VPC and Region. The OS interface MTU must be set to 9001 to use this. Note: traffic through an Internet Gateway is limited to 1500 bytes; through Transit Gateway to 8500 bytes; over VPN to ~1400 bytes due to encapsulation overhead."
+},
+{
+  id:80, domain:2,
+  q:"A company wants to offload TLS termination from backend EC2 targets using NLB, with certificates managed in ACM. Targets must receive decrypted traffic. Which NLB listener configuration enables this?",
+  opts:["TCP listener on port 443 — NLB passes encrypted traffic directly to targets","TLS listener on port 443 with an ACM certificate — NLB terminates TLS and forwards plain TCP to targets","HTTPS listener on port 443 — NLB functions the same as ALB for TLS termination","TCP listener with SSL passthrough and an ACM certificate attached to the target group"],
+  correct:[1],
+  exp:"NLB TLS listeners (not HTTPS — that is ALB terminology) allow NLB to terminate TLS using an ACM-managed certificate and forward decrypted TCP traffic to targets. TCP listeners pass encrypted traffic end-to-end without decryption. NLB does not support HTTPS as a listener protocol — that is an ALB-only feature."
+},
+{
+  id:81, domain:1,
+  q:"A company needs the highest level of Direct Connect resiliency for mission-critical workloads. Which configuration achieves Maximum Resiliency per AWS recommendations?",
+  opts:["Two dedicated connections to the same Direct Connect location from the same AWS device","Two dedicated connections to two separate Direct Connect locations, each from separate devices at each location","One dedicated connection with a LAG for bandwidth redundancy","One dedicated connection with a Site-to-Site VPN as backup"],
+  correct:[1],
+  exp:"AWS Maximum Resiliency requires at least two dedicated connections at two separate Direct Connect locations (separate physical facilities), each connected to separate AWS Direct Connect devices. This eliminates single points of failure at the connection, device, and location levels. Two connections at the same location (A) is High Resiliency, not Maximum."
+},
+{
+  id:82, domain:2,
+  q:"A company wants to use Transit Gateway to route multicast traffic between EC2 instances across multiple VPCs. What is a key prerequisite for TGW multicast support?",
+  opts:["Multicast is enabled by default on all Transit Gateways","Multicast must be enabled on the TGW at creation time and cannot be enabled after creation","All instances must use EFA (Elastic Fabric Adapter) to participate in multicast","One TGW is required per VPC for multicast — a single TGW cannot serve multiple VPC multicast groups"],
+  correct:[1],
+  exp:"TGW multicast support must be enabled at Transit Gateway creation time — it cannot be added to an existing TGW. Once enabled, multicast domains are created and VPC subnets are associated. EFA is not required for TGW multicast. One TGW can host multiple multicast domains across many VPCs."
+},
+{
+  id:83, domain:2,
+  q:"Route 53 health checks on an ALB endpoint are failing intermittently due to upstream network issues, triggering false-positive failovers. The team wants failover to only trigger when a configurable number of regional Route 53 health checkers agree the endpoint is unhealthy. Which feature provides this?",
+  opts:["Increase the health check failure threshold to 10","Create a Calculated Health Check combining individual regional checks with a minimum healthy-child threshold","Enable latency-based routing to automatically route away from slow endpoints","Use a CloudWatch alarm-based health check with a long evaluation period"],
+  correct:[1],
+  exp:"Route 53 Calculated Health Checks aggregate child health checks and report healthy/unhealthy based on a configurable minimum number of healthy children. Individual regional endpoint checks can be children, so failover only triggers when a quorum of checks fail. Increasing the failure threshold (A) applies within a single health check, not across multiple regional checkers."
+},
+{
+  id:84, domain:4,
+  q:"An engineering team wants AWS WAF to throttle API clients sending more than 2,000 requests per 5 minutes per source IP. Which rate-based rule configuration is correct?",
+  opts:["Limit = 2000, Rate key = IP, Evaluation window = 5 minutes","Limit = 400 (2000÷5), Rate key = IP, Evaluation window = 1 minute","Use a COUNT action rule with a CloudWatch alarm triggering at 2000 requests","Rate-based rules only support 10-minute windows — set Limit = 4000 for an equivalent rate"],
+  correct:[0],
+  exp:"AWS WAF rate-based rules support evaluation windows of 1, 2, 5, or 10 minutes. Setting Limit = 2000 with Rate key = IP and a 5-minute window blocks individual source IPs that exceed 2000 requests in that window. The limit represents the total count over the window, not a per-minute rate."
+},
+{
+  id:85, domain:4,
+  q:"A company subscribes to AWS Shield Advanced. During an active DDoS attack, they want the AWS DDoS Response Team (DRT) to engage and apply mitigations automatically without requiring a manual support case. Which Shield Advanced feature enables this?",
+  opts:["Shield Advanced automatic mitigation — the DRT always engages automatically for all customers","Shield Advanced proactive engagement — DRT contacts you and can apply mitigations when health checks are unhealthy during an attack","Shield Advanced with WAF — WAF automatically blocks all attack traffic, replacing DRT engagement","Shield Advanced rate-based rules — automatic throttling replaces DRT involvement"],
+  correct:[1],
+  exp:"Shield Advanced Proactive Engagement allows the DRT to proactively contact customers and apply mitigations when Route 53 health checks associated with the protected resource become unhealthy during an active DDoS event. Without proactive engagement configured, DRT engagement requires opening a support case manually."
+},
+{
+  id:86, domain:3,
+  q:"VPC Flow Logs show the action field as SKIPDATA for some records. What does SKIPDATA indicate?",
+  opts:["The packet was dropped by a NACL DENY rule before logging could occur","Flow log records were dropped by the logging system due to an internal capacity constraint during that aggregation window","The destination was unreachable and ICMP Destination Unreachable was returned","The connection was reset by the Security Group"],
+  correct:[1],
+  exp:"SKIPDATA means the Flow Logs aggregation system had insufficient internal capacity to capture all records — some traffic metadata was lost by the logging infrastructure itself. It is not a network-level event. REJECT indicates a NACL or Security Group denied the traffic. NODATA means no traffic occurred during that window."
+},
+{
+  id:87, domain:2,
+  q:"A company configures an NLB across 3 AZs. AZ-a has 2 targets and AZ-b has 8 targets. By default, without any configuration changes, how does the NLB distribute incoming traffic?",
+  opts:["Evenly across all 10 targets regardless of AZ (cross-zone enabled by default)","Each AZ's NLB node distributes traffic only to targets in its own AZ (cross-zone disabled by default)","NLB uses latency-based selection between AZs automatically","NLB requires explicit cross-AZ configuration before any traffic flows"],
+  correct:[1],
+  exp:"Unlike ALB (cross-zone enabled by default), NLB has cross-zone load balancing DISABLED by default. Each NLB node sends traffic only to targets in its own AZ. With 2 targets in AZ-a and 8 in AZ-b each receiving equal traffic at the NLB level, the AZ-a targets will be 4× more loaded per instance. Enable cross-zone to distribute evenly across all targets."
+},
+{
+  id:88, domain:4,
+  q:"A NACL allows inbound TCP port 443 from 0.0.0.0/0 (rule 100). Responses to HTTPS requests are being dropped. Which NACL rule is MOST likely missing?",
+  opts:["Outbound ALLOW rule for TCP port 443 to 0.0.0.0/0","Outbound ALLOW rule for TCP ephemeral ports (1024–65535) to 0.0.0.0/0","Inbound ALLOW rule for TCP ephemeral ports (1024–65535) from 0.0.0.0/0","An inbound DENY rule override for port 443"],
+  correct:[1],
+  exp:"NACLs are stateless — return traffic is not automatically allowed. When the server responds to an HTTPS request, it sends packets from port 443 to the client's ephemeral source port (1024–65535). The NACL must explicitly allow outbound TCP on ephemeral ports; otherwise responses are dropped. Security Groups handle this automatically since they are stateful."
+},
+{
+  id:89, domain:2,
+  q:"An enterprise needs to maintain BGP sessions between SD-WAN appliances and AWS Transit Gateway without using IPsec VPN or Direct Connect. Which TGW feature is purpose-built for this?",
+  opts:["TGW peering attachment with static routes","TGW Connect attachment using GRE tunnels with BGP over the top","TGW VPN attachment using IKEv2 without encryption","TGW Direct Connect attachment using a hosted connection"],
+  correct:[1],
+  exp:"TGW Connect is a purpose-built attachment type for SD-WAN and network appliances. It establishes GRE tunnels between TGW and a transit VPC appliance, with BGP sessions running over the GRE tunnel for dynamic routing. TGW Connect supports up to 5 Gbps per attachment and multiple GRE tunnels per Connect attachment, without IPsec overhead."
+},
+{
+  id:90, domain:4,
+  q:"A security audit finds that VPC-peered traffic between two accounts flows unencrypted. What is the correct statement about encryption for VPC peering traffic?",
+  opts:["VPC peering traffic is automatically encrypted using AES-256 at the network layer","VPC peering traffic is NOT encrypted at the network layer — application-layer TLS or IPsec overlay is required for encryption","Inter-Region VPC peering is encrypted, but same-Region peering is not","All inter-account traffic in AWS is encrypted regardless of service"],
+  correct:[1],
+  exp:"AWS VPC peering traffic is NOT encrypted at the network layer. AWS provides physical network isolation and security between customers, but no cryptographic encryption is applied to peered traffic in transit. For compliance requirements mandating encrypted data in transit, application-layer TLS or a VPN overlay is required. This applies to both same-Region and inter-Region VPC peering."
+},
+{
+  id:91, domain:2,
+  q:"A company needs 'app.internal.corp' to resolve to a private IP inside a VPC, while being unresolvable from the public internet. No public DNS records exist for 'internal.corp'. Which Route 53 configuration achieves this?",
+  opts:["Create both a public and a private hosted zone for 'internal.corp' — the private zone overrides the public one inside the VPC","Create a private hosted zone for 'internal.corp' associated with the VPC — the absence of a public zone makes the name unresolvable externally","Configure Route 53 Resolver with inbound and outbound endpoints for the 'internal.corp' domain","Use a CNAME in the public zone pointing to the private zone record"],
+  correct:[1],
+  exp:"A Route 53 private hosted zone associated with the VPC serves name resolution for instances within that VPC. Since no public zone for 'internal.corp' exists, external resolvers cannot resolve it — providing natural split-horizon behavior with no extra configuration. A public zone is only needed if you want a different (not absent) resolution from the internet."
+},
+{
+  id:92, domain:3,
+  q:"Amazon ENA Express (SRD protocol) is enabled on EC2 instances in a cluster placement group. Which specific network characteristic does ENA Express improve compared to standard ENA?",
+  opts:["Maximum aggregate network bandwidth per instance","Tail latency (p99/p99.9) and packet reordering — SRD spreads packets across multiple network paths and reorders at the receiver","Cross-AZ network throughput between instances in different Availability Zones","MTU size — SRD enables frames larger than 9001 bytes"],
+  correct:[1],
+  exp:"ENA Express uses AWS's Scalable Reliable Datagram (SRD) protocol, which spreads packets for a single flow across multiple physical network paths and reassembles them at the receiver. This dramatically reduces tail latency (p99, p99.9) and eliminates head-of-line blocking from single-path congestion. It does not increase maximum bandwidth, cross-AZ throughput, or MTU."
+},
+{
+  id:93, domain:4,
+  q:"AWS Network Firewall is configured with both stateless and stateful rule groups. In which order does Network Firewall process these?",
+  opts:["Stateful rules first; then stateless rules for any unmatched packets","Stateless rules first; packets that pass stateless processing are forwarded to stateful inspection","Both rule types are evaluated simultaneously and the most restrictive result wins","The order depends on rule group priority numbers — stateless and stateful share a priority namespace"],
+  correct:[1],
+  exp:"Network Firewall processes packets in order: (1) Stateless rules — evaluated against every packet individually with no connection state; packets can be dropped, passed, or forwarded to stateful inspection. (2) Stateful rules — evaluated against flows with connection tracking. Packets matching a stateless DROP rule never reach stateful rules."
+},
+{
+  id:94, domain:2,
+  q:"A company wants ECMP across two Site-to-Site VPN tunnels attached to a Transit Gateway to double effective VPN throughput. What TWO things must be configured? (Choose TWO)",
+  opts:["Enable 'Equal-cost multi-path routing' on the TGW","Enable ECMP in the specific TGW route table only","Configure the customer gateway to advertise the same BGP routes with equal cost over both tunnels","Replace BGP with static routes — ECMP requires static routing on TGW VPN"],
+  correct:[0,2],
+  multi:true,
+  exp:"TGW ECMP for VPN requires: (1) ECMP enabled on the TGW itself (set at creation or modification), and (2) the customer gateway must advertise identical BGP routes with equal attributes over both VPN tunnels. TGW then distributes flows across all equal-cost paths. ECMP is only supported with BGP, not static routing."
+},
+{
+  id:95, domain:2,
+  q:"A company uses CloudFront in front of an internet-facing ALB. They want to block direct access to the ALB's DNS name so only CloudFront can send requests. Which is the MOST secure and maintainable approach?",
+  opts:["Allow inbound on the ALB Security Group only from AWS CloudFront managed prefix list","Configure CloudFront to inject a secret custom header; add an ALB listener rule that returns 403 for requests missing that header","Restrict the ALB to a private subnet accessible only via PrivateLink from CloudFront","Use Route 53 weighted routing to send 100% of traffic through CloudFront"],
+  correct:[1],
+  exp:"The recommended pattern is to have CloudFront inject a secret custom HTTP header and configure an ALB listener rule that returns 403 for requests lacking the correct header value. The secret is known only to CloudFront and the ALB rule — opaque to clients. The CloudFront managed prefix list (A) is also a valid complementary control, but the header approach is the primary AWS-recommended mechanism as prefix lists change over time."
+},
+{
+  id:96, domain:1,
+  q:"A shared services VPC hosts Active Directory DNS servers. Spoke VPCs connect via Transit Gateway. EC2 instances in spoke VPCs cannot resolve on-premises hostnames through the AD DNS servers. Routes between VPCs are correct. What is the MOST LIKELY missing configuration?",
+  opts:["VPC peering between the shared services VPC and each spoke VPC","Route 53 Resolver outbound endpoint in the shared services VPC with a forwarding rule shared to spoke VPCs via RAM","TGW route table entries pointing spoke CIDRs to the shared services VPC attachment","Security Group rules in the shared services VPC allowing UDP/TCP 53 from spoke VPC CIDRs"],
+  correct:[1],
+  exp:"Network connectivity (routes via TGW) does not automatically enable DNS resolution across VPCs. A Route 53 Resolver outbound endpoint in the shared services VPC, combined with a forwarding rule for the on-premises domain, allows DNS queries to be forwarded through the AD DNS servers. The rule must be shared via RAM to spoke VPC accounts so their resolvers use it."
+},
+{
+  id:97, domain:2,
+  q:"A company wants CloudFront to automatically failover to an S3 static website origin if the primary ALB origin returns 5xx errors. Which CloudFront feature provides this per-request origin failover?",
+  opts:["CloudFront cache behaviors with multiple origins and TTL-based failover","CloudFront Origin Groups with a primary and failover origin triggered by specified HTTP status codes","Route 53 failover routing combined with CloudFront origin health checks","CloudFront Lambda@Edge function to reroute requests on 5xx responses"],
+  correct:[1],
+  exp:"CloudFront Origin Groups define a primary and failover origin. When the primary returns a configured failover-triggering HTTP status code (e.g., 500, 502, 503, 504) or a connection failure, CloudFront automatically retries the request against the failover origin without DNS TTL delays. This provides per-request origin failover built into CloudFront."
+},
+{
+  id:98, domain:4,
+  q:"An engineer configures a Security Group rule referencing 'sg-abc123' from VPC-B, which is connected via inter-Region VPC peering. The rule is accepted by the console but traffic is still blocked. What is the cause?",
+  opts:["Inter-Region VPC peering does not support Security Group ID referencing — CIDR-based rules must be used","The SG reference requires the full ARN format for cross-Region rules","SG referencing across Regions requires Transit Gateway, not VPC peering","Route tables are missing — SG rules have no effect without routes in both VPCs"],
+  correct:[0],
+  exp:"Security Group referencing (using another SG's ID as a rule source) is only supported within the same Region for VPC peering. Inter-Region VPC peering does NOT support cross-VPC SG ID referencing — you must use the peer VPC's CIDR block as the source instead. Same-Region same-account and cross-account VPC peering support SG referencing."
+},
+{
+  id:99, domain:4,
+  q:"A company attaches WAF web ACLs to both a CloudFront distribution and an ALB in us-east-1, with different rules on each. What is the correct statement about WAF scope for this setup?",
+  opts:["WAF web ACLs attached to CloudFront must be CLOUDFRONT scope (created in us-east-1 globally); WAF for ALB must be REGIONAL scope (created in the ALB's Region)","A single WAF web ACL can be attached to both CloudFront and ALB simultaneously","WAF is only available for CloudFront — ALBs require AWS Network Firewall instead","All WAF web ACLs are global and can be attached to any resource type"],
+  correct:[0],
+  exp:"AWS WAF has two scopes: CLOUDFRONT (global, must be created in us-east-1) for CloudFront distributions only, and REGIONAL (created in the same Region as the resource) for ALB, API Gateway, AppSync, and Cognito. A web ACL cannot be shared between CloudFront and a regional resource — two separate web ACLs are required."
+},
+{
+  id:100, domain:2,
+  q:"A Route 53 private hosted zone is associated with VPC-A. EC2 instances in VPC-B (not associated with the hosted zone, but peered with VPC-A) need to resolve names from that private hosted zone. What is the correct solution?",
+  opts:["VPC peering automatically enables cross-VPC private hosted zone resolution","Associate the private hosted zone with VPC-B in addition to VPC-A","Create a Route 53 Resolver forwarding rule in VPC-B pointing to a resolver endpoint in VPC-A","Use a CNAME in VPC-B pointing to the private hosted zone records in VPC-A"],
+  correct:[1],
+  exp:"Route 53 private hosted zones can be associated with multiple VPCs, including VPCs in other accounts (via cross-account CLI/SDK association). Associating the hosted zone with VPC-B allows instances there to resolve names from the zone. VPC peering alone does NOT enable cross-VPC private zone resolution — explicit zone association is required."
+},
+
+{
+  id:101, domain:2,
+  q:"A company has Route 53 geoproximity routing for resources in us-east-1 and eu-west-1. European users are nearly evenly split between the two endpoints. The company wants to attract 20% more European traffic to eu-west-1 without changing endpoint definitions. Which action achieves this?",
+  opts:["Switch to weighted routing with 40% us-east-1 and 60% eu-west-1","Set a positive bias value (e.g., +10) on the eu-west-1 geoproximity record","Create a geolocation rule for Europe explicitly pointing to eu-west-1","Reduce the TTL on the us-east-1 record to force more frequent DNS resolution"],
+  correct:[1],
+  exp:"Geoproximity routing uses bias to expand or shrink a resource's effective coverage area. A positive bias on eu-west-1 shifts the routing boundary toward users currently being sent to us-east-1, attracting more traffic from the borderline region. Bias ranges from -99 to +99. Geoproximity is only available via Route 53 Traffic Flow."
+},
+{
+  id:102, domain:3,
+  q:"Transit Gateway Flow Logs are enabled on a spoke VPC attachment. Which traffic information is captured in TGW Flow Logs that standard VPC Flow Logs on the spoke VPC's ENIs would NOT capture?",
+  opts:["Packet payload content for deep inspection","Traffic dropped by TGW route table blackhole routes before reaching any VPC ENI","The BGP ASN of the source and destination networks","Application-layer HTTP status codes for routed traffic"],
+  correct:[1],
+  exp:"TGW Flow Logs capture traffic flowing through TGW attachments, including traffic dropped by TGW blackhole routes. VPC Flow Logs on ENIs only capture traffic that reaches the ENI — traffic discarded at the TGW routing layer never reaches the VPC ENI and therefore never appears in VPC Flow Logs. TGW Flow Logs help diagnose TGW-level routing drops."
+},
+{
+  id:103, domain:4,
+  q:"A company wants to block EC2 instances from resolving domains associated with known malware command-and-control infrastructure at the DNS layer. Which feature provides this natively within the VPC?",
+  opts:["Route 53 Resolver DNS Firewall with AWS-managed threat intelligence domain lists","Network Firewall stateful rules with Suricata DNS pattern matching","VPC Flow Logs filtered to UDP port 53 combined with Lambda auto-blocking","GuardDuty DNS findings automatically updating Security Group deny rules"],
+  correct:[0],
+  exp:"Route 53 Resolver DNS Firewall lets you attach domain lists with BLOCK, ALLOW, or ALERT actions to VPCs. AWS provides managed domain lists updated with threat intelligence covering malware and botnet C2 domains. Queries matching a blocked domain return NXDOMAIN (or a custom response), preventing resolution at the DNS layer before any connection attempt."
+},
+{
+  id:104, domain:2,
+  q:"An engineer enables 'Private DNS' on a VPC interface endpoint for Amazon SQS in us-east-1. What changes in how EC2 instances in the VPC resolve the standard SQS hostname?",
+  opts:["The hostname 'sqs.us-east-1.amazonaws.com' resolves to the interface endpoint's private IP instead of the SQS public IP","A new private hosted zone is created requiring manual DNS record management for each SQS API call","Instances must use the endpoint-specific DNS name — the standard SQS hostname no longer resolves","Private DNS only affects cross-Region SQS calls — same-Region calls still use the public endpoint"],
+  correct:[0],
+  exp:"When Private DNS is enabled on a VPC interface endpoint, Route 53 Resolver returns the endpoint's private IP(s) for the standard AWS service hostname (e.g., sqs.us-east-1.amazonaws.com). Existing application code using the default AWS SDK endpoint URL automatically routes through the VPC endpoint without any code changes."
+},
+{
+  id:105, domain:2,
+  q:"A company's Site-to-Site VPN uses IKEv1 and wants to migrate to IKEv2. Which statement about IKEv2 support on AWS Site-to-Site VPN is TRUE?",
+  opts:["IKEv2 is not supported on AWS Site-to-Site VPN","IKEv2 is supported and configurable per tunnel; it supports NAT-T and requires fewer exchange round trips than IKEv1","Migrating from IKEv1 to IKEv2 requires deleting and recreating the VPN connection","IKEv2 is only supported on Transit Gateway VPN attachments, not VGW-based VPNs"],
+  correct:[1],
+  exp:"AWS Site-to-Site VPN supports both IKEv1 and IKEv2, configurable per tunnel via tunnel options. IKEv2 advantages include fewer round trips for SA establishment, built-in NAT-T, and improved authentication. IKEv2 is supported on both VGW-based and TGW-based VPN attachments and the IKE version can be changed without deleting the connection."
+},
+{
+  id:106, domain:3,
+  q:"An EC2 instance acting as a NAT appliance receives packets but does not forward them. Which EC2-level setting must be disabled for the instance to forward traffic destined for other hosts?",
+  opts:["Enhanced Networking (ENA) — must be disabled to allow packet forwarding","The source/destination check on the instance's ENI — must be disabled","The instance must be in a cluster placement group for forwarding to work","VPC DNS resolution must be disabled to prevent routing loops"],
+  correct:[1],
+  exp:"By default, EC2 instances drop packets whose source or destination IP does not match their own assigned IPs. For a NAT instance or any forwarding appliance, packets will carry foreign IPs. Disabling the source/destination check on the ENI tells the hypervisor to pass all packets to the instance regardless of IP, enabling forwarding."
+},
+{
+  id:107, domain:2,
+  q:"A company needs to run simple header manipulation and URL rewriting logic at every CloudFront edge location with sub-millisecond latency and no cold starts. Which CloudFront edge compute option is MOST appropriate?",
+  opts:["Lambda@Edge with Node.js — runs at all CloudFront edge locations","CloudFront Functions — lightweight JavaScript runtime at all edge locations with sub-millisecond performance","AWS Lambda in each Region triggered by CloudFront for full runtime capabilities","AWS WAF custom rules with request transformation for header manipulation"],
+  correct:[1],
+  exp:"CloudFront Functions are designed for high-throughput, latency-sensitive operations (header manipulation, URL rewrites, cache-key normalization) at the edge. They execute in under 1 ms, have no cold starts, run natively at all 400+ CloudFront PoPs, and cost significantly less than Lambda@Edge for simple operations. Lambda@Edge supports more capabilities (network calls, larger packages) but adds latency and cost."
+},
+{
+  id:108, domain:3,
+  q:"A company needs to find all EC2 instances with unintended internet access due to overly permissive Security Groups and route table configurations — across all paths, not just a specific pair of endpoints. Which service is designed for this?",
+  opts:["VPC Reachability Analyzer — traces a path between two specified endpoints","AWS Network Access Analyzer — identifies unintended network access paths matching defined conditions","Amazon Inspector — scans instances for network exposure based on Security Group rules","AWS Config with 'restricted-ssh' and related managed rules"],
+  correct:[1],
+  exp:"Network Access Analyzer identifies network configurations that permit unintended access by analyzing all possible paths across your VPC architecture. You define 'network access scopes' (e.g., any EC2 reachable from the internet on non-standard ports) and NAA finds all matching paths — without requiring you to specify individual source/destination pairs as Reachability Analyzer does."
+},
+{
+  id:109, domain:4,
+  q:"A security team wants to centrally manage AWS WAF web ACLs, Security Group policies, and AWS Network Firewall rules across all accounts in an AWS Organization. Which service provides this centralized control plane?",
+  opts:["AWS Security Hub with cross-account aggregation","AWS Config with an Organization aggregator and conformance packs","AWS Firewall Manager","AWS Control Tower with network guardrails"],
+  correct:[2],
+  exp:"AWS Firewall Manager centrally manages security policies across an AWS Organization including: WAF web ACLs (on CloudFront, ALB, API Gateway), Security Group policies (audit and enforce), Network Firewall policies, Shield Advanced protections, and Route 53 Resolver DNS Firewall. Policies are automatically applied to new accounts and resources matching the configured scope."
+},
+{
+  id:110, domain:1,
+  q:"A company runs one NAT Gateway per AZ across 3 AZs. A cost review proposes replacing all three with one NAT Gateway in a single AZ. What is the primary risk of this change?",
+  opts:["A single NAT Gateway supports fewer concurrent connections than three distributed ones","If the single NAT Gateway's AZ experiences an outage, instances in all other AZs lose outbound internet access","Instances cannot use a NAT Gateway in a different AZ — routing will fail at the subnet level","A single NAT Gateway is limited to 55,000 total simultaneous connections"],
+  correct:[1],
+  exp:"NAT Gateways are AZ-specific. AWS best practice is one NAT Gateway per AZ — if the NAT Gateway's AZ fails, instances in other AZs that route through it lose outbound connectivity. Centralizing also adds cross-AZ data transfer costs that partially offset the savings. NAT Gateways scale automatically and have no hard per-AZ instance limit on connections."
+},
+{
+  id:111, domain:2,
+  q:"An ALB uses a weighted forward rule: TG-Blue at weight 80, TG-Green at weight 20. Users report their session switches between old and new application versions with each request. How should the engineer fix this while keeping weighted routing active?",
+  opts:["Enable target group-level stickiness so requests hash to the same target within each group","Enable stickiness on the weighted target group rule (ALB-generated cookie) so a user's session stays within the same target group","Switch to NLB — NLB supports source IP stickiness natively for weighted routing","Add CloudFront in front of the ALB and use cache behaviors for sticky routing"],
+  correct:[1],
+  exp:"ALB supports stickiness at two levels: target-level (within a group) and rule-level (across weighted groups). For weighted canary deployments, enabling stickiness on the listener rule causes the ALB to issue a cookie that pins each user's session to TG-Blue or TG-Green for the configured duration, preventing per-request switching between versions."
+},
+{
+  id:112, domain:3,
+  q:"VPC Flow Logs show repeated inbound REJECT records on port 22 from an external IP across multiple instances. The Security Groups are correctly blocking the traffic. What additional action should the engineer take?",
+  opts:["No action needed — REJECT means traffic is blocked and the instances are safe","Investigate in Amazon GuardDuty for SSH brute-force findings and consider blocking the source IP at the NACL level","REJECT in flow logs only appears for UDP — TCP port 22 REJECTs indicate a routing misconfiguration","Delete the Security Group inbound rules so the flow log REJECTs stop appearing"],
+  correct:[1],
+  exp:"REJECT in VPC Flow Logs confirms traffic is being blocked by Security Group or NACL rules. However, repeated SSH scanning is a classic reconnaissance or brute-force indicator. GuardDuty generates UnauthorizedAccess:EC2/SSHBruteForce findings for this pattern. The appropriate response is to investigate, optionally add a NACL DENY rule for the source IP (stateless, faster block), and review GuardDuty findings."
+},
+{
+  id:113, domain:1,
+  q:"A company has 100 VPCs across multiple accounts and Regions, all needing to resolve a single shared private hosted zone. Which architecture scales best?",
+  opts:["Associate the private hosted zone with all 100 VPCs individually","Use a central DNS VPC with Route 53 Resolver inbound endpoints; associate the hosted zone only with the hub VPC; share forwarding rules to spoke VPCs via RAM","Replicate identical private hosted zones in every account and use automated record sync","Use a public hosted zone — it resolves globally without VPC association"],
+  correct:[1],
+  exp:"The scalable pattern uses a central hub VPC: associate the private hosted zone with only the hub VPC, deploy Resolver inbound endpoints there, and create forwarding rules pointing to those endpoints. Sharing the rules org-wide via RAM lets spoke VPCs resolve the shared domain through the hub's resolver — avoiding the complexity of associating the zone with 100 VPCs and staying within association limits."
+},
+{
+  id:114, domain:2,
+  q:"After AWS issues a Direct Connect LOA-CFA, what must happen before the dedicated connection becomes active?",
+  opts:["AWS automatically activates the physical connection within 24 hours of LOA-CFA issuance","The customer (or colocation provider) uses the LOA-CFA to physically cross-connect their equipment to the AWS Direct Connect device at the colocation facility","The customer submits the LOA-CFA back to AWS Support who completes provisioning end-to-end","The LOA-CFA is only for records — the connection activates when the BGP session first comes up"],
+  correct:[1],
+  exp:"The LOA-CFA (Letter of Authorization – Connecting Facility Assignment) authorizes the colocation facility to make the physical fiber cross-connection between the customer's equipment and the specified AWS Direct Connect device port. AWS does not perform the physical connection. Once the fiber is connected and the physical layer comes up, logical configuration (VIF creation, BGP) can proceed."
+},
+{
+  id:115, domain:1,
+  q:"VPC-A (10.0.0.0/16) and VPC-B (10.0.0.0/16) have overlapping CIDRs. An engineer attempts to create a VPC peering connection between them. What happens?",
+  opts:["The peering connection is created but routing is ambiguous — AWS randomly selects a VPC for 10.x.x.x destinations","AWS rejects the peering connection creation — overlapping CIDRs at the VPC level prevent peering regardless of subnet-level differences","The peering succeeds if the specific subnets being used do not overlap","Cross-account VPC peering with overlapping CIDRs is supported — only same-account peering is restricted"],
+  correct:[1],
+  exp:"AWS checks for CIDR overlap at the VPC level when creating a peering connection. If both VPCs use the same CIDR block (even if their specific subnets don't overlap), the peering connection is rejected. There is no option to create overlapping-CIDR peering for any combination of accounts or Regions. Use AWS PrivateLink for service connectivity between VPCs with overlapping CIDRs."
+},
+{
+  id:116, domain:3,
+  q:"A VPC Flow Log record shows action=ACCEPT for an inbound TCP 443 packet. The EC2 instance's SG allows inbound 443 from 0.0.0.0/0. What does the ACCEPT record confirm?",
+  opts:["The TCP connection was fully established and data was transferred successfully","The packet was permitted by Security Group and/or NACL rules — it does not confirm TCP handshake completion or application response","The Security Group logged the acceptance and the application received the data","ACCEPT only appears for UDP traffic — TCP connections show ESTABLISHED instead"],
+  correct:[1],
+  exp:"VPC Flow Log ACCEPT indicates the network-layer security controls (Security Group, NACL) permitted the packet. It does not confirm that the TCP three-way handshake completed, data was exchanged, or the application responded. The application may have rejected the connection or returned an error. Flow Logs capture allow/deny decisions, not application-layer outcomes."
+},
+{
+  id:117, domain:2,
+  q:"A VPC is attached to a Transit Gateway. The engineer wants the VPC's CIDR blocks automatically added to the TGW route table without manual static route entry. Which TGW feature enables this?",
+  opts:["TGW route propagation — enabling propagation on a VPC attachment automatically adds the VPC CIDR to the associated TGW route table","TGW dynamic routing — TGW runs iBGP with all attached VPCs automatically","VPC route table propagation — the VPC advertises its CIDR to TGW via BGP","TGW auto-discovery — TGW scans attached VPC CIDRs and updates route tables on a schedule"],
+  correct:[0],
+  exp:"TGW route propagation, when enabled on an attachment, automatically adds the attached VPC's CIDR block(s) (including secondary CIDRs) to the associated TGW route table. This eliminates manual static route creation. For VPN and Direct Connect attachments, BGP-learned routes are propagated similarly."
+},
+{
+  id:118, domain:3,
+  q:"An engineer needs to determine who made a specific Security Group rule change 4 months ago. Which service provides the caller identity, source IP, and timestamp for that API call?",
+  opts:["VPC Flow Logs from that date showing traffic pattern changes","AWS CloudTrail — search Management Events for AuthorizeSecurityGroupIngress with the specific date range","AWS Config — view the Security Group's configuration timeline","Amazon GuardDuty historical findings for Security Group modification events"],
+  correct:[1],
+  exp:"CloudTrail records every API call — including AuthorizeSecurityGroupIngress — with the caller's IAM identity, source IP, timestamp, and request parameters. Event history is searchable in the console for 90 days; for older events, search CloudTrail logs delivered to S3. AWS Config shows configuration state changes (before/after) but its primary record does not include caller identity as a first-class field."
+},
+{
+  id:119, domain:2,
+  q:"CloudFront Origin Shield is enabled for a multi-Region distribution. What is the PRIMARY purpose of Origin Shield?",
+  opts:["To provide DDoS protection at the origin by absorbing attack traffic before it reaches the origin server","To add an additional caching layer between regional edge caches and the origin, reducing origin requests and improving cache hit ratio","To encrypt traffic between CloudFront edge locations and the origin using an additional TLS layer","To rate-limit requests from CloudFront edge nodes to prevent origin overload"],
+  correct:[1],
+  exp:"CloudFront Origin Shield is an additional caching layer between regional edge caches and the origin. It collapses redundant origin fetches from multiple regional edge caches into single requests to Origin Shield, which fetches from the origin only on a cache miss. This significantly reduces origin load, improves cache hit ratio, and reduces origin data transfer costs."
+},
+{
+  id:120, domain:2,
+  q:"Is traffic that traverses an inter-Region Transit Gateway peering connection encrypted in transit?",
+  opts:["No — inter-Region TGW peering uses the AWS backbone but traffic is not encrypted; IPsec VPN is required for encryption","Yes — AWS automatically encrypts all inter-Region TGW peering traffic before it leaves the source Region","Yes — but only when both Regions are in the same AWS partition","No — TGW peering uses VPC peering infrastructure which is also unencrypted"],
+  correct:[1],
+  exp:"AWS automatically encrypts all inter-Region TGW peering traffic using AES-256-GCM before it leaves the source AWS Region, with no configuration required. Traffic travels over the AWS global backbone. This differs from VPC peering, which does not encrypt traffic at the network layer. Same-Region TGW routing stays within regional physical infrastructure and does not require cross-Region encryption."
+},
+{
+  id:121, domain:2,
+  q:"A company needs a DNS record mapping their zone apex domain (example.com) to an Application Load Balancer. A standard CNAME cannot be used at the zone apex. Which Route 53 record type solves this?",
+  opts:["An A record with the ALB's current IP addresses (requires manual updates when IPs change)","An ALIAS record pointing to the ALB DNS name — works at the zone apex and automatically reflects ALB IP changes","A CNAME record at the apex — Route 53 supports apex CNAMEs as a proprietary extension","An NS record delegating apex resolution to the ALB's DNS zone"],
+  correct:[1],
+  exp:"Route 53 ALIAS records are a Route 53 extension that functions like a CNAME but can be used at the zone apex. An ALIAS record pointing to an ALB DNS name automatically resolves to the ALB's current IP addresses, handles IP changes transparently, and returns A records to clients. Standard DNS forbids CNAMEs at the zone apex."
+},
+{
+  id:122, domain:4,
+  q:"A company wants to block requests from specific countries to their API Gateway REST API. Which service and configuration achieves geographic blocking at the edge with the least latency impact on allowed traffic?",
+  opts:["API Gateway resource policies with IP CIDR deny rules for country ranges","AWS WAF geo match condition attached to the API Gateway web ACL","Route 53 geolocation routing with a blackhole record for blocked countries","Security Groups with country-specific IP CIDR deny rules on the API Gateway"],
+  correct:[1],
+  exp:"AWS WAF geo match conditions identify request origin countries based on client IP. A WAF rule with a geo match condition and BLOCK action, attached to the API Gateway, blocks requests from configured countries before they reach the API endpoint. WAF at API Gateway runs regionally and evaluates requests inline with near-zero added latency for allowed traffic."
+},
+{
+  id:123, domain:3,
+  q:"VPC-1 and VPC-3 are both attached to the same Transit Gateway and can each communicate with the on-premises network via DXGW. However, VPC-1 and VPC-3 cannot communicate with each other. What is the MOST LIKELY cause?",
+  opts:["Transit Gateway does not support VPC-to-VPC routing — it only routes to on-premises","VPC-1 and VPC-3 are associated with different TGW route tables that lack routes to each other","Security Groups in VPC-3 are blocking all traffic from VPC-1's CIDR","VPC peering is required between VPC-1 and VPC-3 even when both attach to the same TGW"],
+  correct:[1],
+  exp:"The most common cause of selective TGW connectivity is route table segmentation. If VPC-1 and VPC-3 are in separate TGW route tables (intentionally or accidentally), and those tables lack routes for each other's CIDRs, inter-VPC traffic is dropped. TGW fully supports VPC-to-VPC routing — the issue is configuration, not a TGW limitation."
+},
+{
+  id:124, domain:3,
+  q:"VPC Flow Logs are configured with a custom format including the 'pkt-srcaddr' and 'pkt-dstaddr' fields. What do these fields capture that the standard 'srcaddr' and 'dstaddr' fields do not?",
+  opts:["pkt-srcaddr is always identical to srcaddr — they are aliases","For traffic passing through NAT devices, srcaddr/dstaddr show the NAT device IP; pkt-srcaddr/pkt-dstaddr show the original packet source/destination IP","pkt-srcaddr records the IPv6 address when srcaddr records only IPv4","pkt-srcaddr is only populated for rejected traffic"],
+  correct:[1],
+  exp:"When traffic passes through a NAT Gateway or NLB, the standard srcaddr/dstaddr fields reflect the NAT/LB device's translated IP, not the original sender. The pkt-srcaddr and pkt-dstaddr fields capture the original packet-level IPs before NAT translation. This is critical for identifying true client IPs when a NAT device is in the traffic path."
+},
+{
+  id:125, domain:4,
+  q:"A company needs to prevent any EC2 instance across their entire AWS Organization from launching with an automatically assigned public IP. Which control is MOST effective as a preventive guardrail?",
+  opts:["AWS Config rule to detect and terminate instances launched with public IPs","Service Control Policy (SCP) denying ec2:RunInstances when AssociatePublicIpAddress is true","AWS Firewall Manager policy blocking public IP assignment","Disable 'Auto-assign Public IP' on all subnets via CloudFormation StackSets"],
+  correct:[1],
+  exp:"An SCP at the Organization or OU level can deny ec2:RunInstances when the NetworkInterface.AssociatePublicIpAddress parameter is true, preventing instances from ever launching with automatic public IPs — regardless of IAM permissions in member accounts. Config rules (A) are detective, not preventive. Subnet-level defaults (D) can be overridden per-instance at launch time."
+},
+
+// ═══════════════════════════════════════
 //  HARDER QUESTIONS  (Q66–Q75)
 // ═══════════════════════════════════════
 {
@@ -858,7 +1214,57 @@ const WRONG_EXP = {
   72: "Weighted routing (A) is percentage-based but does not account for geography — you'd be sending some European users to us-east-1 unpredictably rather than geographic-boundary shifting. Geolocation routing (C) routes by continent/country — you could create a Europe → eu-west-1 record, but this is an all-or-nothing geographic assignment, not a gradual boundary shift. TTL changes (D) affect DNS caching behavior, not routing decisions.",
   73: "Return traffic from the NAT Gateway (B) is already SNAT'd to the NAT Gateway EIP — return traffic from the internet comes back to the NAT Gateway directly via the IGW, not through the TGW. VPC peering for return routing (D) would bypass the centralized egress model entirely and create a complex mesh. The two missing pieces are the spoke VPC subnet default route to TGW (C) and the TGW route table forwarding to egress VPC (A).",
   74: "Security group rule count (A) — AWS SGs support up to 60 inbound/outbound rules (or more with quota increase), and rule count does not directly affect connection tracking slot capacity. ENA driver bugs (C) — conntrack_allowance_exceeded is a documented, expected metric for a real resource limit, not a driver defect. Jumbo frames (D) change the MTU for packet fragmentation but have no relationship to the connection tracking table size.",
-  75: "Community 7224:7100 (A) signals LP 100 — this would make AWS *deprioritize* the us-east-1 routes, the opposite of what's needed. Community 7224:7200 (B) is the default and changes nothing — AWS already uses LP 200 by default, so both connections would remain equal. Community 7224:9300 (D) tells AWS not to re-advertise the route to other AWS regions — it has no effect on LOCAL_PREF or path preference."
+  75: "Community 7224:7100 (A) signals LP 100 — this would make AWS *deprioritize* the us-east-1 routes, the opposite of what's needed. Community 7224:7200 (B) is the default and changes nothing — AWS already uses LP 200 by default, so both connections would remain equal. Community 7224:9300 (D) tells AWS not to re-advertise the route to other AWS regions — it has no effect on LOCAL_PREF or path preference.",
+  76: "Canned policy signed URLs (A) only support expiration time — no IP address restriction. Signed cookies (C) are better for multi-file access but bind to the browser session, not to a per-user IP per-link. Geo restriction with S3 pre-signed URLs (D) blocks by country, not by authentication or session, and cannot enforce per-user expiration.",
+  77: "DNS amplification (A) exploits open resolvers using any valid domain — DNSSEC actually slightly increases amplification risk by making responses larger. Unauthorized console changes (B) are controlled by IAM policies, not cryptographic DNS signing. Zone transfers (D) are restricted by NS configuration and ACLs on the name server, not by DNSSEC.",
+  78: "Global Accelerator with NLB in front of VPN (A) — NLB cannot sit in front of a VPN endpoint (VGW or TGW); VPN termination is not behind a load balancer. TGW inter-Region peering (B) connects AWS Regions to each other, not on-premises offices to AWS. CloudFront with VPN (D) — CloudFront does not support VPN protocol termination at edge locations.",
+  79: "1500 bytes (A) is the standard MTU and applies at Internet Gateways and VPN endpoints, not for in-VPC traffic. 8500 bytes (B) is the maximum MTU through Transit Gateway, not for direct in-VPC instance traffic. 65535 bytes (D) is the theoretical IPv6 jumbogram limit — not supported in AWS VPCs.",
+  80: "TCP listener on 443 (A) passes traffic end-to-end encrypted — NLB cannot decrypt it. HTTPS listener (C) — HTTPS is an ALB listener protocol, not NLB. SSL passthrough with ACM on the target group (D) — SSL passthrough means NLB doesn't terminate TLS; ACM certificates attach to the NLB listener, not target groups.",
+  81: "Two connections at one location (A) is High Resiliency — a single location outage takes down both connections. A LAG for bandwidth (C) provides link redundancy within one location but not location-level redundancy. DX plus backup VPN (D) is the Development/Testing resiliency model, not Maximum Resiliency.",
+  82: "Multicast enabled by default (A) is false — it must be explicitly enabled at TGW creation. EFA required for multicast (C) is false — EFA is for OS-bypass HPC networking, unrelated to TGW multicast. Dedicated TGW per VPC (D) is false — one TGW with multicast enabled serves all attached VPCs via multicast domains.",
+  83: "Increasing the failure threshold (A) makes a single health check less sensitive but does not aggregate across regional checkers. Latency-based routing (C) routes to lower-latency endpoints but does not use health check quorum logic. CloudWatch alarm-based health checks (D) rely on a single metric alarm, not a consensus of multiple regional checkers.",
+  84: "Limit = 400 per 1-minute window (B) — WAF rate limits are totals over the configured window, not per-minute rates; 400/min ≠ 2000/5min in WAF's evaluation model. COUNT with CloudWatch alarm (C) detects but does not block. 10-minute window only (D) — WAF supports 1, 2, 5, and 10-minute evaluation windows.",
+  85: "Shield Advanced automatic engagement for all customers (A) — proactive engagement must be explicitly configured and associated with Route 53 health checks; it is not on by default. Shield Advanced with WAF auto-blocking (C) — WAF can block known attack signatures but is separate from DRT engagement; WAF does not replace DRT. Rate-based rules (D) are WAF features, not Shield Advanced DRT engagement mechanisms.",
+  86: "NACL DENY (A) results in action=REJECT in flow logs, not SKIPDATA. ICMP Destination Unreachable (C) is a network-layer response packet — it would appear as a separate flow log entry with action=ACCEPT (or REJECT), not as SKIPDATA. Security Group TCP RST (D) — Security Groups silently drop packets; they don't send TCP RST, and that would show as REJECT not SKIPDATA.",
+  87: "Cross-zone enabled by default (A) describes ALB behavior, not NLB. Latency-based AZ selection (C) — NLB routes based on which AZ the traffic enters, not measured latency. Explicit cross-AZ target group config (D) — cross-zone is a load balancer attribute set at the LB level, not a target group configuration.",
+  88: "Outbound ALLOW for port 443 (A) — response traffic leaves the server from port 443 destined to the client's ephemeral port; the outbound rule needed is for ephemeral destination ports, not port 443. Inbound ephemeral port rule (C) — inbound ephemeral ports describe the client's *source* port on inbound packets, which is already covered by allowing all inbound 443; the missing piece is the *outbound* ephemeral port rule. DENY override (D) would only further block traffic, not fix the drop.",
+  89: "TGW peering with static routes (A) — TGW peering connects two TGWs to each other, not TGW to SD-WAN appliances. TGW VPN with IKEv2 (C) — Site-to-Site VPN uses IPsec; TGW Connect specifically avoids IPsec overhead using GRE. TGW DX attachment (D) — there is no such attachment type; DX connects to TGW via a DXGW and transit VIF.",
+  90: "Automatic AES-256 encryption for VPC peering (A) — VPC peering does NOT encrypt traffic at the network layer; AWS provides isolation but not cryptographic confidentiality. Inter-Region encrypted / same-Region not (C) — neither type encrypts at the network layer. All inter-account traffic encrypted (D) — false; AWS provides physical and logical isolation but network-layer encryption requires application-layer TLS or a VPN overlay.",
+  91: "Public + private hosted zone (A) works for split-horizon when you want DIFFERENT resolutions publicly and privately. Here the domain has no public presence, so a private zone alone achieves the goal more simply. Resolver with inbound/outbound endpoints (C) is for hybrid DNS with on-premises systems, not for simple VPC-internal private name resolution. CNAME in public zone (D) — no public zone exists for 'internal.corp', so there's nowhere to put it.",
+  92: "Maximum aggregate bandwidth (A) — ENA Express improves tail latency, not the maximum bandwidth ceiling. Cross-AZ throughput (C) — ENA Express / SRD operates within a cluster placement group (same AZ); it is not designed for cross-AZ paths. MTU increase (D) — ENA Express does not change supported MTU; the in-VPC limit remains 9001 bytes.",
+  93: "Stateful first, then stateless (A) — the order is reversed; stateless rules always run first. Both simultaneously with most-restrictive winning (C) — the evaluation is sequential, not parallel. Priority namespace shared (D) — stateless and stateful rule groups have separate priority namespaces within Network Firewall.",
+  94: "Enable ECMP only in the route table (B) — ECMP is a TGW-level setting, not per-route-table. Static routes instead of BGP (D) — TGW ECMP for VPN requires BGP; ECMP is not supported with static routing on VPN attachments.",
+  95: "CloudFront managed prefix list (A) — maintaining IP-based rules is valid as a secondary control but those IPs change as CloudFront expands; the custom header is the primary AWS-recommended mechanism. Private ALB with PrivateLink from CloudFront (C) — CloudFront cannot natively connect to a PrivateLink endpoint; this would require additional architecture. Route 53 weighted routing (D) — this controls DNS responses, not actual HTTP traffic; clients can bypass DNS and hit the ALB directly.",
+  96: "VPC peering (A) provides network connectivity but does not address DNS resolution — you still need Resolver configuration. TGW route table entries (C) — routes already exist (the question states routes are correct). Security Group rules on port 53 (D) — while necessary for DNS traffic to flow, opening port 53 alone doesn't configure where DNS queries are forwarded.",
+  97: "Cache behaviors with TTL-based failover (A) — cache behaviors route based on URL path patterns, not origin health. Route 53 failover with CloudFront health checks (C) — Route 53 failover switches DNS, which has TTL delays; Origin Groups provide per-request failover at the CloudFront level without DNS changes. Lambda@Edge for 5xx rerouting (D) — workable but requires custom code versus Origin Groups' built-in capability.",
+  98: "Full ARN format required (B) — Security Group rules use IDs, not ARNs, even across regions. SG referencing requires TGW (C) — same-Region VPC peering does support SG referencing; only inter-Region peering restricts it. Missing routes (D) — routes are a prerequisite for traffic to flow but the question specifically describes an SG rule configuration failure, not a routing failure.",
+  99: "Single web ACL shared between CloudFront and ALB (B) — a CLOUDFRONT-scope web ACL cannot be attached to a regional ALB; they are separate scope types. WAF only for CloudFront (C) — WAF supports regional resources including ALB, API Gateway, and AppSync. All WAF web ACLs are global (D) — false; only CLOUDFRONT-scope ACLs are global; REGIONAL ACLs are per-Region.",
+  100: "VPC peering enables cross-VPC private zone resolution automatically (A) — false; VPC peering has no effect on Route 53 private hosted zone associations. Resolver forwarding rule to VPC-A endpoint (C) — this works but requires deploying Resolver endpoints and is more complex than simply associating the hosted zone with VPC-B. CNAME pointing across private zones (D) — CNAMEs cannot bridge across unassociated private zones; the target zone is not resolvable from VPC-B until associated.",
+  101: "Weighted routing (A) splits traffic by percentage regardless of geography — it doesn't shift the geographic boundary between endpoints. Geolocation rule for Europe (C) — a geolocation rule maps entire continents or countries to one endpoint; it doesn't provide gradual boundary shifting. Reducing TTL (D) affects how quickly DNS changes propagate, not which endpoint traffic is routed to.",
+  102: "Packet payload content (A) — TGW Flow Logs, like VPC Flow Logs, capture metadata (IPs, ports, bytes, action) only, not packet payloads. BGP ASN of source/destination (C) — TGW Flow Logs don't include BGP routing information. Application-layer HTTP status codes (D) — Flow Logs are network-layer; they have no visibility into HTTP responses.",
+  103: "Network Firewall Suricata DNS rules (B) — Network Firewall stateful rules with Suricata can match DNS query content but require custom rule authoring; DNS Firewall provides managed threat-intel domain lists natively. VPC Flow Logs + Lambda (C) — reactive/detective approach requiring custom development; DNS Firewall is preventive and native. GuardDuty auto-updating DNS Firewall (D) — GuardDuty detects threats in findings but does not automatically update DNS Firewall rule groups.",
+  104: "New private hosted zone requiring manual updates (B) — enabling Private DNS automatically creates the required DNS resolution behavior via Route 53; no manual hosted zone management is needed. Standard hostname no longer resolves (C) — the standard hostname continues to resolve, but now returns the endpoint's private IP instead of the public IP. Private DNS only for inter-Region calls (D) — Private DNS applies to all queries within the associated VPC regardless of call origin.",
+  105: "IKEv2 not supported on AWS VPN (A) — IKEv2 is fully supported. Deleting and recreating the VPN connection (C) — the IKE version can be changed in tunnel options without deleting the connection; it requires tunnel renegotiation only. IKEv2 only on TGW VPNs (D) — IKEv2 is supported on both VGW-based and TGW-based VPN attachments.",
+  106: "Disable Enhanced Networking (A) — ENA/enhanced networking is unrelated to IP forwarding; disabling it would degrade network performance. Cluster placement group required (C) — NAT instances work in any placement configuration; no placement group is needed. Disable VPC DNS resolution (D) — the DNS resolution attribute controls whether the VPC DNS resolver is enabled, not IP packet forwarding behavior.",
+  107: "Lambda@Edge (A) — supports more capabilities (network calls to origins, larger packages, Node.js/Python) but adds 1–5 ms latency, has cold starts, and costs more per invocation for simple header operations. AWS Lambda in each Region (C) — invoking a regional Lambda from CloudFront adds significant round-trip latency. WAF custom rules (D) — WAF is for security filtering (allow/block), not general request transformation like header rewriting.",
+  108: "Reachability Analyzer (A) — traces a specific path between two designated endpoints you specify; it doesn't sweep for all unintended access paths. Inspector (C) — assesses individual instance vulnerabilities and checks specific SG rules but doesn't perform network-wide multi-hop path analysis. Config managed rules (D) — checks specific rule patterns (e.g., open port 22) but doesn't trace reachability across multi-layer network configurations.",
+  109: "Security Hub (A) — aggregates findings from multiple services for visibility but doesn't centrally deploy WAF rules, SG policies, or Network Firewall configurations. Config aggregator (B) — provides compliance visibility across accounts but doesn't push security policy configurations. Control Tower (D) — provides account vending and high-level guardrails; granular network security policy management is delegated to Firewall Manager.",
+  110: "Fewer concurrent connections with one NAT Gateway (A) — NAT Gateways scale automatically and support millions of connections; this is not the risk. Routing fails when NAT Gateway is in a different AZ (C) — route tables can direct traffic from any subnet to a NAT Gateway in any AZ; routing itself works. 55,000 total connection limit (D) — the 55,000 limit applies per unique destination (IP:port combination), not total simultaneous connections across all destinations.",
+  111: "Target group-level stickiness (A) — TG stickiness ensures a user always hits the same *target within* a group, not the same *target group* across the weighted rule. NLB source IP stickiness (C) — NLB doesn't understand ALB weighted target group routing. CloudFront for sticky routing (D) — CloudFront cache behaviors route based on URL/cookie content but don't understand ALB's internal weighted group assignment.",
+  112: "No action needed (A) — while instances are protected, repeated scanning indicates an active threat actor probing the environment. REJECT only for UDP (C) — REJECT appears for all protocols (TCP, UDP, ICMP) when denied by SG or NACL. Deleting SG rules (D) — removing the inbound deny would make the instances vulnerable; REJECT records confirm protection is working.",
+  113: "Associate the zone with all 100 VPCs (A) — possible (up to 300 associations per zone) but complex to automate across many accounts and Regions. Replicate zones in every account (C) — maintaining consistent records across hundreds of zones is operationally expensive and error-prone. Public hosted zone (D) — exposes internal hostnames publicly, which is a security concern.",
+  114: "AWS auto-activates within 24 hours (A) — AWS issues the authorization document but does not perform the physical cross-connection. AWS Support provisions end-to-end (C) — AWS Support cannot physically cable equipment at a colocation facility operated by a third party. LOA-CFA only for records (D) — the LOA-CFA is the actual authorization document the colocation provider requires before making the physical connection.",
+  115: "Peering works if specific subnets don't overlap (A) — false; AWS checks at the VPC CIDR level, not subnet level. Routing is ambiguous (C) — false; the peering connection is rejected at creation time before any routing is configured. Cross-account overlapping CIDRs supported (D) — false; the restriction applies to all account combinations and Regions.",
+  116: "Connection fully established and data transferred (A) — ACCEPT confirms the network-layer permit decision only, not TCP handshake completion or application response. SG logged acceptance and forwarded data (C) — Security Groups are enforcement points in the data path; they don't log actions separately. ACCEPT only for UDP (D) — ACCEPT/REJECT appear for all protocols in Flow Logs.",
+  117: "TGW runs iBGP with all VPCs (B) — TGW does not run BGP with VPC attachments; BGP is used only for VPN and DX attachments. VPC advertises CIDR via BGP (C) — VPCs don't run BGP; route propagation is a TGW-native mechanism triggered by attachment events. TGW auto-discovery on a schedule (D) — route propagation is event-driven on attach/detach, not a periodic scan.",
+  118: "VPC Flow Logs showing traffic pattern changes (A) — Flow Logs capture network traffic metadata, not who made API calls. Config configuration timeline (C) — Config records what changed and when (before/after states) but does not include the IAM caller identity as a first-class searchable field. GuardDuty historical findings (D) — GuardDuty detects threats; it does not audit authorized configuration changes with caller identity.",
+  119: "DDoS protection at origin (A) — while CloudFront provides some DDoS mitigation at edge, Origin Shield's primary purpose is caching efficiency, not DDoS absorption. Additional TLS layer (C) — Origin Shield does not add a separate TLS session; origin traffic uses HTTPS if already configured. Rate-limiting to origin (D) — Origin Shield reduces origin requests through caching, but rate-limiting is not its mechanism or purpose.",
+  120: "Not encrypted — use IPsec VPN (A) — inter-Region TGW peering IS automatically encrypted by AWS; no additional IPsec configuration is needed. Only same-partition encrypted (C) — encryption applies to all inter-Region TGW peering regardless of partition. TGW peering uses VPC peering infrastructure (D) — incorrect; TGW peering is a distinct service; and VPC peering (same-Region) doesn't encrypt traffic while inter-Region TGW peering does.",
+  121: "A record with ALB's current IPs (A) — ALB IPs change without notice; static A records would cause intermittent outages. Apex CNAME in Route 53 (C) — Route 53 does not support standard CNAME at the zone apex (the DNS spec forbids it); only ALIAS records work at the apex. NS record for delegation (D) — NS records delegate a subdomain zone, not map a domain apex to an application endpoint.",
+  122: "API Gateway resource policies with country IP ranges (A) — maintaining country-level IP range lists (thousands of CIDRs per country, constantly changing) is operationally impractical. Route 53 geolocation with blackhole (C) — geolocation routing changes DNS responses but can be bypassed by clients using the API endpoint's IP directly. Security Groups with country IPs (D) — API Gateway is a managed service; Security Groups don't attach to it directly, and maintaining IP lists is impractical.",
+  123: "TGW doesn't support VPC-to-VPC routing (A) — false; VPC-to-VPC routing is Transit Gateway's primary use case. SG blocking VPC-3 (C) — possible but Security Group misconfig would be instance-level; the more common and likely architectural cause is TGW route table isolation. VPC peering still required (D) — false; TGW replaces full-mesh VPC peering.",
+  124: "pkt-srcaddr always identical to srcaddr (A) — only true when no NAT device is in the path. pkt-srcaddr is for IPv6 only (C) — both standard and pkt-level fields are available for both IPv4 and IPv6 traffic. pkt-srcaddr only for rejected traffic (D) — the pkt-level fields are populated for all traffic regardless of action.",
+  125: "Config rule to detect and terminate (A) — Config is detective, not preventive; there is a window during which instances with public IPs exist before remediation. Firewall Manager blocking public IP assignment (C) — Firewall Manager manages WAF, SG policies, Network Firewall, and Shield; it does not prevent public IP assignment at EC2 launch. Subnet-level auto-assign disabled via StackSets (D) — subnet defaults can be overridden per-instance at launch using the API parameter; SCPs are a harder preventive control."
 };
 
 // ─────────────────────────────────────────────
@@ -939,7 +1345,57 @@ const REFS = {
   72: [{t:"Route 53 Geoproximity Routing",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html"},{t:"Traffic Flow",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/traffic-flow.html"}],
   73: [{t:"Centralized Egress with TGW",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-nat-igw.html"},{t:"TGW Route Tables",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"}],
   74: [{t:"ENA Monitoring Metrics",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html"},{t:"Connection Tracking",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html"}],
-  75: [{t:"DX BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"DX Routing Policies and BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html#bgp-communities"}]
+  75: [{t:"DX BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"DX Routing Policies and BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html#bgp-communities"}],
+  76: [{t:"CloudFront Signed URLs – Custom Policy",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-creating-signed-url-custom-policy.html"},{t:"Signed URLs vs Signed Cookies",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-choosing-signed-urls-cookies.html"}],
+  77: [{t:"Route 53 DNSSEC",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html"},{t:"How DNSSEC Works",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-enable-signing.html"}],
+  78: [{t:"Accelerated Site-to-Site VPN",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/accelerated-vpn.html"},{t:"Global Accelerator",u:"https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"}],
+  79: [{t:"Jumbo Frames",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html"},{t:"Network MTU for EC2",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/network_mtu.html#jumbo_frame_instances"}],
+  80: [{t:"NLB TLS Listeners",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-tls-listener.html"},{t:"ACM with NLB",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-tls-listener.html#tls-listener-prerequisites"}],
+  81: [{t:"DX Resiliency Toolkit",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/resilency_toolkit.html"},{t:"Maximum Resiliency Model",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/resilency_toolkit.html#resiliency-models"}],
+  82: [{t:"TGW Multicast",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-multicast-overview.html"},{t:"TGW Multicast Domains",u:"https://docs.aws.amazon.com/vpc/latest/tgw/working-with-multicast.html"}],
+  83: [{t:"Calculated Health Checks",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating-values.html#health-checks-creating-values-calculated"},{t:"Route 53 Health Check Types",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html"}],
+  84: [{t:"WAF Rate-Based Rules",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"},{t:"Rate-Based Rule Keys",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-aggregation.html"}],
+  85: [{t:"Shield Advanced Proactive Engagement",u:"https://docs.aws.amazon.com/waf/latest/developerguide/ddos-srt-proactive.html"},{t:"DDoS Response Team",u:"https://docs.aws.amazon.com/waf/latest/developerguide/ddos-responding.html"}],
+  86: [{t:"Flow Log Record Fields",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html"},{t:"Flow Log Status Values",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html#flow-logs-fields"}],
+  87: [{t:"NLB Cross-Zone Load Balancing",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-cross-zone.html"},{t:"NLB vs ALB Cross-Zone Defaults",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"}],
+  88: [{t:"NACLs and Ephemeral Ports",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#nacl-ephemeral-ports"},{t:"NACL Overview",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"}],
+  89: [{t:"TGW Connect Attachments",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-connect.html"},{t:"TGW Connect with SD-WAN",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-connect.html#tgw-connect-overview"}],
+  90: [{t:"VPC Peering Security",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-security.html"},{t:"Data Encryption in Transit",u:"https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html"}],
+  91: [{t:"Route 53 Private Hosted Zones",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html"},{t:"Split-View DNS",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-considerations.html"}],
+  92: [{t:"ENA Express (SRD)",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html"},{t:"ENA Express Overview",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html#ena-express-overview"}],
+  93: [{t:"Network Firewall Rule Processing",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/firewall-rules-engines.html"},{t:"Stateless vs Stateful Rules",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-ips.html"}],
+  94: [{t:"TGW ECMP for VPN",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html"},{t:"VPN ECMP and BGP",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html"}],
+  95: [{t:"Restricting ALB Access from CloudFront",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"},{t:"CloudFront Managed Prefix List",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html"}],
+  96: [{t:"Shared Services VPC DNS",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html"},{t:"RAM for Resolver Rules",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-rules-managing.html"}],
+  97: [{t:"CloudFront Origin Groups",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"},{t:"Origin Failover",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups"}],
+  98: [{t:"SG Referencing and VPC Peering",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-security-groups.html"},{t:"Inter-Region Peering Limitations",u:"https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html"}],
+  99: [{t:"WAF Scope – CloudFront vs Regional",u:"https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html"},{t:"WAF Web ACL Scope",u:"https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-creating.html"}],
+  100:[{t:"Private Hosted Zone Association",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs.html"},{t:"Cross-Account Zone Association",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-associate-vpcs-different-accounts.html"}],
+  101:[{t:"Geoproximity Routing with Bias",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html"},{t:"Route 53 Traffic Flow",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/traffic-flow.html"}],
+  102:[{t:"TGW Flow Logs",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-flow-logs.html"},{t:"TGW Flow Log Fields",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-flow-logs.html#tgw-flow-log-records"}],
+  103:[{t:"Route 53 Resolver DNS Firewall",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall.html"},{t:"AWS Managed Domain Lists",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html"}],
+  104:[{t:"Interface Endpoint Private DNS",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"},{t:"Private DNS for Interface Endpoints",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-dns.html"}],
+  105:[{t:"Site-to-Site VPN IKEv2",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-tunnel-options.html"},{t:"VPN Tunnel Options",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html"}],
+  106:[{t:"Source/Destination Check",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html#source-dest-check"},{t:"NAT Instances",u:"https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html"}],
+  107:[{t:"CloudFront Functions vs Lambda@Edge",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions.html"},{t:"CloudFront Functions",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html"}],
+  108:[{t:"Network Access Analyzer",u:"https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html"},{t:"NAA vs Reachability Analyzer",u:"https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/getting-started.html"}],
+  109:[{t:"AWS Firewall Manager",u:"https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html"},{t:"Firewall Manager Policies",u:"https://docs.aws.amazon.com/waf/latest/developerguide/working-with-policies.html"}],
+  110:[{t:"NAT Gateway High Availability",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-basics"},{t:"NAT Gateway Best Practices",u:"https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-scenarios.html"}],
+  111:[{t:"ALB Weighted Target Group Stickiness",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html"},{t:"ALB Listener Rule Stickiness",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#sticky-sessions"}],
+  112:[{t:"VPC Flow Logs – REJECT vs ACCEPT",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html"},{t:"GuardDuty SSH Brute Force Finding",u:"https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-ec2.html"}],
+  113:[{t:"Centralized DNS with Route 53 Resolver",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html"},{t:"RAM Sharing for Resolver Rules",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-rules-managing.html"}],
+  114:[{t:"DX LOA-CFA",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-connection.html"},{t:"DX Connection Process",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithConnections.html"}],
+  115:[{t:"VPC Peering CIDR Requirements",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html#vpc-peering-limitations"},{t:"PrivateLink for Overlapping CIDRs",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"}],
+  116:[{t:"VPC Flow Log Action Field",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html#flow-logs-fields"},{t:"Flow Logs Overview",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"}],
+  117:[{t:"TGW Route Propagation",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"},{t:"TGW Route Tables",u:"https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html"}],
+  118:[{t:"CloudTrail Management Events",u:"https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html"},{t:"Searching CloudTrail Logs",u:"https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"}],
+  119:[{t:"CloudFront Origin Shield",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html"},{t:"Origin Shield Benefits",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html#origin-shield-benefits"}],
+  120:[{t:"TGW Inter-Region Peering Encryption",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html"},{t:"TGW Peering Overview",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-peering-scenario.html"}],
+  121:[{t:"Route 53 ALIAS Records",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"},{t:"ALIAS vs CNAME",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"}],
+  122:[{t:"WAF Geo Match Condition",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"},{t:"Geographic Blocking with WAF",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"}],
+  123:[{t:"TGW Route Table Troubleshooting",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"},{t:"TGW Route Propagation",u:"https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html"}],
+  124:[{t:"Flow Log pkt-srcaddr Field",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html"},{t:"VPC Flow Logs Custom Format",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records"}],
+  125:[{t:"SCP Examples – VPC Controls",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_vpc.html"},{t:"Preventing Public IPs with SCPs",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"}]
 };
 
 // ─────────────────────────────────────────────
@@ -951,9 +1407,10 @@ const DOMAIN_NAMES = {
   3: "Domain 3 – Management & Operations",
   4: "Domain 4 – Security & Compliance"
 };
-const DOMAIN_CLASS = { 1:"d1", 2:"d2", 3:"d3", 4:"d4" };
-const PASS_SCORE   = 75; // ANS-C01 passing ~75%
-const EXAM_MINS    = 170;
+const DOMAIN_CLASS     = { 1:"d1", 2:"d2", 3:"d3", 4:"d4" };
+const PASS_SCORE       = 75; // ANS-C01 passing ~75%
+const EXAM_MINS        = 170;
+const EXAM_QUESTIONS   = 75; // drawn randomly from the full pool each attempt
 
 // ─────────────────────────────────────────────
 //  STATE
@@ -1041,7 +1498,7 @@ function startExam(mode) {
   state.current = 0;
   state.answers = {};
   state.submitted = {};
-  state.questions = shuffle([...QUESTIONS]);
+  state.questions = shuffle([...QUESTIONS]).slice(0, EXAM_QUESTIONS);
   state.startTime = Date.now();
   state.remaining = EXAM_MINS * 60;
   render();
@@ -1110,13 +1567,13 @@ function renderStart() {
 <div class="screen">
   <div class="aws-logo">☁️</div>
   <h1>AWS Advanced Networking Specialty</h1>
-  <p>ANS-C01 Practice Exam &nbsp;·&nbsp; ${QUESTIONS.length} Questions &nbsp;·&nbsp; 4 Domains</p>
+  <p>ANS-C01 Practice Exam &nbsp;·&nbsp; ${EXAM_QUESTIONS} questions per attempt &nbsp;·&nbsp; ${QUESTIONS.length}-question pool &nbsp;·&nbsp; 4 Domains</p>
 
   <div class="info-grid">
-    <div class="info-box"><div class="val">${QUESTIONS.length}</div><div class="lbl">Questions</div></div>
+    <div class="info-box"><div class="val">${EXAM_QUESTIONS}</div><div class="lbl">Per Attempt</div></div>
+    <div class="info-box"><div class="val">${QUESTIONS.length}</div><div class="lbl">Question Pool</div></div>
     <div class="info-box"><div class="val">${EXAM_MINS}m</div><div class="lbl">Time Limit</div></div>
     <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Pass Score</div></div>
-    <div class="info-box"><div class="val">4</div><div class="lbl">Domains</div></div>
   </div>
 
   <p style="margin-bottom:12px;font-weight:600;">Select a mode:</p>
