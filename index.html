@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Advanced Networking Specialty (ANS-C01) Practice Exam</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #252836;
+    --border: #2e3248;
+    --accent: #FF9900;
+    --accent2: #232F3E;
+    --text: #e8eaf0;
+    --muted: #8b92a8;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --blue: #3498db;
+    --yellow: #f39c12;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  #app { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  /* ── Header ── */
+  .exam-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .exam-title { font-size: 14px; font-weight: 600; color: var(--accent); }
+  .exam-meta { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+  #timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #timer.warning { color: var(--yellow); }
+  #timer.danger  { color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* ── Progress ── */
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width .3s ease; }
+
+  /* ── Domain badge ── */
+  .domain-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 12px;
+  }
+  .d1 { background: #1a2744; color: #60a5fa; }
+  .d2 { background: #1a2f1a; color: #4ade80; }
+  .d3 { background: #2f2a1a; color: #fbbf24; }
+  .d4 { background: #2f1a1a; color: #f87171; }
+
+  /* ── Question card ── */
+  .question-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 16px;
+  }
+  .question-num { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .question-text { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .multi-hint { font-size: 12px; color: var(--accent); margin-top: 6px; font-style: italic; }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: border-color .15s, background .15s;
+    user-select: none;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); }
+  .option.selected  { border-color: var(--accent); background: #2a2212; }
+  .option.correct   { border-color: var(--green); background: #122212; }
+  .option.incorrect { border-color: var(--red);   background: #221212; }
+  .option.disabled  { cursor: default; }
+  .option-letter {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--muted); transition: background .15s, color .15s;
+  }
+  .option.selected  .option-letter { background: var(--accent); color: #000; }
+  .option.correct   .option-letter { background: var(--green); color: #000; }
+  .option.incorrect .option-letter { background: var(--red);   color: #fff; }
+  .option-text { font-size: 14px; padding-top: 2px; }
+
+  /* ── Explanation ── */
+  .explanation {
+    margin-top: 16px; padding: 16px; background: var(--surface2);
+    border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;
+    font-size: 14px; color: var(--text); display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent); }
+
+  /* ── Buttons ── */
+  .btn {
+    padding: 10px 24px; border-radius: 8px; border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--red); color: #fff; }
+
+  .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* ── Start / Results screens ── */
+  .screen {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 40px 32px; text-align: center;
+  }
+  .screen h1 { font-size: 24px; margin-bottom: 8px; }
+  .screen p  { color: var(--muted); margin-bottom: 20px; }
+  .aws-logo  { font-size: 48px; margin-bottom: 16px; }
+
+  .info-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+    gap: 12px; margin: 24px 0;
+  }
+  .info-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .info-box .val { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .info-box .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* score ring */
+  .score-ring { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg  { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring .ring-val { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    text-align: center;
+  }
+  .ring-pct  { font-size: 32px; font-weight: 800; }
+  .ring-pass { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+  .domain-scores { margin: 24px 0; text-align: left; }
+  .domain-row { margin-bottom: 10px; }
+  .domain-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .domain-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .domain-fill { height: 100%; border-radius: 4px; }
+
+  /* review */
+  .review-item { margin-bottom: 12px; }
+  .review-q {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 13px;
+  }
+  .review-q:hover { border-color: var(--accent); }
+  .review-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .r-correct   { background: var(--green); color: #000; }
+  .r-incorrect { background: var(--red);   color: #fff; }
+  .r-skipped   { background: var(--muted); color: #000; }
+
+  /* mode selector */
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .mode-card {
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: 10px; padding: 18px; cursor: pointer; text-align: left; transition: border-color .15s;
+  }
+  .mode-card:hover, .mode-card.active { border-color: var(--accent); }
+  .mode-card h3 { font-size: 15px; margin-bottom: 4px; }
+  .mode-card p  { font-size: 12px; color: var(--muted); }
+
+  .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; margin-left:6px; }
+  .tag-new { background:#1a2f44; color:#60c8fa; }
+
+  /* ── Enhanced explanation blocks ── */
+  .exp-block { margin-top: 16px; border-radius: 8px; overflow: hidden; font-size: 14px; }
+  .exp-section { padding: 14px 16px; }
+  .exp-section + .exp-section { border-top: 1px solid rgba(255,255,255,.06); }
+  .exp-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .exp-correct  { background: #0e2218; }
+  .exp-correct  .exp-header { color: var(--green); }
+  .exp-wrong    { background: #220e0e; }
+  .exp-wrong    .exp-header { color: var(--red); }
+  .exp-neutral  { background: var(--surface2); }
+  .exp-neutral  .exp-header { color: var(--accent); }
+  .exp-refs     { background: #111827; }
+  .exp-refs     .exp-header { color: #60a5fa; }
+  .exp-refs ul  { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+  .exp-refs a   { color: #60a5fa; text-decoration: none; font-size: 13px; padding: 3px 10px; background: #1a2744; border-radius: 20px; display: inline-block; transition: background .15s; }
+  .exp-refs a:hover { background: #243560; }
+  .exp-wrong-opts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .exp-wrong-opt  { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #ccc; }
+  .exp-wrong-letter { flex-shrink:0; font-weight:700; color: var(--red); min-width:16px; }
+
+  @media(max-width:600px){
+    .mode-grid { grid-template-columns:1fr; }
+    .exam-header { flex-direction:column; align-items:flex-start; }
+    .question-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  QUESTION BANK  –  ANS-C01
+//  Domain 1: Network Design (30%)
+//  Domain 2: Network Implementation (26%)
+//  Domain 3: Network Management & Operations (20%)
+//  Domain 4: Network Security, Compliance & Governance (24%)
+// ─────────────────────────────────────────────
+const QUESTIONS = [
+
+// ═══════════════════════════════════════
+//  DOMAIN 1 – NETWORK DESIGN
+// ═══════════════════════════════════════
+{
+  id:1, domain:1,
+  q:"A company needs to connect 50 VPCs across 5 AWS Regions with full mesh connectivity. Which solution minimizes operational overhead?",
+  opts:["VPC peering between every pair of VPCs","AWS Transit Gateway with inter-Region peering","AWS PrivateLink endpoints in each VPC","AWS Direct Connect with a public VIF to each VPC"],
+  correct:[1],
+  exp:"Transit Gateway acts as a hub, eliminating the need for O(n²) peering connections. Inter-Region TGW peering extends this across Regions, drastically reducing operational overhead compared to full-mesh VPC peering."
+},
+{
+  id:2, domain:1,
+  q:"An on-premises data center requires 10 Gbps of dedicated bandwidth to AWS with SLA guarantees. Which option meets this requirement?",
+  opts:["AWS Site-to-Site VPN with equal-cost multipath","AWS Direct Connect 10G dedicated connection","AWS Direct Connect hosted connection (1 Gbps) with LAG","AWS Client VPN with split tunneling"],
+  correct:[1],
+  exp:"A 10G Dedicated Connection provides the full 10 Gbps with a carrier-grade SLA. Hosted connections max at 10 Gbps but are provisioned by APN partners. VPN uses the public internet and cannot guarantee bandwidth or latency."
+},
+{
+  id:3, domain:1,
+  q:"A company uses BGP over Direct Connect. They want traffic to prefer the Direct Connect path over a backup VPN. Which BGP attribute should they configure on the VPN to make it less preferred?",
+  opts:["Lower LOCAL_PREF on the VPN route","Higher AS_PATH prepending on the VPN route","Lower MED on the VPN route","Set the VPN route ORIGIN to INCOMPLETE"],
+  correct:[1],
+  exp:"AS_PATH prepending adds extra ASN hops to a route advertisement, making it longer and therefore less preferred by BGP. LOCAL_PREF is used within an AS (not applicable between AWS and customer). MED influences inbound traffic from AWS side, not outbound."
+},
+{
+  id:4, domain:1,
+  q:"A network engineer must design a VPC where EC2 instances can reach the internet but must NOT be directly reachable from the internet. Which architecture is correct?",
+  opts:["Place instances in a public subnet, remove the Internet Gateway","Place instances in a private subnet with a NAT Gateway in a public subnet","Place instances in a public subnet behind a Network ACL blocking inbound","Place instances in a private subnet with a VPC Endpoint for all services"],
+  correct:[1],
+  exp:"Private subnets have no route to the IGW. A NAT Gateway in a public subnet allows outbound internet traffic from private instances via source NAT, while preventing unsolicited inbound connections."
+},
+{
+  id:5, domain:1,
+  q:"Which of the following CIDR ranges are valid for a VPC? (Choose TWO)",
+  opts:["10.0.0.0/8","172.16.0.0/12","192.168.0.0/28","100.64.0.0/10","198.19.0.0/16"],
+  correct:[1,3],
+  multi:true,
+  exp:"AWS allows VPC CIDRs from RFC 1918 (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) and the CGNAT range 100.64.0.0/10. /28 is too small for a VPC (minimum is /28 for subnets, but the VPC itself must be between /16 and /28). 198.19.0.0/16 is not a supported VPC CIDR range."
+},
+{
+  id:6, domain:1,
+  q:"A company wants to expose an internal NLB-backed service to thousands of customers' VPCs without requiring VPC peering or overlapping IP address management. Which solution should they use?",
+  opts:["AWS Transit Gateway","AWS PrivateLink (VPC Endpoint Service)","VPC peering with non-overlapping CIDRs","AWS Direct Connect with a private VIF"],
+  correct:[1],
+  exp:"AWS PrivateLink (VPC Endpoint Service) lets service providers expose services via an NLB, and consumers connect via Interface VPC Endpoints. IP address overlap is not a concern, and no full network access is granted — only service-level access."
+},
+{
+  id:7, domain:1,
+  q:"A Transit Gateway is receiving routes from two attached VPCs and one Direct Connect Gateway. An engineer wants to prevent the two VPCs from routing to each other while still allowing both to communicate with on-premises. What is the MOST operationally efficient approach?",
+  opts:["Use separate route tables on TGW: one for VPC-to-DX, blackhole VPC-to-VPC routes","Delete the VPC attachments and use VPC peering instead","Use Security Groups to block inter-VPC traffic","Modify NACLs in both VPCs to block traffic from the other VPC CIDR"],
+  correct:[0],
+  exp:"TGW supports multiple route tables. By placing the VPC attachments in a route table that only has routes for the DXGW attachment (and vice versa), you achieve network-level isolation without security group or NACL complexity."
+},
+{
+  id:8, domain:1,
+  q:"An application requires sub-millisecond latency between EC2 instances. Which placement strategy and networking feature combination is BEST?",
+  opts:["Spread placement group + Enhanced Networking (ENA)","Cluster placement group + Enhanced Networking (ENA)","Partition placement group + Elastic Fabric Adapter (EFA)","Cluster placement group + Elastic Fabric Adapter (EFA)"],
+  correct:[3],
+  exp:"Cluster placement groups pack instances into the same AZ rack for the lowest latency and highest throughput. EFA (Elastic Fabric Adapter) provides OS-bypass networking for HPC/MPI workloads, delivering the lowest possible latency."
+},
+{
+  id:9, domain:1,
+  q:"A company needs IPv6 connectivity for EC2 instances that must initiate connections to the internet but must NOT accept inbound connections from the internet. Which component should they use?",
+  opts:["Internet Gateway with IPv6 routes","Egress-Only Internet Gateway","NAT64 with a NAT Gateway","IPv6 VPC Endpoint"],
+  correct:[1],
+  exp:"An Egress-Only Internet Gateway (EIGW) is the IPv6 equivalent of a NAT Gateway — it allows outbound-initiated IPv6 connections from private instances while blocking unsolicited inbound traffic."
+},
+{
+  id:10, domain:1,
+  q:"A solutions architect needs to connect an on-premises BGP network to AWS and requires the ability to advertise specific routes to influence inbound traffic from AWS. Which BGP attribute can the customer use to influence AWS's outbound route preference?",
+  opts:["LOCAL_PREF advertised via BGP OPEN message","MED (Multi-Exit Discriminator)","AS_PATH prepending","COMMUNITY attribute 7224:9300"],
+  correct:[1],
+  exp:"AWS honors the MED attribute on routes advertised from the customer to AWS. A lower MED is preferred. This allows the customer to influence which Direct Connect connection or VPN AWS uses for outbound traffic when multiple paths exist."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 2 – NETWORK IMPLEMENTATION
+// ═══════════════════════════════════════
+{
+  id:11, domain:2,
+  q:"A company is setting up a Direct Connect connection. They need the connection to support both private VIF and transit VIF. What is a key requirement for transit VIF?",
+  opts:["Transit VIF requires a Direct Connect Gateway","Transit VIF connects directly to a VGW in the VPC","Transit VIF is only available on hosted connections","Transit VIF requires BGP MD5 authentication"],
+  correct:[0],
+  exp:"Transit VIF is only supported with a Direct Connect Gateway (DXGW). The DXGW then connects to Transit Gateways. You cannot associate a transit VIF directly with a VGW."
+},
+{
+  id:12, domain:2,
+  q:"When configuring BGP on a Direct Connect private VIF, which ASN is used by AWS by default?",
+  opts:["ASN 7224","ASN 64512","ASN 65000","ASN 16509"],
+  correct:[0],
+  exp:"AWS uses ASN 7224 on the AWS side of Direct Connect private VIFs by default. Customers may specify a different AWS-side ASN when creating their Direct Connect Gateway, but 7224 is the default."
+},
+{
+  id:13, domain:2,
+  q:"An engineer configures a Site-to-Site VPN between a VGW and an on-premises router. After configuration, only one tunnel is up and passing traffic. What is the MOST likely cause?",
+  opts:["VGW only supports one active tunnel at a time","The on-premises router is not sending traffic down both tunnels","AWS VPN uses active/passive tunnels; the second tunnel is standby","The customer gateway IP is wrong for the second tunnel"],
+  correct:[1],
+  exp:"AWS Site-to-Site VPN creates two tunnels for redundancy, both of which can be active (active/active). However, the on-premises device must initiate or send traffic down both tunnels to keep them up. Many routers only use one path by default unless configured for ECMP."
+},
+{
+  id:14, domain:2,
+  q:"A company wants to migrate from a Virtual Private Gateway (VGW) to a Transit Gateway for their Direct Connect connection. Which step is required?",
+  opts:["Delete the existing private VIF and recreate it as a transit VIF associated with a DXGW","Modify the existing private VIF to transit VIF type in-place","Attach the VGW directly to the Transit Gateway","Create a new hosted connection for the transit VIF"],
+  correct:[0],
+  exp:"Private VIFs and transit VIFs are different VIF types. You must delete the private VIF and create a new transit VIF associated with a Direct Connect Gateway, which then connects to the Transit Gateway."
+},
+{
+  id:15, domain:2,
+  q:"An ALB is configured with three target groups and path-based routing. Requests to /api/* should go to the API target group, /images/* to the images target group, and everything else to the default target group. Where is the default rule configured?",
+  opts:["As the first rule in the listener","As a rule with priority 1","In the default action of the listener","In the target group attributes"],
+  correct:[2],
+  exp:"ALB listener rules are evaluated in priority order. The default action is a special rule that applies when no other rule matches. It is configured in the listener's default action, not as a numbered priority rule."
+},
+{
+  id:16, domain:2,
+  q:"Which statement about NLB and connection handling is TRUE?",
+  opts:["NLB performs NAT and replaces the source IP with its own","NLB preserves the client source IP by default for TCP/UDP targets","NLB requires a security group to allow inbound traffic","NLB does not support static IP addresses"],
+  correct:[1],
+  exp:"NLB preserves the client's source IP address for TCP and UDP targets, unlike ALB which uses X-Forwarded-For. NLB does not have security groups — traffic control is done at the instance-level security group. NLB supports Elastic IP addresses per AZ."
+},
+{
+  id:17, domain:2,
+  q:"A company wants to inspect all inter-VPC traffic flowing through a Transit Gateway using a third-party firewall appliance. Which AWS service and architecture pattern should they use?",
+  opts:["Place firewall appliances in each VPC and use Security Group referencing","Use Gateway Load Balancer (GWLB) in a centralized inspection VPC, route TGW traffic through it","Use AWS Network Firewall in each spoke VPC","Use AWS WAF attached to the Transit Gateway"],
+  correct:[1],
+  exp:"Gateway Load Balancer (GWLB) enables transparent insertion of third-party firewalls at scale. In a centralized inspection architecture, TGW routes traffic to an inspection VPC containing GWLB with firewall appliances before forwarding to the destination."
+},
+{
+  id:18, domain:2,
+  q:"A network engineer is implementing VPC peering. After creating the peering connection and accepting it, instances still cannot communicate. Which TWO steps are most likely missing? (Choose TWO)",
+  opts:["Adding routes in both VPCs' route tables pointing to the peering connection","Enabling DNS resolution support for the peering connection","Disabling the VPC peering DNS resolution restriction in IAM","Configuring Security Groups to allow traffic from the peer VPC CIDR"],
+  correct:[0,3],
+  multi:true,
+  exp:"After accepting a VPC peering connection, you must: (1) add routes in both VPCs' route tables pointing the peer CIDR at the PCX, and (2) update security groups to allow inbound from the peer CIDR. DNS resolution is optional and route tables + SGs are the most common missing steps."
+},
+{
+  id:19, domain:2,
+  q:"A company needs to resolve on-premises DNS names from within a VPC and resolve AWS private hosted zone names from on-premises. Which Route 53 features enable this bidirectional DNS resolution?",
+  opts:["Route 53 Resolver inbound and outbound endpoints","Route 53 private hosted zones with VPC association only","Route 53 public hosted zones with split-horizon DNS","Route 53 Resolver with conditional forwarding rules only"],
+  correct:[0],
+  exp:"Route 53 Resolver Inbound Endpoints allow on-premises resolvers to forward DNS queries into the VPC. Outbound Endpoints with Forwarding Rules allow VPC instances to resolve on-premises DNS names. Both are needed for bidirectional resolution."
+},
+{
+  id:20, domain:2,
+  q:"An engineer is configuring a Link Aggregation Group (LAG) on Direct Connect. Which statements are TRUE? (Choose TWO)",
+  opts:["All connections in a LAG must use the same bandwidth","A LAG can span multiple AWS Direct Connect locations","All connections in a LAG must terminate at the same Direct Connect endpoint","A LAG can have a maximum of 4 active connections"],
+  correct:[0,2],
+  multi:true,
+  exp:"LAG requirements: all connections must have the same bandwidth, all must terminate at the same DX location/endpoint, and a LAG can have up to 4 active connections (or more with some configurations). LAG cannot span multiple DX locations."
+},
+{
+  id:21, domain:2,
+  q:"A company deploys a Gateway Load Balancer (GWLB) for traffic inspection. Which protocol does GWLB use to encapsulate traffic between the GWLB and appliances?",
+  opts:["VXLAN (UDP port 6081)","GRE (Generic Routing Encapsulation)","IPsec tunnel mode","MPLS label switching"],
+  correct:[0],
+  exp:"GWLB uses GENEVE protocol encapsulated in VXLAN on UDP port 6081 to forward packets to the appliance targets. This preserves the original packet headers so the appliance can inspect the full original traffic."
+},
+{
+  id:22, domain:2,
+  q:"Which Route 53 routing policy should be used to route traffic to different endpoints based on the geographic location of DNS queries, while providing a default for locations not explicitly configured?",
+  opts:["Latency-based routing","Geolocation routing","Geoproximity routing","IP-based routing"],
+  correct:[1],
+  exp:"Geolocation routing routes based on the geographic location of the user making the DNS query. You can define continent, country, or US state records, and a 'Default' record covers all locations not explicitly mapped."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 3 – MANAGEMENT & OPERATIONS
+// ═══════════════════════════════════════
+{
+  id:23, domain:3,
+  q:"A security team wants to capture all traffic flowing to and from a specific EC2 instance for forensic analysis without installing an agent. Which feature should they use?",
+  opts:["VPC Flow Logs","VPC Traffic Mirroring","AWS CloudTrail with data events","Amazon GuardDuty VPC findings"],
+  correct:[1],
+  exp:"VPC Traffic Mirroring copies actual packet data (not just metadata) from an ENI to a monitoring appliance or NLB. VPC Flow Logs only capture metadata (IPs, ports, bytes) and do not include packet payloads."
+},
+{
+  id:24, domain:3,
+  q:"VPC Flow Logs show REJECT for traffic from an IP to an EC2 instance on port 443. The Security Group allows port 443 from 0.0.0.0/0. What is the MOST likely cause?",
+  opts:["The Security Group outbound rule is missing","The NACL has a DENY rule for the source IP or port 443","The EC2 instance is in a stopped state","The Internet Gateway is not attached"],
+  correct:[1],
+  exp:"Security Groups are stateful and allow return traffic automatically. NACLs are stateless and evaluated in rule number order. A NACL DENY rule (lower rule number than the ALLOW) for the source IP or inbound port 443 would cause REJECT in Flow Logs even when SG allows it."
+},
+{
+  id:25, domain:3,
+  q:"An engineer needs to verify end-to-end network path reachability between two EC2 instances across different VPCs connected via Transit Gateway, without sending actual traffic. Which tool should they use?",
+  opts:["VPC Reachability Analyzer","Network Access Analyzer","AWS CloudWatch Network Monitor","AWS Transit Gateway Network Manager"],
+  correct:[0],
+  exp:"VPC Reachability Analyzer performs configuration analysis to verify if a path exists between two endpoints without sending traffic. Network Access Analyzer identifies unintended network access. TGW Network Manager provides global network visibility and telemetry."
+},
+{
+  id:26, domain:3,
+  q:"A company uses AWS Transit Gateway Network Manager. Which capability does it provide that TGW alone does NOT?",
+  opts:["Cross-region TGW peering","Global network topology visualization with SD-WAN integration","BGP route advertisement control","Site-to-Site VPN creation"],
+  correct:[1],
+  exp:"TGW Network Manager provides a central dashboard for monitoring global network topology, including on-premises networks via registered devices and links, CloudWatch metrics integration, and SD-WAN partner integration — capabilities beyond what TGW alone provides."
+},
+{
+  id:27, domain:3,
+  q:"An engineer needs to reduce BGP route table size received from AWS over Direct Connect. Their VPC has 50 subnets. What is the MOST effective approach?",
+  opts:["Enable route summarization on the VGW","Use a supernet CIDR for the VPC and advertise only the VPC-level summary","Split the VPC into multiple smaller VPCs","Use a static default route instead of BGP"],
+  correct:[1],
+  exp:"Designing the VPC CIDR as a supernet of all subnets allows AWS to advertise a single summary route over BGP instead of individual subnet routes. This is the most effective way to minimize BGP table size on the on-premises router."
+},
+{
+  id:28, domain:3,
+  q:"CloudWatch shows intermittent packet drops on a high-throughput EC2 instance. The instance type supports Enhanced Networking. Which metric in CloudWatch/ENA should the engineer check FIRST?",
+  opts:["CPUUtilization","NetworkIn/NetworkOut","bw_in_allowance_exceeded or pps_in_allowance_exceeded","StatusCheckFailed_Instance"],
+  correct:[2],
+  exp:"ENA driver-level metrics like bw_in_allowance_exceeded, pps_in_allowance_exceeded, conntrack_allowance_exceeded, and linklocal_allowance_exceeded indicate when the instance is hitting network limits, causing drops. These require the ENA driver metrics feature."
+},
+{
+  id:29, domain:3,
+  q:"A company wants to automate the detection of overly permissive Security Group rules (e.g., 0.0.0.0/0 on port 22). Which AWS service should they use for continuous compliance monitoring?",
+  opts:["Amazon Inspector","AWS Config with managed rule 'restricted-ssh'","Amazon GuardDuty","AWS Trusted Advisor"],
+  correct:[1],
+  exp:"AWS Config provides continuous configuration monitoring with managed rules. The 'restricted-ssh' managed rule (and 'vpc-sg-open-only-to-authorized-ports') automatically flags security groups that allow unrestricted inbound SSH access."
+},
+{
+  id:30, domain:3,
+  q:"An on-premises router advertises 10.0.0.0/8 over Direct Connect to AWS. An engineer wants AWS to prefer a more specific route for 10.1.0.0/16 that is learned from a VPN. How does BGP route selection work in this case?",
+  opts:["The VPN route wins because VPN is always preferred over Direct Connect","BGP selects the more specific /16 prefix over /8 regardless of path","The Direct Connect route wins because it has a higher LOCAL_PREF","Both routes are installed and ECMP is used"],
+  correct:[1],
+  exp:"BGP always prefers the most specific matching prefix (longest prefix match) before any other attribute. A /16 is more specific than a /8, so the VPN route for 10.1.0.0/16 would be preferred for that prefix regardless of LOCAL_PREF or path type."
+},
+{
+  id:31, domain:3,
+  q:"A network operations team needs to receive alerts when a Direct Connect virtual interface goes down. Which combination of services provides this? (Choose TWO)",
+  opts:["Amazon EventBridge rule for DX state change events","AWS CloudTrail log monitoring for DX API calls","Amazon CloudWatch alarm on DirectConnect/ConnectionState metric","AWS Health Dashboard events via EventBridge"],
+  correct:[0,3],
+  multi:true,
+  exp:"Direct Connect state changes (VIF up/down) generate AWS Health events delivered via EventBridge, enabling automated alerting. EventBridge also receives DX-specific events. CloudWatch does not have a pre-built ConnectionState metric for VIF status."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 4 – SECURITY, COMPLIANCE & GOVERNANCE
+// ═══════════════════════════════════════
+{
+  id:32, domain:4,
+  q:"A company wants to protect their web application from SQL injection and XSS attacks at the edge. Which service and component should they use?",
+  opts:["AWS Shield Advanced with DDoS protection","AWS WAF with managed rule groups on CloudFront","VPC Network ACLs with deep packet inspection","Amazon GuardDuty with RDS protection enabled"],
+  correct:[1],
+  exp:"AWS WAF with managed rule groups (AWS Managed Rules or third-party) deployed on CloudFront provides protection against OWASP Top 10 attacks including SQLi and XSS at the edge, before traffic reaches the origin."
+},
+{
+  id:33, domain:4,
+  q:"An engineer needs to ensure that S3 buckets are only accessible from within a specific VPC. Which approach enforces this at the network level?",
+  opts:["S3 bucket policy with aws:SourceVpc condition key","VPC endpoint for S3 with endpoint policy","Both A and B together provide the strongest enforcement","Security Group outbound rules blocking non-S3 traffic"],
+  correct:[2],
+  exp:"Combining a VPC endpoint for S3 (restricting traffic to flow through the endpoint) with an S3 bucket policy using aws:SourceVpc or aws:SourceVpce condition provides defense-in-depth. The endpoint policy controls what S3 actions are allowed through the endpoint."
+},
+{
+  id:34, domain:4,
+  q:"A Security Group rule allows inbound TCP 443 from a Security Group ID (sg-abc123). What does this mean for traffic flow?",
+  opts:["Only instances in the same VPC with sg-abc123 attached can connect on port 443","Any instance in the AWS account with sg-abc123 can connect on port 443","All instances in the referenced Security Group's VPC can connect on port 443","Only instances in the same AZ with sg-abc123 can connect on port 443"],
+  correct:[0],
+  exp:"Security Group referencing allows traffic from instances with the referenced SG attached. This is scoped to the same VPC (or peered VPCs with appropriate configurations). It does not allow all instances in the account or all instances in the VPC."
+},
+{
+  id:35, domain:4,
+  q:"Which statement correctly describes the difference between Security Groups and Network ACLs?",
+  opts:["Security Groups are stateless; NACLs are stateful","Security Groups support DENY rules; NACLs support only ALLOW rules","Security Groups are stateful and operate at the instance level; NACLs are stateless and operate at the subnet level","NACLs can reference Security Group IDs in their rules"],
+  correct:[2],
+  exp:"Security Groups: stateful (return traffic automatically allowed), applied to ENIs/instances. NACLs: stateless (return traffic must be explicitly allowed), applied to subnets, evaluated in rule number order, support both ALLOW and DENY. NACLs cannot reference SG IDs."
+},
+{
+  id:36, domain:4,
+  q:"An organization requires all traffic leaving a VPC to be inspected by a firewall before reaching the internet. The solution must be managed by AWS without requiring the customer to manage firewall software. Which service should they use?",
+  opts:["AWS Network Firewall deployed in the VPC","Third-party firewall appliances via GWLB","AWS WAF on the Internet Gateway","Security Group outbound rules with strict IP ranges"],
+  correct:[0],
+  exp:"AWS Network Firewall is a managed, stateful network firewall service for VPCs. It supports stateful inspection, IPS rules (Suricata-compatible), and domain-based filtering. AWS manages the infrastructure; customers define the rules."
+},
+{
+  id:37, domain:4,
+  q:"A company uses AWS PrivateLink to expose a service. They want to restrict which AWS accounts can create endpoints to their service. Where is this configured?",
+  opts:["In the NLB target group attributes","In the VPC Endpoint Service permissions (allowed principals)","In the IAM policy attached to the NLB","In the VPC Endpoint policy of each consumer"],
+  correct:[1],
+  exp:"VPC Endpoint Service (PrivateLink) has an 'Allowed principals' list where you specify which AWS account IDs, IAM users, or IAM roles can create endpoints. You can also require manual acceptance for each endpoint request."
+},
+{
+  id:38, domain:4,
+  q:"AWS Shield Standard protects against which types of attacks automatically at no additional cost? (Choose TWO)",
+  opts:["Layer 3 and Layer 4 DDoS attacks","Layer 7 application attacks (SQLi, XSS)","SYN floods and UDP reflection attacks","Zero-day vulnerability exploits"],
+  correct:[0,2],
+  multi:true,
+  exp:"AWS Shield Standard automatically protects all AWS customers against common infrastructure-layer (L3/L4) DDoS attacks including SYN floods, UDP reflection, and other volumetric attacks at no extra cost. Layer 7 protection requires WAF; zero-day exploits require Shield Advanced + WAF."
+},
+{
+  id:39, domain:4,
+  q:"A company needs to meet a compliance requirement stating that network traffic between services must be encrypted in transit within the VPC. Which approach ensures this for EC2-to-EC2 communication?",
+  opts:["VPC encryption is on by default for all inter-instance traffic","Use TLS/SSL at the application layer between instances","Enable 'VPC Flow Log Encryption' in the console","Attach an IAM policy requiring encryption to the instances"],
+  correct:[1],
+  exp:"Traffic between EC2 instances within a VPC is not encrypted by default at the network layer (though some instance types encrypt traffic between instances in the same cluster). Application-layer TLS/SSL is the correct approach for in-transit encryption compliance."
+},
+{
+  id:40, domain:4,
+  q:"Which AWS Network Firewall rule type provides domain-based filtering (e.g., blocking access to *.malware.com)?",
+  opts:["Stateless rules with IP-based ACLs","Stateful rules using domain list rule groups","5-tuple stateless rules","Suricata IPS rules with regex matching"],
+  correct:[1],
+  exp:"AWS Network Firewall stateful rule groups include 'Domain list' type rules that allow or deny traffic to specific domain names. These use SNI inspection for HTTPS and DNS query inspection to filter by domain name."
+},
+
+// ── More Advanced Questions ──
+{
+  id:41, domain:1,
+  q:"A company has two VPCs with overlapping CIDR 10.0.0.0/16. They need specific EC2 instances in each VPC to communicate. VPC peering cannot be used due to overlapping CIDRs. What is the BEST solution?",
+  opts:["Use AWS PrivateLink with NLBs in each VPC","Reconfigure both VPCs with non-overlapping CIDRs","Use Transit Gateway with NAT in the middle","Use IPv6 addressing for the communication path"],
+  correct:[0],
+  exp:"AWS PrivateLink (VPC Endpoint Service) works regardless of CIDR overlap because it uses private IP addresses from the consumer VPC's CIDR for the endpoint, not the provider VPC's CIDR. This is the standard solution for overlapping CIDR communication."
+},
+{
+  id:42, domain:2,
+  q:"An engineer is configuring CloudFront with an S3 origin. They want to ensure S3 content is only accessible via CloudFront, not directly. Which feature should they use?",
+  opts:["S3 bucket policy with CloudFront IP ranges","Origin Access Control (OAC) with an updated S3 bucket policy","Origin Access Identity (OAI) — the only supported method","CloudFront signed URLs with S3 pre-signed URL chaining"],
+  correct:[1],
+  exp:"Origin Access Control (OAC) is the current recommended approach (OAI is legacy). OAC allows CloudFront to authenticate to S3 using SigV4, and the S3 bucket policy grants access only to the CloudFront distribution's OAC, blocking direct S3 access."
+},
+{
+  id:43, domain:3,
+  q:"A VPC has 10 subnets. An engineer enables VPC Flow Logs at the VPC level. How does this affect subnets and ENIs?",
+  opts:["Only the default subnet is logged","All ENIs in all subnets are logged","Only ENIs explicitly opted-in are logged","Each subnet must have Flow Logs enabled individually"],
+  correct:[1],
+  exp:"VPC-level Flow Logs capture traffic for all ENIs in all subnets within the VPC. You can also enable Flow Logs at the subnet level (covering all ENIs in that subnet) or at the individual ENI level for more granular control."
+},
+{
+  id:44, domain:4,
+  q:"An engineer wants to prevent resources in a VPC from making outbound internet requests to any destination, including through a NAT Gateway. Which is the MOST effective control?",
+  opts:["Remove outbound rules from all Security Groups","Remove the route to the NAT Gateway from private subnet route tables and remove the IGW route from public subnets","Set up a NACL that denies all outbound traffic on all subnets","Configure the NAT Gateway with a restrictive Elastic IP"],
+  correct:[1],
+  exp:"Route tables control traffic flow at the subnet level. Removing the default route (0.0.0.0/0) to the NAT Gateway from private subnets and the route to the IGW from public subnets prevents outbound internet access at the network level. Security Group changes are less reliable as they can be modified per instance."
+},
+{
+  id:45, domain:1,
+  q:"A company has Direct Connect with a private VIF to VPC-A. They now need to access VPC-B (peered with VPC-A) from on-premises via the same Direct Connect. Will this work?",
+  opts:["Yes, traffic can transit through VPC peering over Direct Connect","No, AWS does not support transitive routing through VPC peering","Yes, if you enable transitive routing on the VGW","Yes, if the peering connection has route propagation enabled"],
+  correct:[1],
+  exp:"VPC peering is non-transitive. Traffic from on-premises over Direct Connect to VPC-A cannot be forwarded to VPC-B through a peering connection. You must either create a Direct Connect/VPN connection directly to VPC-B's VGW or use Transit Gateway."
+},
+{
+  id:46, domain:2,
+  q:"An ALB is configured with a listener rule using weighted target groups: TG-Blue at 90% and TG-Green at 10%. What is this pattern called and what is its purpose?",
+  opts:["Blue/Green deployment for instant cutover","Weighted routing for canary deployment / gradual traffic shifting","Round-robin load balancing across target groups","Sticky session distribution based on cookies"],
+  correct:[1],
+  exp:"Weighted target groups on an ALB enable canary deployments and gradual traffic shifting. By starting at 90/10 and gradually shifting, teams can test new versions with a small percentage of real traffic before full rollout."
+},
+{
+  id:47, domain:3,
+  q:"After updating Security Group rules, an engineer wants to verify the effective network path and access between two specific endpoints. Which tool provides the FASTEST configuration-based verification?",
+  opts:["Launch a test EC2 instance and run curl/telnet","Use VPC Reachability Analyzer to trace the path","Check Security Group and NACL rules manually","Enable VPC Flow Logs and generate test traffic"],
+  correct:[1],
+  exp:"VPC Reachability Analyzer runs a configuration analysis in seconds and shows the exact path (or blockers) without launching instances or generating traffic. It's far faster than manual inspection or live traffic testing."
+},
+{
+  id:48, domain:4,
+  q:"A company's compliance team requires that all API calls to networking services (create VPC, modify Security Group, etc.) be logged with caller identity and source IP. Which service provides this?",
+  opts:["VPC Flow Logs","AWS CloudTrail (Management Events)","Amazon CloudWatch Logs","AWS Config"],
+  correct:[1],
+  exp:"AWS CloudTrail records all API calls to AWS services as Management Events, including the caller's identity (IAM user/role/account), source IP, timestamp, and request parameters. VPC Flow Logs capture network traffic metadata, not API calls."
+},
+{
+  id:49, domain:1,
+  q:"A company wants to use a single Direct Connect connection to reach multiple VPCs in the same Region without VPC peering. Which combination achieves this with the LEAST number of VIFs?",
+  opts:["One private VIF per VPC (one per VGW)","One transit VIF to a Direct Connect Gateway connected to a Transit Gateway","One public VIF shared across all VPCs","One hosted VIF with multiple BGP sessions"],
+  correct:[1],
+  exp:"A single transit VIF to a DXGW, connected to a Transit Gateway with all VPCs attached, allows one DX connection to reach all VPCs. Private VIFs require one VIF per VGW (per VPC), which is less scalable."
+},
+{
+  id:50, domain:4,
+  q:"An organization wants to prevent any VPC in their AWS Organization from having an Internet Gateway attached. Which service and mechanism enforces this organization-wide?",
+  opts:["AWS Config rule deployed via StackSets to all accounts","AWS Organizations Service Control Policy (SCP) denying ec2:AttachInternetGateway","VPC sharing with RAM to control VPC access","IAM Permission Boundary on all roles in member accounts"],
+  correct:[1],
+  exp:"SCPs are applied at the AWS Organizations level and provide guardrails that cannot be overridden by IAM policies in member accounts. An SCP denying ec2:AttachInternetGateway prevents any account in the OU/Organization from attaching an IGW, regardless of their IAM permissions."
+},
+{
+  id:51, domain:2,
+  q:"An engineer needs to configure DNS failover for a web application. The primary endpoint should be used when healthy; the secondary (S3 static site) should activate automatically when the primary fails. Which Route 53 configuration achieves this?",
+  opts:["Weighted routing with weights 100 and 0","Failover routing with health checks on the primary record","Latency routing with CloudWatch alarms","Multivalue answer routing with health checks"],
+  correct:[1],
+  exp:"Route 53 Failover routing uses health checks: when the primary record's health check fails, Route 53 automatically returns the secondary record. This is the designed pattern for active-passive failover."
+},
+{
+  id:52, domain:3,
+  q:"A company needs real-time visibility into BGP route changes on their Direct Connect connections. Which service provides this?",
+  opts:["AWS CloudTrail for BGP API events","AWS Transit Gateway Network Manager with Route Analyzer","Amazon CloudWatch BGP metrics","VPC Flow Logs with BGP traffic filter"],
+  correct:[1],
+  exp:"TGW Network Manager includes a Route Analyzer that shows BGP route table state and changes across your global network. CloudTrail captures control-plane API calls but not BGP routing events. VPC Flow Logs don't capture BGP routing information."
+},
+{
+  id:53, domain:4,
+  q:"A company wants to ensure EC2 instances in private subnets can ONLY communicate with AWS services (S3, DynamoDB) and cannot reach the general internet even if misconfigured. Which approach BEST enforces this?",
+  opts:["Configure NACLs to block all traffic except specific AWS service IPs","Use VPC Gateway Endpoints for S3 and DynamoDB, remove NAT Gateway, and restrict route tables","Use Security Groups to only allow outbound to AWS service IP ranges","Configure a proxy server that only allows AWS service domains"],
+  correct:[1],
+  exp:"Gateway Endpoints for S3 and DynamoDB route traffic directly through the AWS network without internet access. Removing the NAT Gateway eliminates any path to the internet. This is a network-level control that doesn't rely on IP lists (which change) or security group rules."
+},
+{
+  id:54, domain:1,
+  q:"A company has a multi-Region architecture. They want the lowest latency DNS resolution directing users to the nearest healthy Region. Which Route 53 routing policy should they use?",
+  opts:["Geolocation routing","Geoproximity routing with bias adjustment","Latency-based routing with health checks","Weighted routing with equal weights across Regions"],
+  correct:[2],
+  exp:"Latency-based routing directs users to the AWS Region with the lowest measured latency from their location. Combined with health checks, it automatically routes away from unhealthy endpoints. Geolocation routes by geography, not latency. Geoproximity is for Traffic Flow only."
+},
+{
+  id:55, domain:2,
+  q:"An engineer needs to migrate from Classic Load Balancer to Application Load Balancer. Which feature is available on ALB but NOT on Classic Load Balancer?",
+  opts:["SSL/TLS termination","HTTP to HTTPS redirect rules","Cross-zone load balancing","Health checks"],
+  correct:[1],
+  exp:"ALB supports listener rules including HTTP-to-HTTPS redirect rules natively. Classic Load Balancer does not support listener rules or content-based routing. SSL termination, cross-zone load balancing, and health checks are available on both."
+},
+{
+  id:56, domain:3,
+  q:"An engineer notices that VPC Flow Logs are showing NODATA for a 10-minute period. What does NODATA indicate?",
+  opts:["The ENI was unreachable during that period","There was no traffic to or from the ENI during that aggregation window","The Flow Logs delivery to S3 failed","The ENI was deleted and recreated"],
+  correct:[1],
+  exp:"NODATA in Flow Logs means there was no network traffic to report for that aggregation interval (default 10 minutes). It does not indicate an error or connectivity problem — it simply means the ENI had no traffic during that window."
+},
+{
+  id:57, domain:4,
+  q:"A company needs DDoS protection with 24/7 access to the AWS DDoS Response Team (DRT) and cost protection for DDoS-related scaling charges. Which service tier provides this?",
+  opts:["AWS Shield Standard","AWS Shield Advanced","AWS WAF with rate-based rules","Amazon CloudFront with AWS Shield Standard"],
+  correct:[1],
+  exp:"AWS Shield Advanced provides enhanced DDoS protection, access to the AWS DDoS Response Team (DRT), real-time attack visibility, and financial protection (credits) for DDoS-related scaling charges on protected resources."
+},
+{
+  id:58, domain:1,
+  q:"A company's VPC CIDR is 192.168.0.0/16. They want to add a secondary CIDR to expand their address space. Which secondary CIDR is valid to add?",
+  opts:["10.0.0.0/8","172.16.0.0/12","192.168.1.0/24","100.64.0.0/10"],
+  correct:[3],
+  exp:"You can add secondary CIDRs to a VPC. You cannot add a CIDR that overlaps with the existing VPC CIDR (192.168.0.0/16). RFC 1918 ranges that don't overlap and the 100.64.0.0/10 CGNAT range are valid. 10.0.0.0/8, 172.16.0.0/12 are valid but only if they don't overlap with the primary CIDR. 100.64.0.0/10 is valid."
+},
+{
+  id:59, domain:2,
+  q:"An engineer configures a public VIF on Direct Connect. What type of traffic can be sent over a public VIF?",
+  opts:["Traffic to private EC2 instances in a VPC","Traffic to AWS public service endpoints (S3, DynamoDB, etc.) using public IPs","Traffic to any public internet destination","Traffic to VPC private IP addresses using NAT"],
+  correct:[1],
+  exp:"A public VIF connects to AWS's public IP space, allowing traffic to AWS public service endpoints (e.g., S3, DynamoDB, SQS) using their public IP addresses. It does NOT provide access to the general internet or to private IP addresses within VPCs (that requires a private VIF)."
+},
+{
+  id:60, domain:4,
+  q:"A network engineer needs to restrict outbound internet access from an EC2 instance to only specific FQDNs (e.g., api.partner.com). Which AWS service supports FQDN-based outbound filtering?",
+  opts:["Security Groups with domain-based rules","Network ACLs with domain resolution","AWS Network Firewall with domain list stateful rules","VPC endpoint policies with domain conditions"],
+  correct:[2],
+  exp:"AWS Network Firewall supports stateful domain list rules that filter traffic based on FQDN using SNI inspection (for HTTPS) and DNS query interception. Security Groups and NACLs only support IP-based rules and cannot perform FQDN-based filtering."
+},
+{
+  id:61, domain:1,
+  q:"Which of the following are limitations of VPC peering? (Choose TWO)",
+  opts:["VPC peering does not support transitive routing","VPCs must be in the same AWS account to peer","VPC peering does not work across different AWS Regions","Overlapping CIDR blocks prevent VPC peering"],
+  correct:[0,3],
+  multi:true,
+  exp:"VPC peering is non-transitive (traffic cannot flow through a peered VPC to another). Overlapping CIDRs prevent peering because routing would be ambiguous. VPC peering DOES work across accounts and across Regions (inter-Region VPC peering is supported)."
+},
+{
+  id:62, domain:3,
+  q:"An application team complains about intermittent connection timeouts to an RDS instance. VPC Flow Logs show ACCEPT for the initial connection but then show no further traffic. What is the MOST likely cause?",
+  opts:["Security Group rule is blocking return traffic","NAT Gateway is dropping connections after 30 seconds","Idle connection timeout on the NAT Gateway (350 seconds) or Security Group tracking","RDS Multi-AZ failover is occurring frequently"],
+  correct:[2],
+  exp:"NAT Gateway has an idle connection timeout of 350 seconds for TCP. Security group connection tracking also has idle timeouts. If a connection is idle for longer than the timeout without TCP keepalives, the state is dropped, causing subsequent packets to be rejected. The ACCEPT in flow logs shows it was allowed initially."
+},
+{
+  id:63, domain:2,
+  q:"A company wants to distribute traffic to EC2 instances across three AZs using an NLB. One AZ has twice the capacity. How should they configure the NLB?",
+  opts:["Enable cross-zone load balancing — NLB distributes evenly across all instances","Use weighted target groups to assign more weight to the larger AZ's targets","Use two separate NLBs — one per high-capacity AZ","Add more listeners to direct extra traffic to the larger AZ"],
+  correct:[0],
+  exp:"With cross-zone load balancing enabled on NLB, traffic is distributed evenly across all registered targets regardless of AZ. If the high-capacity AZ has twice as many instances registered, it naturally receives twice the traffic. This is the simplest operational approach."
+},
+{
+  id:64, domain:4,
+  q:"A company needs to audit all changes to Security Groups and VPC route tables across all accounts in an AWS Organization. Which solution provides centralized, automated auditing?",
+  opts:["Enable CloudTrail in each account and aggregate to a central S3 bucket","Use AWS Config with an Organization-level aggregator and conformance packs","Deploy VPC Flow Logs to a central account","Use AWS Security Hub with cross-account findings"],
+  correct:[1],
+  exp:"AWS Config Organization aggregator collects configuration and compliance data from all accounts. Conformance packs can deploy Config rules (like 'vpc-sg-open-only-to-authorized-ports' and 'restricted-ssh') organization-wide, providing centralized auditing and compliance reporting."
+},
+{
+  id:65, domain:1,
+  q:"A company needs to run a workload requiring 100 Gbps of network throughput between EC2 instances. Which instance networking feature enables this?",
+  opts:["Enhanced Networking (ENA) on any instance type","Elastic Fabric Adapter (EFA) on supported instance types","Placement group with SR-IOV","Multiple ENIs with link aggregation"],
+  correct:[1],
+  exp:"EFA (Elastic Fabric Adapter) on supported instance types (such as hpc6a.48xlarge, p4d.24xlarge, etc.) supports up to 400 Gbps of network bandwidth with OS-bypass for MPI and ML workloads. Standard ENA maxes out at lower bandwidths depending on instance type."
+}
+
+,
+// ═══════════════════════════════════════
+//  HARDER QUESTIONS  (Q66–Q75)
+// ═══════════════════════════════════════
+{
+  id:66, domain:2,
+  q:"A centralized inspection VPC contains stateful firewall appliances behind a Transit Gateway attachment. Asymmetric routing is causing stateful firewalls to drop return traffic — the outbound flow traverses Appliance-A in AZ-a, but the return flow is being sent through Appliance-B in AZ-b. Which TGW configuration resolves this without changing the appliance architecture?",
+  opts:["Enable ECMP on the TGW attachment for the inspection VPC","Enable Appliance Mode on the TGW attachment for the inspection VPC","Use a GWLB instead of a TGW attachment for the inspection VPC","Add static routes in the inspection VPC pinning each flow to one AZ"],
+  correct:[1],
+  exp:"TGW Appliance Mode ensures that both directions of a traffic flow (request and response) use the same AZ-local attachment endpoint, preventing asymmetric routing through stateful appliances. Without Appliance Mode, TGW may route return traffic through a different AZ's ENI, breaking stateful inspection."
+},
+{
+  id:67, domain:3,
+  q:"A company's Direct Connect connection fails, and BGP failover to the backup Site-to-Site VPN takes 85 seconds. Their SLA requires failover within 10 seconds. BGP keepalive/hold timers are already at their minimum allowed values. What should the engineer configure to meet the SLA?",
+  opts:["Add a second Direct Connect connection in a LAG","Enable BFD (Bidirectional Forwarding Detection) on the Direct Connect virtual interface","Reduce the BGP hold timer below 3 seconds using a vendor-specific feature","Switch from BGP to static routes on the VGW"],
+  correct:[1],
+  exp:"BFD is a sub-second failure detection protocol. AWS supports BFD on Direct Connect VIFs with a minimum interval of 300 ms and a multiplier of 3, enabling failure detection in under 1 second — far faster than BGP timers. BFD operates independently of BGP timers and triggers rapid BGP route withdrawal upon failure detection."
+},
+{
+  id:68, domain:1,
+  q:"A company with 3 AWS accounts, each with its own Transit Gateway, wants to connect all three TGWs to a single Direct Connect Gateway (DXGW) for on-premises access. What is a critical constraint they MUST consider?",
+  opts:["A DXGW can only be associated with one Transit Gateway at a time","All Transit Gateways associated with a DXGW must be in the same AWS account","The CIDR ranges advertised by each associated Transit Gateway must not overlap","Transit VIFs must be re-created for each additional TGW association"],
+  correct:[2],
+  exp:"A DXGW can be associated with up to 6 Transit Gateways (across accounts via RAM sharing). The critical constraint is that the allowed prefixes configured for each TGW association with the DXGW must be non-overlapping — the DXGW cannot route between two TGWs that advertise overlapping CIDRs, as it would be unable to determine the correct destination."
+},
+{
+  id:69, domain:4,
+  q:"A security team manages an approved CIDR allow-list used in Security Group inbound rules across 200 Security Groups in 15 VPCs. When the list changes, updating each Security Group individually takes hours and introduces human error. Which AWS feature eliminates per-Security-Group updates when the CIDR list changes?",
+  opts:["AWS Config auto-remediation with a Lambda function","Customer-Managed Prefix Lists referenced directly in Security Group rules","VPC sharing via RAM so one Security Group covers all VPCs","AWS Firewall Manager with Security Group policies"],
+  correct:[1],
+  exp:"Customer-Managed Prefix Lists are reusable, versioned CIDR collections. Security Group rules can reference a prefix list ID instead of individual CIDRs. When the prefix list is updated (new version), all Security Groups referencing it immediately reflect the change — no per-SG edits required. AWS also publishes managed prefix lists for services like CloudFront and S3."
+},
+{
+  id:70, domain:4,
+  q:"An engineer needs AWS Network Firewall to block all outbound HTTP traffic where the User-Agent header contains the string 'python-requests'. Domain list rules cannot inspect HTTP headers. Which stateful rule type in Network Firewall supports this inspection?",
+  opts:["5-tuple stateless rules with a port 80 match","Domain list stateful rules with 'python-requests' as a domain pattern","Suricata-compatible IPS rules with a content keyword matching the User-Agent header","Network Firewall cannot inspect HTTP header contents — use AWS WAF instead"],
+  correct:[2],
+  exp:"AWS Network Firewall supports Suricata-compatible stateful rule groups. A Suricata rule with 'content:\"python-requests\"; http_header;' (or 'http.user_agent; content:\"python-requests\";') matches on the HTTP User-Agent header content. Domain list rules only match on SNI/DNS names, not arbitrary header values."
+},
+{
+  id:71, domain:1,
+  q:"A central networking account shares subnets with 10 application accounts via AWS RAM. Application teams deploy EC2 instances and create Security Groups in the shared subnets. Which statement is TRUE about Security Group behavior in this architecture?",
+  opts:["Application accounts can reference Security Groups from other application accounts sharing the same subnet","Application account Security Groups can be referenced by name, not just ID, across accounts","Application accounts cannot create or modify route tables in the shared VPC","Each application account's Security Groups are isolated — they can only reference SGs from the same account or the owner account in rules"],
+  correct:[3],
+  exp:"In VPC sharing, each participant account creates its own Security Groups within the shared VPC. Security Group rules can reference the participant's own SGs or SGs owned by the VPC owner account — but NOT SGs from other participant accounts sharing the same subnet. Route tables, subnets, and IGWs are owned by the VPC owner account and cannot be modified by participants."
+},
+{
+  id:72, domain:2,
+  q:"A company has Route 53 geoproximity routing configured for resources in us-east-1 and eu-west-1. European users are nearly evenly split between the two endpoints due to geographic proximity. The company wants to route 20% more European traffic to eu-west-1 without changing DNS TTLs or weights. Which configuration achieves this?",
+  opts:["Switch to weighted routing with 40% us-east-1 and 60% eu-west-1","Set a positive bias value (e.g., +10) on the eu-west-1 geoproximity record","Create a geolocation rule for Europe pointing to eu-west-1 as an override","Reduce the TTL of the us-east-1 record to force more frequent DNS resolution"],
+  correct:[1],
+  exp:"Geoproximity routing (available in Route 53 Traffic Flow) routes traffic based on geographic distance between users and resources. A positive bias expands the effective routing area of a resource, attracting more traffic from a wider region. A bias of +10 shifts the boundary toward users who are currently being sent to the competing endpoint. Bias values range from -99 to +99."
+},
+{
+  id:73, domain:1,
+  q:"A company routes all outbound internet traffic from 20 spoke VPCs through a centralized egress VPC via Transit Gateway. After configuring the TGW, internet-bound traffic from spoke VPCs is being dropped. The NAT Gateway in the egress VPC is healthy. Which TWO route table configurations are MOST likely missing? (Choose TWO)",
+  opts:["A 0.0.0.0/0 route in the TGW route table pointing to the egress VPC TGW attachment","A 0.0.0.0/0 route in the egress VPC's private subnet route table pointing to the TGW attachment for return traffic","A 0.0.0.0/0 route in spoke VPC subnet route tables pointing to the TGW attachment","A VPC peering connection between each spoke VPC and the egress VPC for return routing"],
+  correct:[0,2],
+  multi:true,
+  exp:"Centralized egress requires: (1) Spoke VPC subnet route tables must have 0.0.0.0/0 pointing to the TGW attachment. (2) The TGW route table (associated with spoke VPC attachments) must route 0.0.0.0/0 to the egress VPC's TGW attachment. The egress VPC's NAT Gateway subnet already has 0.0.0.0/0 → IGW. Return traffic flows back through the NAT Gateway naturally (SNAT'd), so no special return route to TGW is needed from the egress VPC's NAT subnet."
+},
+{
+  id:74, domain:3,
+  q:"An EC2 instance (c5.xlarge) running a custom NAT workload shows packet drops in VPC Flow Logs despite CPU being under 20% and bandwidth under 50% of the instance limit. Examining ENA driver metrics via CloudWatch, the engineer sees conntrack_allowance_exceeded incrementing rapidly. What is the root cause and the BEST remediation?",
+  opts:["The instance's security group has too many rules — remove unused rules to free connection tracking entries","The instance has exceeded its per-instance connection tracking table limit; scale to a larger instance type or use a managed NAT Gateway","The ENA driver needs updating — the conntrack metric indicates a driver bug on c5 instances","Enable jumbo frames (9001 MTU) to reduce the number of tracked connections"],
+  correct:[1],
+  exp:"Each EC2 instance has a fixed connection tracking table limit (varies by instance type and size) that tracks active TCP/UDP/ICMP flows. When this limit is exceeded, new connections are dropped — conntrack_allowance_exceeded counts these drops. A c5.xlarge has a smaller conntrack table than larger instance types. The remediation is to scale up (more conntrack capacity) or use a managed NAT Gateway, which has no per-instance connection tracking limits."
+},
+{
+  id:75, domain:2,
+  q:"A company has two Direct Connect connections — one in us-east-1 (preferred) and one in us-west-2 (backup) — both advertising the same route 10.0.0.0/8. AWS is load-balancing traffic across both connections. The company wants AWS to use us-east-1 exclusively for outbound traffic while keeping us-west-2 as a failover. Which BGP community value should they tag on routes advertised from the us-east-1 connection to signal AWS to prefer it?",
+  opts:["7224:7100 (signals LOCAL_PREF 100 — lower preference)","7224:7200 (signals LOCAL_PREF 200 — default, no preference change)","7224:7300 (signals LOCAL_PREF 300 — higher preference)","7224:9300 (signals that the route should not be re-advertised)"],
+  correct:[2],
+  exp:"AWS honors BGP communities on routes received from customers over Direct Connect to set LOCAL_PREF on the AWS side: 7224:7100 → LP 100 (low), 7224:7200 → LP 200 (default), 7224:7300 → LP 300 (high). Tagging the us-east-1 routes with 7224:7300 sets LOCAL_PREF 300, making AWS prefer that path over us-west-2 (which receives default LP 200 or is tagged 7224:7100). Community 7224:9300 controls route propagation scope, not preference."
+}
+
+]; // end QUESTIONS
+
+// ─────────────────────────────────────────────
+//  WRONG-ANSWER EXPLANATIONS  (keyed by question id)
+//  Shown only in Practice Mode when the user answers incorrectly.
+// ─────────────────────────────────────────────
+const WRONG_EXP = {
+  1:  "VPC peering (A) requires O(n²) connections and does not scale to 50 VPCs. PrivateLink (C) exposes individual services, not full network connectivity. Direct Connect public VIF (D) reaches AWS public services, not private VPC routes.",
+  2:  "Site-to-Site VPN (A) tunnels over the public internet — bandwidth and latency are not guaranteed. A 1 Gbps hosted connection with LAG (C) still can't reach 10 Gbps through a single hosted connection from most partners. Client VPN (D) is for end-user remote access, not data center connectivity.",
+  3:  "LOCAL_PREF (A) is an iBGP attribute used within an AS to prefer routes — AWS cannot read your LOCAL_PREF advertisements. MED (C) influences inbound traffic *from* AWS to you, not your outbound preference. COMMUNITY 7224:9300 (D) signals AWS's own network, not the customer's VPN path.",
+  4:  "Removing the IGW from a public subnet (A) prevents internet access but does not protect instances if they still have public IPs on the same subnet. NACLs (C) are stateless and complex to manage; they also don't prevent direct internet routing if a public IP and IGW route exist. VPC Endpoints (D) only cover specific AWS services, not general internet egress.",
+  5:  "10.0.0.0/8 (A) is valid RFC 1918 for VPCs. 192.168.0.0/28 (C) is too small — VPC CIDR must be between /16 and /28 for the 192.168 range, and a /28 is only valid as a subnet. 198.19.0.0/16 (E) is not a supported VPC CIDR range. 172.16.0.0/12 is valid. The correct pair is B and D.",
+  6:  "Transit Gateway (A) grants full network-layer access between all attached VPCs — not suitable for exposing a single service to many customers with overlapping CIDRs. VPC peering (C) fails with overlapping CIDRs and is not scalable to thousands of customers. Direct Connect private VIF (D) is for on-premises connectivity, not inter-customer service exposure.",
+  7:  "Deleting VPC attachments and using peering (B) loses the central hub model and doesn't scale. Security Groups (C) are instance-level controls, not network routing controls — traffic would still be routed and only blocked at the instance. NACLs (D) would require updates in both VPCs for every new subnet, and are error-prone versus TGW route table isolation.",
+  8:  "Spread placement groups (A) maximize fault isolation across hardware but increase latency. Cluster + ENA (B) provides high bandwidth but ENA uses the kernel network stack, adding latency overhead. Partition + EFA (C) is for fault-isolated distributed systems, not lowest-latency compute clusters.",
+  9:  "An Internet Gateway (A) with IPv6 routes allows *inbound* connections from the internet — it is bidirectional. NAT64 (C) is for IPv4-only workloads to reach IPv6 destinations, not the other way around. There is no 'IPv6 VPC Endpoint' (D) concept — endpoints use private IPs.",
+  10: "LOCAL_PREF (A) is set by the receiving router internally — customers cannot advertise it to AWS via BGP OPEN. AS_PATH prepending (C) affects the customer's preference for routes *from* AWS (outbound from AWS), not AWS's choice for outbound traffic to the customer. COMMUNITY 7224:9300 (D) controls AWS's LOCAL_PREF internally — customers do not set it directly.",
+  11: "A Direct Connect Gateway (A) is required for transit VIF — you cannot skip it. Private VIF connects to a VGW, not a TGW. Statement B is false: transit VIF *does not* connect directly to a VGW. Transit VIF is available on both dedicated and hosted connections (C is false). BGP MD5 auth (D) is optional on all VIF types.",
+  12: "ASN 64512 (B) is a private BGP ASN range — not used by AWS publicly. ASN 65000 (C) is also private. ASN 16509 (D) is used by Amazon EC2 in AWS's public routing table, not for Direct Connect VIFs.",
+  13: "VGW supports active/active tunnels (A is false). AWS VPN *does* support active/active with ECMP if the customer router is configured for it (C is only partially true for some routers). A wrong customer gateway IP (D) would prevent the tunnel from establishing at all, not cause one tunnel to be up.",
+  14: "You cannot modify a VIF type in-place (B) — private and transit VIFs are fundamentally different. You cannot attach a VGW directly to a TGW (C) — they are separate gateway types. A new hosted connection (D) is not required; you can create a transit VIF on the existing dedicated connection.",
+  15: "The first rule (A) is evaluated first in priority order — but the *default* action is separate from numbered rules. Priority 1 (B) would be the highest-priority explicit rule, not the fallback. Target group attributes (D) control stickiness and routing within a group, not listener-level defaults.",
+  16: "NLB does *not* replace the source IP with its own (A) for TCP/UDP targets — that is ALB's behavior. NLB does not have security groups (C) — you control access via instance-level SGs referencing 0.0.0.0/0 or via NACLs. NLB supports Elastic IPs (static IPs) per AZ, so D is false.",
+  17: "Firewall appliances in each VPC (A) require per-VPC configuration and don't provide centralized inspection of inter-VPC traffic. AWS Network Firewall (C) is an AWS-managed service but uses GWLB endpoints for centralized inspection — the architecture described in B is the correct pattern for third-party firewalls. AWS WAF (D) cannot attach to a Transit Gateway.",
+  18: "Enabling DNS resolution (B) only affects hostname resolution, not connectivity. IAM policies (C) have no role in VPC peering network traffic. Route tables and security groups are the two most commonly missed steps after accepting a peering connection.",
+  19: "Private hosted zones with VPC association alone (B) only resolves *AWS* private records from within the VPC — it does not resolve on-premises DNS names. Conditional forwarding rules alone (D) only handle outbound queries from VPC to on-premises — inbound (on-premises to VPC) requires an inbound endpoint. Both endpoints together (A) are needed for full bidirectional resolution.",
+  20: "LAG connections *cannot* span multiple DX locations (B) — all must terminate at the same endpoint. A LAG supports up to 4 active connections on a dedicated connection link aggregation group (checking: actually AWS docs say up to 4 active ports in a LAG). Statement D about max 4 is correct but was presented as a true statement — verify with AWS docs for current limits.",
+  21: "GRE (B) is a generic tunneling protocol not used by GWLB. IPsec (C) encrypts traffic but is not the encapsulation protocol GWLB uses. MPLS (D) is a label-switching protocol used in service provider networks, not in GWLB.",
+  22: "Latency-based routing (A) routes based on measured network latency to the Region, not geographic location of the DNS query. Geoproximity (C) is only available in Route 53 Traffic Flow policies and uses bias values, not simple geographic mapping. IP-based routing (D) routes based on the client's IP CIDR prefix, not their broader geographic region.",
+  23: "VPC Flow Logs (A) capture only metadata (source/dest IP, port, protocol, bytes, action) — not actual packet payloads. CloudTrail data events (C) log S3 and Lambda API-level activity, not network packets. GuardDuty (D) analyzes Flow Logs and DNS logs for threat detection but does not capture raw packets.",
+  24: "Security Groups are stateful (A) — return traffic is automatically allowed without explicit outbound rules. Stopped instances (C) would show no traffic at all, not a REJECT. If the IGW is not attached (D), there would be no inbound traffic to log at all.",
+  25: "Network Access Analyzer (B) finds unintended access paths across your entire network — it's a broader audit tool, not a point-to-point path check. CloudWatch Network Monitor (C) monitors network performance metrics (latency, packet loss) between probes, not configuration-based reachability. TGW Network Manager (D) provides topology visualization and telemetry, not path reachability analysis.",
+  26: "Cross-region TGW peering (A) is a TGW feature itself, not a Network Manager-specific capability. BGP route advertisement control (C) is handled by the TGW and VGW, not Network Manager. Site-to-Site VPN creation (D) is done in the VPC console, not Network Manager (though it can register existing connections).",
+  27: "Route summarization on the VGW (A) is not a configurable feature — AWS VGW advertises individual subnet/VPC routes. Splitting into smaller VPCs (C) increases operational complexity and doesn't reduce routes proportionally. A static default route (D) removes BGP entirely, losing dynamic routing benefits.",
+  28: "CPUUtilization (A) reflects compute load, not network drops. NetworkIn/NetworkOut (B) show total bytes transferred — they don't show drops or throttling. StatusCheckFailed (D) indicates EC2 hardware or OS issues, not network throughput limits.",
+  29: "Amazon Inspector (A) scans EC2 instances for OS vulnerabilities and software CVEs — it does not continuously monitor security group configurations. GuardDuty (C) detects threat activity from traffic patterns and logs, but does not enforce configuration compliance rules. Trusted Advisor (D) checks for open security groups but is not a continuous compliance monitoring service.",
+  30: "VPN is not always preferred over Direct Connect (A) — BGP selects routes based on attributes, not connection type. The Direct Connect route would only win if it had a more specific prefix or equivalent specificity with better attributes (C is only true if prefixes are equal length). AWS does not automatically install both routes with ECMP (D) when one is more specific.",
+  31: "CloudTrail (B) logs API calls like CreateVirtualInterface — it records management actions, not real-time connection state changes. CloudWatch does not have a pre-built ConnectionState metric for VIF status (C) — you'd need custom metrics or Health events.",
+  32: "AWS Shield Advanced (A) provides DDoS protection at L3/L4 but does not inspect HTTP payloads for SQLi or XSS. NACLs (C) are IP/port based and cannot do deep packet inspection or application-layer filtering. GuardDuty (D) detects threats from log analysis — it does not block SQLi or XSS at the request level.",
+  33: "A bucket policy alone with aws:SourceVpc (A) is incomplete — if there is no VPC endpoint, traffic can still flow via the public S3 endpoint from within the VPC. A VPC endpoint policy alone (B) restricts what can be done *through* the endpoint but does not prevent access via the public endpoint if not combined with a bucket policy restriction. Using both (C) is the correct defense-in-depth answer.",
+  34: "The reference covers the same VPC (A is correct) but B (whole account) and C (whole VPC) are both incorrect — SG referencing is scoped to the specific SG, not all instances in a VPC or account. AZ (D) is also incorrect — SGs are not AZ-scoped.",
+  35: "Security Groups are *stateful* and NACLs are *stateless* — A has this reversed. Security Groups do *not* support DENY rules (B) — all SG rules are ALLOW; implicit deny applies to unmatched traffic. NACLs cannot reference Security Group IDs (D) — they only support IP CIDR ranges.",
+  36: "Third-party appliances via GWLB (B) require the customer to manage the firewall software, OS patching, and scaling of the appliance instances. AWS WAF cannot attach to an Internet Gateway (C). Security Group outbound rules (D) are IP-based and require maintaining IP lists; they don't provide stateful inspection or IPS capabilities.",
+  37: "NLB target group attributes (A) control health checks and routing within targets — not endpoint access control. IAM policies on the NLB (C) control who can manage the NLB via the API, not who can create VPC endpoints to the service. VPC Endpoint policies (D) are set by the *consumer*, not the provider — they restrict what actions the consumer can take through the endpoint.",
+  38: "Layer 7 attacks like SQLi and XSS (B) require AWS WAF — Shield Standard only handles L3/L4. Zero-day exploits (D) are not covered by Shield at any tier without WAF and appropriate rules.",
+  39: "VPC traffic is *not* encrypted by default (A) — only certain specific instance-to-instance paths (e.g., some Nitro-to-Nitro traffic in the same cluster) may be encrypted, and this is not guaranteed or configurable by customers. 'VPC Flow Log Encryption' (C) encrypts the *log data at rest* in CloudWatch/S3, not the actual network traffic. IAM policies (D) are for authorization, not network-layer encryption.",
+  40: "Stateless rules (A) match on 5-tuple (src IP, dst IP, protocol, src port, dst port) — they have no awareness of domain names. 5-tuple stateless rules (C) are the same as A. Suricata IPS rules (D) can match on regex patterns in packet payloads but domain list rules are a higher-level abstraction specifically designed for FQDN filtering.",
+  41: "Reconfiguring VPC CIDRs (B) requires migrating all resources to new subnets and is a massive operational undertaking — not practical. Transit Gateway with NAT in the middle (C) is complex and non-standard; TGW itself doesn't perform NAT. IPv6 (D) avoids the overlap but requires application and OS changes.",
+  42: "S3 bucket policy with CloudFront IP ranges (A) is fragile — CloudFront's IP ranges change and maintaining the list is operationally expensive. OAI (C) is the legacy method — AWS now recommends OAC for new distributions. Signed URL chaining (D) is for controlling end-user access to content, not for restricting the origin.",
+  43: "Only the default subnet is logged (A) is false — VPC-level logs cover all ENIs. Individual ENI opt-in (C) is false — enabling at VPC level automatically covers all ENIs. Subnet-by-subnet enabling (D) is an option, but not a requirement when VPC-level logging is enabled.",
+  44: "Removing SG outbound rules (A) — SGs are stateful, and instances can still initiate connections if a session was already tracked. A NACL denying all outbound (C) — NACLs are also per-subnet and can be bypassed by removing or modifying the NACL. Configuring NAT with a restrictive EIP (D) doesn't make sense — the EIP doesn't restrict destinations, only provides a source IP.",
+  45: "Traffic CAN transit through VPC peering conceptually (A feels intuitive) but AWS explicitly does not support transitive routing through VPC peering — packets are dropped. Enabling transitive routing on the VGW (C) is not a feature that exists. Route propagation (D) propagates routes from VGW to route tables but doesn't enable transitive forwarding.",
+  46: "Blue/Green deployment (A) typically means instant cutover by switching DNS or listener — not gradual percentage-based splitting. Round-robin (C) distributes traffic equally, not by weight. Sticky session distribution (D) is for session persistence within a target group.",
+  47: "Launching a test EC2 and running connectivity tests (A) takes minutes/hours to provision and requires you to know exact ports. Manual rule inspection (C) is error-prone across complex multi-service architectures. VPC Flow Logs (D) require generating traffic and waiting for logs — can take 5–15 minutes and don't explain *why* traffic is blocked.",
+  48: "VPC Flow Logs (A) capture network traffic metadata (IPs, ports, bytes), not the identity of the API caller. CloudWatch Logs (C) can receive Flow Logs or application logs but does not natively capture API calls. AWS Config (D) records configuration *state* changes, not the real-time API call details with caller identity.",
+  49: "One private VIF per VPC (A) — each VGW requires its own VIF, which doesn't scale and consumes VIF quota on the connection. One public VIF (C) reaches AWS public IP space (S3, DynamoDB public endpoints), not private VPC resources. A hosted VIF with multiple BGP sessions (D) — hosted VIFs are single-purpose; you'd still need one per VGW for private access.",
+  50: "AWS Config via StackSets (A) can detect non-compliant IGW attachments but *cannot prevent* them — Config is detective, not preventive. VPC sharing with RAM (C) controls which subnets accounts can use, not what networking resources they can create. IAM Permission Boundaries (D) restrict the maximum permissions for a role, but they only apply within the account and can be set per-role — they are not enforced organization-wide automatically.",
+  51: "Weighted routing with 0 weight (A) — a record with weight 0 is never returned, making the secondary effectively unreachable even when primary is healthy; also no health-check-based switching. Latency routing with CloudWatch alarms (C) doesn't directly trigger DNS failover — you'd need to connect alarms to Route 53 health checks separately. Multivalue answer (D) returns multiple IPs for load balancing, not active-passive failover.",
+  52: "CloudTrail (A) logs BGP configuration API calls (e.g., create VIF, update BGP peer settings) but does not show real-time BGP route table state or route change events. CloudWatch BGP metrics (C) — CloudWatch does not have pre-built BGP routing metrics for Direct Connect. VPC Flow Logs (D) capture IP traffic data, not BGP control-plane events.",
+  53: "NACLs with AWS service IPs (A) — AWS service IP ranges change frequently; maintaining IP lists is operationally fragile and error-prone. Security Groups with AWS service IP ranges (C) — same problem as NACLs; IP ranges change. A proxy server (D) requires managing additional infrastructure, patching, and scaling.",
+  54: "Geolocation routing (A) routes based on the DNS query's geographic origin (continent, country, state) — not network latency. Geoproximity routing (B) is only available within Route 53 Traffic Flow and uses bias values to shift traffic, not measured latency. Weighted routing (D) distributes traffic in fixed proportions regardless of latency or health.",
+  55: "SSL/TLS termination (A) is available on both CLB and ALB. Cross-zone load balancing (C) is available on both (enabled by default on ALB, optional on CLB). Health checks (D) are available on both. Listener rules with redirect actions are an ALB-exclusive feature.",
+  56: "ENI unreachable (A) — if the ENI were unreachable, there would be no records at all, not NODATA. Flow Log delivery failure (C) — delivery failures show an error status in the CloudWatch/S3 delivery, not NODATA records in the log itself. ENI deletion and recreation (D) — this would cause a gap in logs entirely, not a NODATA record for the original ENI.",
+  57: "Shield Standard (A) provides automatic L3/L4 protection for all AWS customers at no extra cost, but does not include DRT access or cost protection. WAF with rate-based rules (C) throttles excessive requests but does not provide DDoS-specific protections or DRT access. CloudFront with Shield Standard (D) provides edge-layer DDoS mitigation but not DRT access or financial protection.",
+  58: "10.0.0.0/8 (A) and 172.16.0.0/12 (B) are valid RFC 1918 ranges, but AWS restricts adding a secondary CIDR that would create routing ambiguity — specifically, you cannot add a secondary CIDR from the same RFC 1918 block if it could overlap with the primary. The 192.168.0.0/16 primary means no other 192.168.x.x range can be added. 192.168.1.0/24 (C) overlaps with the existing VPC CIDR 192.168.0.0/16.",
+  59: "Traffic to private EC2 instances (A) requires a *private* VIF to a VGW or transit VIF to a DXGW+TGW. A public VIF does NOT provide access to the general public internet (C) — it only reaches AWS-owned public IP space. NAT to private IPs (D) is not a capability of the public VIF.",
+  60: "Security Groups (A) only support IP CIDR and Security Group ID references — no DNS or FQDN-based rules. NACLs (B) are IP/port based only — they perform no DNS lookups or domain resolution. VPC endpoint policies (D) restrict actions through a VPC endpoint, not outbound internet FQDN filtering.",
+  61: "VPCs can peer across accounts (B is false — cross-account peering is supported). VPC peering does work across different AWS Regions (C is false — inter-Region peering is supported). The two actual limitations are non-transitive routing (A) and overlapping CIDRs (D).",
+  62: "Security Groups are stateful (A) — return traffic is automatically tracked and allowed; SG is not the cause if the initial connection was accepted. NAT Gateway drops after 30 seconds (B) — the actual idle timeout for TCP is 350 seconds, not 30. RDS Multi-AZ failover (D) causes a brief DNS-level cutover (~60 seconds), not a pattern of intermittent timeouts visible in flow logs as accepted connections with no follow-up traffic.",
+  63: "Weighted target groups (B) can bias routing percentages between groups, but you'd need to know the exact capacity ratio upfront and manually maintain it. Two separate NLBs (C) increases operational overhead and requires clients to use different endpoints. Adding more listeners (D) — listeners define protocols/ports, not traffic distribution weights.",
+  64: "CloudTrail aggregation to S3 (A) captures API call history but does not provide compliance evaluation or automated rule checking against configuration standards. VPC Flow Logs to a central account (C) captures network traffic metadata but not resource configuration state. Security Hub (D) aggregates security findings but does not replace Config's continuous configuration compliance evaluation.",
+  65: "Enhanced Networking (ENA) (A) improves network performance on standard instance types up to ~100 Gbps on certain types, but it's not the right answer for the absolute highest bandwidth on specialized HPC instances. Placement group with SR-IOV (C) — SR-IOV is the underlying technology for ENA; a placement group alone doesn't change the NIC type. Multiple ENIs with LAG (D) — AWS EC2 does not support Link Aggregation between ENIs; each ENI is independent.",
+  66: "Enabling ECMP (A) distributes flows across multiple paths but does not guarantee symmetric routing — it can make asymmetric routing worse for stateful appliances. Using GWLB instead of TGW (C) is a valid architecture change, but the question asks how to fix the existing TGW-based design without changing the appliance architecture. Static AZ-pinned routes (D) don't fix the TGW forwarding behavior; TGW still selects the AZ endpoint independently.",
+  67: "A second DX connection in a LAG (A) adds bandwidth and resilience but does not speed up failure detection — BGP still needs to detect the failure via timers. Reducing BGP hold timer below 3 seconds (C) — AWS BGP sessions have minimum timer limits and extremely low timers can cause false BGP flaps on congested links. Static routes (D) remove dynamic routing entirely, eliminating failover capability.",
+  68: "A DXGW can support up to 6 TGW associations (A is false — it supports multiple). TGWs do not need to be in the same account (B is false — cross-account associations via RAM are supported). Transit VIFs don't need to be recreated for additional TGW associations (D is false — one transit VIF to the DXGW serves all associated TGWs).",
+  69: "Config auto-remediation with Lambda (A) can update Security Groups reactively, but it introduces latency, Lambda invocation cost, and complexity — it doesn't provide native real-time reference like prefix lists. VPC sharing (C) doesn't consolidate Security Groups across accounts — each account still has its own SGs. Firewall Manager (D) manages Security Group policies centrally but still requires per-SG rule updates when CIDRs change, unless combined with prefix lists.",
+  70: "5-tuple stateless rules (A) match on IP/port/protocol only — they cannot inspect HTTP payload or headers. Domain list rules (B) match on SNI (TLS) and DNS query names — they have no concept of HTTP User-Agent headers. AWS WAF (D) can inspect HTTP headers but is attached to CloudFront/ALB/API Gateway, not to VPC network-layer traffic — it cannot block outbound EC2 traffic at the VPC level.",
+  71: "Application accounts cannot reference other participant accounts' Security Groups (A is false). Security Groups must be referenced by ID, not name, even within the same account in Security Group rules (B is false). Route tables in the shared VPC are owned and controlled by the VPC owner account — participant accounts cannot modify them (C is true, making D the answer that is specifically about SG isolation).",
+  72: "Weighted routing (A) is percentage-based but does not account for geography — you'd be sending some European users to us-east-1 unpredictably rather than geographic-boundary shifting. Geolocation routing (C) routes by continent/country — you could create a Europe → eu-west-1 record, but this is an all-or-nothing geographic assignment, not a gradual boundary shift. TTL changes (D) affect DNS caching behavior, not routing decisions.",
+  73: "Return traffic from the NAT Gateway (B) is already SNAT'd to the NAT Gateway EIP — return traffic from the internet comes back to the NAT Gateway directly via the IGW, not through the TGW. VPC peering for return routing (D) would bypass the centralized egress model entirely and create a complex mesh. The two missing pieces are the spoke VPC subnet default route to TGW (C) and the TGW route table forwarding to egress VPC (A).",
+  74: "Security group rule count (A) — AWS SGs support up to 60 inbound/outbound rules (or more with quota increase), and rule count does not directly affect connection tracking slot capacity. ENA driver bugs (C) — conntrack_allowance_exceeded is a documented, expected metric for a real resource limit, not a driver defect. Jumbo frames (D) change the MTU for packet fragmentation but have no relationship to the connection tracking table size.",
+  75: "Community 7224:7100 (A) signals LP 100 — this would make AWS *deprioritize* the us-east-1 routes, the opposite of what's needed. Community 7224:7200 (B) is the default and changes nothing — AWS already uses LP 200 by default, so both connections would remain equal. Community 7224:9300 (D) tells AWS not to re-advertise the route to other AWS regions — it has no effect on LOCAL_PREF or path preference."
+};
+
+// ─────────────────────────────────────────────
+//  REFERENCE LINKS  (keyed by question id)
+// ─────────────────────────────────────────────
+const REFS = {
+  1:  [{t:"Transit Gateway",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-transit-gateways.html"},{t:"TGW Inter-Region Peering",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html"},{t:"VPC Peering Limitations",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"}],
+  2:  [{t:"Direct Connect Dedicated Connections",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/dedicated_connection.html"},{t:"Site-to-Site VPN vs Direct Connect",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html"}],
+  3:  [{t:"BGP over Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"Active/Passive DX Routing",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html#bgp-multi-exit-discriminator"}],
+  4:  [{t:"NAT Gateways",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"},{t:"Private Subnets",u:"https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"}],
+  5:  [{t:"VPC CIDR Blocks",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"},{t:"Allowed VPC CIDR Ranges",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4"}],
+  6:  [{t:"AWS PrivateLink",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"},{t:"VPC Endpoint Services",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"}],
+  7:  [{t:"TGW Route Tables",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"},{t:"TGW Isolation Routing",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-vpcs.html"}],
+  8:  [{t:"Elastic Fabric Adapter",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html"},{t:"Cluster Placement Groups",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html#placement-groups-cluster"}],
+  9:  [{t:"Egress-Only Internet Gateway",u:"https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"},{t:"IPv6 in VPC",u:"https://docs.aws.amazon.com/vpc/latest/userguide/aws-ipv6-support.html"}],
+  10: [{t:"BGP MED over Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"DX Routing Policies",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html#bgp-routing-policies"}],
+  11: [{t:"Transit VIF",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html"},{t:"Direct Connect Gateways",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"}],
+  12: [{t:"DX BGP ASN",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html#create-private-vif"},{t:"Direct Connect Routing",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"}],
+  13: [{t:"Site-to-Site VPN Tunnels",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html"},{t:"VPN Redundancy",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-redundant-connection.html"}],
+  14: [{t:"DX VIF Types",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html"},{t:"Migrate to Transit Gateway",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-transit-gateways.html"}],
+  15: [{t:"ALB Listener Rules",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html"},{t:"ALB Routing",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"}],
+  16: [{t:"NLB Overview",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"},{t:"NLB Target Groups",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html"}],
+  17: [{t:"Gateway Load Balancer",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"},{t:"Centralized Inspection with GWLB",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/getting-started.html"}],
+  18: [{t:"VPC Peering",u:"https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html"},{t:"VPC Peering Routing",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html"}],
+  19: [{t:"Route 53 Resolver",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"},{t:"Resolver Endpoints",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html"}],
+  20: [{t:"LAG on Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/lags.html"},{t:"DX Connection Types",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithConnections.html"}],
+  21: [{t:"GWLB Architecture",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"},{t:"GENEVE Protocol in GWLB",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/target-groups.html"}],
+  22: [{t:"Route 53 Geolocation Routing",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html"},{t:"Routing Policy Comparison",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"}],
+  23: [{t:"VPC Traffic Mirroring",u:"https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"},{t:"VPC Flow Logs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"}],
+  24: [{t:"Network ACLs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"},{t:"Security Groups vs NACLs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html"}],
+  25: [{t:"Reachability Analyzer",u:"https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html"},{t:"Network Access Analyzer",u:"https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html"}],
+  26: [{t:"TGW Network Manager",u:"https://docs.aws.amazon.com/network-manager/latest/tgwnm/what-is-network-manager.html"},{t:"Network Manager Route Analyzer",u:"https://docs.aws.amazon.com/network-manager/latest/tgwnm/route-analyzer.html"}],
+  27: [{t:"BGP Route Summarization",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"VPC CIDR Design",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"}],
+  28: [{t:"ENA Driver Metrics",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html"},{t:"EC2 Network Bandwidth",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html"}],
+  29: [{t:"AWS Config Managed Rules",u:"https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html"},{t:"restricted-ssh Rule",u:"https://docs.aws.amazon.com/config/latest/developerguide/restricted-ssh.html"}],
+  30: [{t:"BGP Longest Prefix Match",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"VPN and DX Route Priority",u:"https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html"}],
+  31: [{t:"DX CloudWatch Metrics",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/monitoring-cloudwatch.html"},{t:"AWS Health Events",u:"https://docs.aws.amazon.com/health/latest/ug/cloudwatch-events-health.html"}],
+  32: [{t:"AWS WAF",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html"},{t:"WAF Managed Rule Groups",u:"https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html"}],
+  33: [{t:"VPC Endpoints for S3",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"},{t:"S3 Bucket Policies with VPC Conditions",u:"https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"}],
+  34: [{t:"Security Group Referencing",u:"https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"},{t:"Security Groups",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"}],
+  35: [{t:"Security Groups vs NACLs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html"},{t:"NACLs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"}],
+  36: [{t:"AWS Network Firewall",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"},{t:"Network Firewall Deployment",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/architectures.html"}],
+  37: [{t:"PrivateLink Service Permissions",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/configure-endpoint-service.html"},{t:"VPC Endpoint Services",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"}],
+  38: [{t:"AWS Shield Standard",u:"https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html"},{t:"Shield Standard vs Advanced",u:"https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"}],
+  39: [{t:"Data in Transit Encryption",u:"https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html"},{t:"AWS Encryption in Transit",u:"https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-security/encryption-of-data-in-transit.html"}],
+  40: [{t:"Network Firewall Domain Lists",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"},{t:"Stateful Rules",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-ips.html"}],
+  41: [{t:"PrivateLink for Overlapping CIDRs",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"},{t:"VPC Peering Limitations",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html#vpc-peering-limitations"}],
+  42: [{t:"CloudFront Origin Access Control",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"},{t:"OAC vs OAI",u:"https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#private-content-oac-overview"}],
+  43: [{t:"VPC Flow Logs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"},{t:"Flow Log Levels",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records"}],
+  44: [{t:"VPC Route Tables",u:"https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html"},{t:"Internet Gateway",u:"https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"}],
+  45: [{t:"VPC Peering Non-Transitive",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html#vpc-peering-limitations"},{t:"VPC Connectivity Options",u:"https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/introduction.html"}],
+  46: [{t:"ALB Weighted Target Groups",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"},{t:"ALB Listener Rules",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html"}],
+  47: [{t:"Reachability Analyzer",u:"https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html"},{t:"How Reachability Analyzer Works",u:"https://docs.aws.amazon.com/vpc/latest/reachability/how-reachability-analyzer-works.html"}],
+  48: [{t:"AWS CloudTrail",u:"https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"},{t:"Management Events",u:"https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html"}],
+  49: [{t:"DX Private VIF",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html"},{t:"Transit VIF with DXGW",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-transit-gateways.html"}],
+  50: [{t:"Service Control Policies",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"},{t:"SCP Examples",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_vpc.html"}],
+  51: [{t:"Route 53 Failover Routing",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html"},{t:"Health Checks",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating.html"}],
+  52: [{t:"TGW Network Manager",u:"https://docs.aws.amazon.com/network-manager/latest/tgwnm/what-is-network-manager.html"},{t:"Route Analyzer",u:"https://docs.aws.amazon.com/network-manager/latest/tgwnm/route-analyzer.html"}],
+  53: [{t:"VPC Gateway Endpoints",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"},{t:"Restrict S3 to VPC",u:"https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"}],
+  54: [{t:"Route 53 Latency Routing",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html"},{t:"Multi-Region Active-Active",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html"}],
+  55: [{t:"ALB Redirect Rules",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#redirect-actions"},{t:"Migrate CLB to ALB",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/application/migrate-to-application-load-balancer.html"}],
+  56: [{t:"Flow Log Record Fields",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html"},{t:"Flow Log Status Values",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html#flow-logs-fields"}],
+  57: [{t:"AWS Shield Advanced",u:"https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"},{t:"DDoS Response Team",u:"https://docs.aws.amazon.com/waf/latest/developerguide/ddos-responding.html"}],
+  58: [{t:"Secondary VPC CIDRs",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#add-cidr-block-restrictions"},{t:"VPC CIDR Block Restrictions",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"}],
+  59: [{t:"DX Virtual Interfaces",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html"},{t:"Public VIF",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/create-vif.html#create-public-vif"}],
+  60: [{t:"Network Firewall Domain Lists",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"},{t:"FQDN Filtering",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"}],
+  61: [{t:"VPC Peering Limitations",u:"https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html#vpc-peering-limitations"},{t:"Inter-Region Peering",u:"https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html"}],
+  62: [{t:"NAT Gateway Timeouts",u:"https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-troubleshooting.html"},{t:"Security Group Connection Tracking",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html"}],
+  63: [{t:"NLB Cross-Zone Load Balancing",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-cross-zone.html"},{t:"NLB Overview",u:"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"}],
+  64: [{t:"AWS Config Aggregator",u:"https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html"},{t:"Conformance Packs",u:"https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html"}],
+  65: [{t:"Elastic Fabric Adapter",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html"},{t:"EFA Supported Instance Types",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html#efa-instance-types"}],
+  66: [{t:"TGW Appliance Mode",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-appliance-scenario.html"},{t:"Centralized Inspection Architecture",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-vpcs.html"}],
+  67: [{t:"BFD on Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"DX Resiliency Recommendations",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/resilency_toolkit.html"}],
+  68: [{t:"DXGW with Transit Gateway",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-transit-gateways.html"},{t:"DXGW Allowed Prefixes",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"}],
+  69: [{t:"Managed Prefix Lists",u:"https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html"},{t:"Security Group Prefix List References",u:"https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"}],
+  70: [{t:"Network Firewall Suricata Rules",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html"},{t:"Stateful Rule Groups",u:"https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-ips.html"}],
+  71: [{t:"VPC Sharing with RAM",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html"},{t:"Shared VPC Security Groups",u:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html#vpc-sharing-security-groups"}],
+  72: [{t:"Route 53 Geoproximity Routing",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html"},{t:"Traffic Flow",u:"https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/traffic-flow.html"}],
+  73: [{t:"Centralized Egress with TGW",u:"https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-nat-igw.html"},{t:"TGW Route Tables",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"}],
+  74: [{t:"ENA Monitoring Metrics",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html"},{t:"Connection Tracking",u:"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html"}],
+  75: [{t:"DX BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html"},{t:"DX Routing Policies and BGP Communities",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/routing-and-bgp.html#bgp-communities"}]
+};
+
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+const DOMAIN_NAMES = {
+  1: "Domain 1 – Network Design",
+  2: "Domain 2 – Network Implementation",
+  3: "Domain 3 – Management & Operations",
+  4: "Domain 4 – Security & Compliance"
+};
+const DOMAIN_CLASS = { 1:"d1", 2:"d2", 3:"d3", 4:"d4" };
+const PASS_SCORE   = 75; // ANS-C01 passing ~75%
+const EXAM_MINS    = 170;
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let state = {
+  screen: "start",   // start | exam | results | review
+  mode: "timed",     // timed | practice
+  questions: [],
+  current: 0,
+  answers: {},       // qIndex -> Set of option indices
+  submitted: {},     // qIndex -> boolean
+  startTime: null,
+  remaining: EXAM_MINS * 60,
+  timerID: null,
+  reviewIdx: null
+};
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function fmtTime(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+    : `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function calcScore() {
+  let total = 0, correct = 0;
+  const byDomain = {1:{t:0,c:0},2:{t:0,c:0},3:{t:0,c:0},4:{t:0,c:0}};
+  state.questions.forEach((q, i) => {
+    total++;
+    byDomain[q.domain].t++;
+    const ans = state.answers[i] || new Set();
+    const correctSet = new Set(q.correct);
+    const isCorrect = ans.size === correctSet.size && [...ans].every(v => correctSet.has(v));
+    if (isCorrect) { correct++; byDomain[q.domain].c++; }
+  });
+  return { total, correct, byDomain };
+}
+
+// ─────────────────────────────────────────────
+//  TIMER
+// ─────────────────────────────────────────────
+function startTimer() {
+  if (state.mode !== "timed") return;
+  clearInterval(state.timerID);
+  state.timerID = setInterval(() => {
+    state.remaining--;
+    updateTimerDisplay();
+    if (state.remaining <= 0) {
+      clearInterval(state.timerID);
+      endExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById("timer");
+  if (!el) return;
+  el.textContent = fmtTime(state.remaining);
+  el.className = "";
+  if (state.remaining <= 300) el.classList.add("danger");
+  else if (state.remaining <= 600) el.classList.add("warning");
+}
+
+function stopTimer() { clearInterval(state.timerID); }
+
+// ─────────────────────────────────────────────
+//  ACTIONS
+// ─────────────────────────────────────────────
+function startExam(mode) {
+  state.mode    = mode;
+  state.screen  = "exam";
+  state.current = 0;
+  state.answers = {};
+  state.submitted = {};
+  state.questions = shuffle([...QUESTIONS]);
+  state.startTime = Date.now();
+  state.remaining = EXAM_MINS * 60;
+  render();
+  if (mode === "timed") startTimer();
+}
+
+function selectOption(qIdx, optIdx) {
+  if (state.submitted[qIdx]) return;
+  const q   = state.questions[qIdx];
+  const ans = state.answers[qIdx] = state.answers[qIdx] || new Set();
+  if (q.multi) {
+    if (ans.has(optIdx)) ans.delete(optIdx); else ans.add(optIdx);
+  } else {
+    ans.clear(); ans.add(optIdx);
+  }
+  renderQuestion();
+}
+
+function submitAnswer() {
+  const i = state.current;
+  if (state.submitted[i]) return;
+  if (!state.answers[i] || state.answers[i].size === 0) return;
+  state.submitted[i] = true;
+  renderQuestion();
+}
+
+function navigate(dir) {
+  state.current = Math.max(0, Math.min(state.questions.length - 1, state.current + dir));
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function endExam() {
+  stopTimer();
+  state.screen = "results";
+  render();
+}
+
+function showReview() {
+  state.screen  = "review";
+  state.reviewIdx = null;
+  render();
+}
+
+function showReviewQuestion(i) {
+  state.reviewIdx = i;
+  state.screen = "reviewq";
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+  if (state.screen === "start")   app.innerHTML = renderStart();
+  else if (state.screen === "exam") app.innerHTML = renderExamShell();
+  else if (state.screen === "results") app.innerHTML = renderResults();
+  else if (state.screen === "review")  app.innerHTML = renderReviewList();
+  else if (state.screen === "reviewq") app.innerHTML = renderReviewQuestion();
+  attachListeners();
+}
+
+function renderStart() {
+  return `
+<div class="screen">
+  <div class="aws-logo">☁️</div>
+  <h1>AWS Advanced Networking Specialty</h1>
+  <p>ANS-C01 Practice Exam &nbsp;·&nbsp; ${QUESTIONS.length} Questions &nbsp;·&nbsp; 4 Domains</p>
+
+  <div class="info-grid">
+    <div class="info-box"><div class="val">${QUESTIONS.length}</div><div class="lbl">Questions</div></div>
+    <div class="info-box"><div class="val">${EXAM_MINS}m</div><div class="lbl">Time Limit</div></div>
+    <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Pass Score</div></div>
+    <div class="info-box"><div class="val">4</div><div class="lbl">Domains</div></div>
+  </div>
+
+  <p style="margin-bottom:12px;font-weight:600;">Select a mode:</p>
+  <div class="mode-grid">
+    <div class="mode-card active" id="mode-timed" onclick="setMode('timed')">
+      <h3>⏱ Timed Exam</h3>
+      <p>Simulates the real exam with a ${EXAM_MINS}-minute countdown. Answers revealed after submission or exam end.</p>
+    </div>
+    <div class="mode-card" id="mode-practice" onclick="setMode('practice')">
+      <h3>📚 Practice Mode</h3>
+      <p>No time limit. Explanations shown immediately after each answer.</p>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:8px;" onclick="startExam(selectedMode)">Start Exam</button>
+</div>`;
+}
+
+let selectedMode = "timed";
+function setMode(m) {
+  selectedMode = m;
+  document.querySelectorAll(".mode-card").forEach(c => c.classList.remove("active"));
+  document.getElementById("mode-" + m).classList.add("active");
+}
+
+function renderExamShell() {
+  const pct = ((state.current + 1) / state.questions.length * 100).toFixed(1);
+  const answered = Object.keys(state.submitted).length;
+  return `
+<div class="exam-header">
+  <span class="exam-title">ANS-C01 Practice Exam</span>
+  <div class="exam-meta">
+    <div class="stat"><div class="stat-val">${state.current+1}/${state.questions.length}</div><div class="stat-lbl">Question</div></div>
+    <div class="stat"><div class="stat-val">${answered}</div><div class="stat-lbl">Answered</div></div>
+    ${state.mode === "timed" ? `<div class="stat"><div id="timer" class="stat-val">${fmtTime(state.remaining)}</div><div class="stat-lbl">Remaining</div></div>` : ''}
+    <button class="btn btn-danger" onclick="if(confirm('End exam and see results?')) endExam()">End Exam</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+<div id="question-area">${renderQuestionHTML(state.current)}</div>`;
+}
+
+function renderQuestion() {
+  const el = document.getElementById("question-area");
+  if (el) el.innerHTML = renderQuestionHTML(state.current);
+  if (state.mode === "timed") updateTimerDisplay();
+  attachListeners();
+}
+
+function buildExplanationBlock(q, ans, { isPractice = false } = {}) {
+  const correctSet = new Set(q.correct);
+  const isCorrect  = ans.size === correctSet.size && [...ans].every(v => correctSet.has(v));
+  const refs       = REFS[q.id] || [];
+  const wrongExp   = WRONG_EXP[q.id] || "";
+
+  // Wrong-option breakdown: list letters the user selected that were wrong
+  const wrongChosen = [...ans].filter(oi => !correctSet.has(oi));
+  const wrongOptsHTML = wrongChosen.length
+    ? `<div class="exp-wrong-opts">${wrongChosen.map(oi =>
+        `<div class="exp-wrong-opt"><span class="exp-wrong-letter">${String.fromCharCode(65+oi)}.</span><span>${q.opts[oi]}</span></div>`
+      ).join("")}</div>`
+    : "";
+
+  const correctLetters = q.correct.map(oi => String.fromCharCode(65+oi)).join(", ");
+
+  let html = `<div class="exp-block">`;
+
+  if (isPractice && !isCorrect && ans.size > 0) {
+    // ── Wrong answer: show why they were wrong, then the correct explanation
+    if (wrongOptsHTML) {
+      html += `<div class="exp-section exp-wrong">
+        <div class="exp-header">✗ Your incorrect selection${wrongChosen.length > 1 ? "s" : ""}</div>
+        ${wrongOptsHTML}
+      </div>`;
+    }
+    if (wrongExp) {
+      html += `<div class="exp-section exp-wrong">
+        <div class="exp-header">Why these are wrong</div>
+        ${wrongExp}
+      </div>`;
+    }
+    html += `<div class="exp-section exp-correct">
+      <div class="exp-header">✓ Correct answer${q.correct.length > 1 ? "s" : ""}: ${correctLetters}</div>
+      ${q.exp}
+    </div>`;
+  } else if (isPractice && isCorrect) {
+    // ── Correct answer in practice mode
+    html += `<div class="exp-section exp-correct">
+      <div class="exp-header">✓ Correct!</div>
+      ${q.exp}
+    </div>`;
+  } else {
+    // ── Timed mode post-exam review (neutral style)
+    html += `<div class="exp-section exp-neutral">
+      <div class="exp-header">Explanation &nbsp;·&nbsp; Correct: ${correctLetters}</div>
+      ${q.exp}
+    </div>`;
+    if (wrongExp && ans.size > 0 && !isCorrect) {
+      html += `<div class="exp-section exp-wrong">
+        <div class="exp-header">Why the distractors fail</div>
+        ${wrongExp}
+      </div>`;
+    }
+  }
+
+  if (refs.length) {
+    const links = refs.map(r => `<li><a href="${r.u}" target="_blank" rel="noopener">${r.t} ↗</a></li>`).join("");
+    html += `<div class="exp-section exp-refs">
+      <div class="exp-header">📖 AWS Documentation</div>
+      <ul>${links}</ul>
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function renderQuestionHTML(i) {
+  const q          = state.questions[i];
+  const ans        = state.answers[i] || new Set();
+  const submitted  = state.submitted[i];
+  const correctSet = new Set(q.correct);
+  const isPractice = state.mode === "practice";
+
+  const opts = q.opts.map((opt, oi) => {
+    let cls = "option";
+    if (submitted) {
+      cls += " disabled";
+      if (correctSet.has(oi))  cls += " correct";
+      else if (ans.has(oi))    cls += " incorrect";
+    } else {
+      if (ans.has(oi)) cls += " selected";
+    }
+    return `<div class="${cls}" data-qi="${i}" data-oi="${oi}">
+      <div class="option-letter">${String.fromCharCode(65+oi)}</div>
+      <div class="option-text">${opt}</div>
+    </div>`;
+  }).join("");
+
+  const multiHint  = q.multi ? `<div class="multi-hint">★ Select ${q.correct.length} answers</div>` : "";
+  const expBlock   = submitted ? buildExplanationBlock(q, ans, { isPractice }) : "";
+  const canSubmit  = ans.size > 0 && !submitted;
+  const isLast     = i === state.questions.length - 1;
+
+  return `
+<div class="question-card">
+  <div class="question-num">Question ${i+1} of ${state.questions.length}</div>
+  <span class="domain-badge ${DOMAIN_CLASS[q.domain]}">${DOMAIN_NAMES[q.domain]}</span>
+  <div class="question-text">${q.q}</div>
+  ${multiHint}
+  <div class="options">${opts}</div>
+  ${expBlock}
+</div>
+<div class="nav-row">
+  <button class="btn btn-secondary" onclick="navigate(-1)" ${i===0?"disabled":""}>← Previous</button>
+  <div style="display:flex;gap:10px;">
+    ${!submitted ? `<button class="btn btn-primary" onclick="submitAnswer()" ${!canSubmit?"disabled":""}>Check Answer</button>` : ""}
+    ${submitted && isLast ? `<button class="btn btn-primary" onclick="endExam()">View Results</button>` : ""}
+    ${i < state.questions.length-1 ? `<button class="btn btn-secondary" onclick="navigate(1)">Next →</button>` : ""}
+  </div>
+</div>`;
+}
+
+function renderResults() {
+  const { total, correct, byDomain } = calcScore();
+  const pct  = Math.round(correct / total * 100);
+  const pass = pct >= PASS_SCORE;
+  const circumference = 2 * Math.PI * 60;
+  const dash = circumference * (1 - pct / 100);
+  const color = pass ? "#2ecc71" : "#e74c3c";
+
+  const domainBars = Object.entries(byDomain).map(([d, {t,c}]) => {
+    if (t === 0) return "";
+    const dp = Math.round(c/t*100);
+    const dc = dp >= PASS_SCORE ? "#2ecc71" : "#e74c3c";
+    return `<div class="domain-row">
+      <div class="domain-label"><span>${DOMAIN_NAMES[d]}</span><span>${c}/${t} (${dp}%)</span></div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${dp}%;background:${dc}"></div></div>
+    </div>`;
+  }).join("");
+
+  return `
+<div class="screen">
+  <h1>Exam Complete</h1>
+  <p>${pass ? "Congratulations! You passed." : "Keep practicing — you'll get there."}</p>
+
+  <div class="score-ring">
+    <svg width="160" height="160" viewBox="0 0 160 160">
+      <circle class="ring-bg" cx="80" cy="80" r="60"/>
+      <circle class="ring-val" cx="80" cy="80" r="60"
+        stroke="${color}"
+        stroke-dasharray="${circumference}"
+        stroke-dashoffset="${dash}"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" style="color:${color}">${pct}%</div>
+      <div class="ring-pass" style="color:${color}">${pass?"PASS":"FAIL"}</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box"><div class="val" style="color:var(--green)">${correct}</div><div class="lbl">Correct</div></div>
+    <div class="info-box"><div class="val" style="color:var(--red)">${total-correct}</div><div class="lbl">Incorrect</div></div>
+    <div class="info-box"><div class="val">${total}</div><div class="lbl">Total</div></div>
+    <div class="info-box"><div class="val" style="color:${color}">${pct}%</div><div class="lbl">Score</div></div>
+  </div>
+
+  <div class="domain-scores">${domainBars}</div>
+
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <button class="btn btn-secondary" onclick="showReview()">Review Answers</button>
+    <button class="btn btn-primary" onclick="state.screen='start';render()">New Exam</button>
+  </div>
+</div>`;
+}
+
+function renderReviewList() {
+  const { byDomain } = calcScore();
+  const items = state.questions.map((q, i) => {
+    const ans = state.answers[i] || new Set();
+    const correctSet = new Set(q.correct);
+    const isCorrect = ans.size === correctSet.size && [...ans].every(v => correctSet.has(v));
+    const skipped = ans.size === 0;
+    const icon = skipped ? "r-skipped" : isCorrect ? "r-correct" : "r-incorrect";
+    const sym  = skipped ? "–" : isCorrect ? "✓" : "✗";
+    return `<div class="review-item">
+      <div class="review-q" onclick="showReviewQuestion(${i})">
+        <div class="review-icon ${icon}">${sym}</div>
+        <div><span style="color:var(--muted);font-size:11px;">Q${i+1} · ${DOMAIN_NAMES[q.domain]}</span><br>${q.q}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+  <button class="btn btn-secondary" onclick="state.screen='results';render()">← Results</button>
+  <h2 style="font-size:18px;">Answer Review</h2>
+</div>
+${items}`;
+}
+
+function renderReviewQuestion() {
+  const i = state.reviewIdx;
+  const q = state.questions[i];
+  const ans = state.answers[i] || new Set();
+  const correctSet = new Set(q.correct);
+
+  const opts = q.opts.map((opt, oi) => {
+    let cls = "option disabled";
+    if (correctSet.has(oi))     cls += " correct";
+    else if (ans.has(oi))       cls += " incorrect";
+    return `<div class="${cls}">
+      <div class="option-letter">${String.fromCharCode(65+oi)}</div>
+      <div class="option-text">${opt}</div>
+    </div>`;
+  }).join("");
+
+  const expBlock = buildExplanationBlock(q, ans, { isPractice: false });
+
+  return `
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+  <button class="btn btn-secondary" onclick="state.screen='review';render()">← Review List</button>
+  <span style="color:var(--muted);font-size:13px;">Question ${i+1} of ${state.questions.length}</span>
+</div>
+<div class="question-card">
+  <span class="domain-badge ${DOMAIN_CLASS[q.domain]}">${DOMAIN_NAMES[q.domain]}</span>
+  <div class="question-text">${q.q}</div>
+  ${q.multi ? `<div class="multi-hint">★ Select ${q.correct.length} answers</div>` : ""}
+  <div class="options">${opts}</div>
+  ${expBlock}
+</div>
+<div class="nav-row">
+  <button class="btn btn-secondary" onclick="showReviewQuestion(${Math.max(0,i-1)})" ${i===0?"disabled":""}>← Prev</button>
+  <button class="btn btn-secondary" onclick="showReviewQuestion(${Math.min(state.questions.length-1,i+1)})" ${i===state.questions.length-1?"disabled":""}>Next →</button>
+</div>`;
+}
+
+// ─────────────────────────────────────────────
+//  EVENT DELEGATION
+// ─────────────────────────────────────────────
+function attachListeners() {
+  document.querySelectorAll(".option[data-qi]").forEach(el => {
+    el.addEventListener("click", () => {
+      const qi = parseInt(el.dataset.qi);
+      const oi = parseInt(el.dataset.oi);
+      selectOption(qi, oi);
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
