@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cisco Practice Exam — CCNA · ENARSI · SCOR</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #1d9bf0; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --yellow: #f39c12;
+    --ccna: #3b82f6; --enarsi: #22c55e; --scor: #ef4444;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  #app { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  .exam-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .exam-title { font-size: 14px; font-weight: 600; color: var(--accent); }
+  .exam-meta { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+  #timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #timer.warning { color: var(--yellow); }
+  #timer.danger  { color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width .3s ease; }
+
+  .cert-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px;
+  }
+  .c1 { background: #1a2744; color: var(--ccna); }
+  .c2 { background: #142814; color: var(--enarsi); }
+  .c3 { background: #2a1414; color: var(--scor); }
+
+  .question-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 16px;
+  }
+  .question-num { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .question-text { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .multi-hint { font-size: 12px; color: var(--accent); margin-top: 6px; font-style: italic; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); }
+  .option.selected  { border-color: var(--accent); background: #0d1e33; }
+  .option.correct   { border-color: var(--green); background: #122212; }
+  .option.incorrect { border-color: var(--red);   background: #221212; }
+  .option.disabled  { cursor: default; }
+  .option-letter {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--muted); transition: background .15s, color .15s;
+  }
+  .option.selected  .option-letter { background: var(--accent); color: #fff; }
+  .option.correct   .option-letter { background: var(--green); color: #000; }
+  .option.incorrect .option-letter { background: var(--red);   color: #fff; }
+  .option-text { font-size: 14px; padding-top: 2px; }
+
+  .exp-block { margin-top: 16px; border-radius: 8px; overflow: hidden; font-size: 14px; }
+  .exp-section { padding: 14px 16px; }
+  .exp-section + .exp-section { border-top: 1px solid rgba(255,255,255,.06); }
+  .exp-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; }
+  .exp-correct  { background: #0e2218; }
+  .exp-correct  .exp-header { color: var(--green); }
+  .exp-wrong    { background: #220e0e; }
+  .exp-wrong    .exp-header { color: var(--red); }
+  .exp-neutral  { background: var(--surface2); }
+  .exp-neutral  .exp-header { color: var(--accent); }
+  .exp-wrong-opts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .exp-wrong-opt  { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #ccc; }
+  .exp-wrong-letter { flex-shrink:0; font-weight:700; color: var(--red); min-width:16px; }
+
+  .btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--red); color: #fff; }
+
+  .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .screen { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 40px 32px; text-align: center; }
+  .screen h1 { font-size: 24px; margin-bottom: 8px; }
+  .screen p  { color: var(--muted); margin-bottom: 20px; }
+  .cisco-logo { font-size: 48px; margin-bottom: 16px; }
+
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; margin: 24px 0; }
+  .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .info-box .val { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .info-box .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .score-ring { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg  { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring .ring-val { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .ring-pct  { font-size: 32px; font-weight: 800; }
+  .ring-pass { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+  .domain-scores { margin: 24px 0; text-align: left; }
+  .domain-row { margin-bottom: 10px; }
+  .domain-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .domain-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .domain-fill { height: 100%; border-radius: 4px; }
+
+  .review-item { margin-bottom: 12px; }
+  .review-q { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .review-q:hover { border-color: var(--accent); }
+  .review-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .r-correct   { background: var(--green); color: #000; }
+  .r-incorrect { background: var(--red);   color: #fff; }
+  .r-skipped   { background: var(--muted); color: #000; }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .mode-card { background: var(--surface2); border: 2px solid var(--border); border-radius: 10px; padding: 18px; cursor: pointer; text-align: left; transition: border-color .15s; }
+  .mode-card:hover, .mode-card.active { border-color: var(--accent); }
+  .mode-card h3 { font-size: 15px; margin-bottom: 4px; }
+  .mode-card p  { font-size: 12px; color: var(--muted); }
+
+  .cert-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; justify-content: center; }
+  .cert-btn { padding: 7px 16px; border-radius: 20px; border: 2px solid var(--border); font-size: 13px; font-weight: 600; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .15s; }
+  .cert-btn.active { color: #000; }
+  .cert-btn.all.active    { background: var(--accent);  border-color: var(--accent); color: #fff; }
+  .cert-btn.ccna.active   { background: var(--ccna);   border-color: var(--ccna); }
+  .cert-btn.enarsi.active { background: var(--enarsi); border-color: var(--enarsi); }
+  .cert-btn.scor.active   { background: var(--scor);   border-color: var(--scor); }
+
+  @media(max-width:600px){ .mode-grid{grid-template-columns:1fr;} .exam-header{flex-direction:column;align-items:flex-start;} .question-card{padding:18px;} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  QUESTION BANK
+//  cert: 1 = CCNA 200-301, 2 = ENARSI 300-410, 3 = SCOR 350-701
+// ─────────────────────────────────────────────
+const QUESTIONS = [
+
+// ══════════════════════════════════════════
+//  CCNA 200-301
+// ══════════════════════════════════════════
+{id:1, cert:1, q:"At which OSI layer do switches make forwarding decisions?",
+ opts:["Layer 1 — Physical","Layer 2 — Data Link","Layer 3 — Network","Layer 4 — Transport"],
+ correct:[1],
+ exp:"Switches operate at Layer 2 (Data Link). They forward frames based on destination MAC addresses learned in the CAM table. Routers operate at Layer 3 using IP addresses.",
+ we:"Layer 1 devices (hubs, repeaters) just regenerate signals — no intelligence. Layer 3 is the router's domain (IP addressing). Layer 4 handles port numbers and TCP/UDP sessions."},
+
+{id:2, cert:1, q:"A host is assigned 192.168.10.50/26. What is the subnet's broadcast address?",
+ opts:["192.168.10.63","192.168.10.127","192.168.10.64","192.168.10.255"],
+ correct:[0],
+ exp:"/26 = 64 addresses per subnet. Subnets: .0–.63, .64–.127, .128–.191, .192–.255. Host .50 is in the .0–.63 subnet. Broadcast = last address = .63.",
+ we:".127 is the broadcast of the second subnet (.64–.127). .64 is the network address of the second subnet. .255 is the subnet broadcast for /24, not /26."},
+
+{id:3, cert:1, q:"Which IPv6 address type is automatically assigned to every IPv6-enabled interface and is only valid on the local link?",
+ opts:["Global Unicast (2000::/3)","Unique Local (FC00::/7)","Link-Local (FE80::/10)","Multicast (FF00::/8)"],
+ correct:[2],
+ exp:"Link-local addresses (FE80::/10) are mandatory on every IPv6 interface. They are auto-configured and used for neighbor discovery, routing protocol communication, and default gateway. They are never routed off the local link.",
+ we:"Global unicast (2000::/3) are public routable addresses. Unique local (FC00::/7) are private routable within an organization (similar to RFC 1918). Multicast (FF00::/8) is for one-to-many delivery."},
+
+{id:4, cert:1, q:"A trunk link between two Cisco switches shows CDP error 'Native VLAN mismatch'. What is the MOST likely cause?",
+ opts:["The trunk encapsulation protocols differ (802.1Q vs ISL)","One switch has native VLAN 1 and the other has native VLAN 10 configured on the trunk port","The allowed VLANs list is different on each end of the trunk","DTP negotiation failed and both ports are in access mode"],
+ correct:[1],
+ exp:"Native VLAN mismatch occurs when the two ends of an 802.1Q trunk have different native VLANs configured. Untagged frames on one side are placed into the wrong VLAN on the other side — a VLAN hopping security risk. Fix by matching native VLAN on both ends.",
+ we:"Encapsulation mismatch would prevent the trunk from forming at all, not just a native VLAN warning. Allowed VLAN differences cause traffic drops, not a native VLAN CDP error. DTP failure would leave ports in access mode, not generate a native VLAN mismatch."},
+
+{id:5, cert:1, q:"Which STP port role is elected on each segment to provide the best path toward the Root Bridge?",
+ opts:["Root Port","Designated Port","Alternate Port","Backup Port"],
+ correct:[1],
+ exp:"The Designated Port is the best port on each network segment (collision domain) in the direction toward the Root Bridge. Each segment has exactly one DP. The Root Bridge has all ports as Designated Ports.",
+ we:"Root Port is the best path toward the root on a non-root switch (one per switch, not per segment). Alternate Port is a backup to the Root Port (RSTP). Backup Port is a backup to the Designated Port on the same segment (RSTP)."},
+
+{id:6, cert:1, q:"An engineer wants to configure EtherChannel between two switches using an IEEE standard protocol. Which mode combination allows LACP to form a channel?",
+ opts:["Both sides set to 'on'","One side Active, one side Active","One side Active, one side Passive","One side Desirable, one side Auto"],
+ correct:[2],
+ exp:"LACP (802.3ad) uses Active and Passive modes. Active initiates negotiation; Passive responds. Active-Active and Active-Passive both form a channel. Both Passive (Passive-Passive) will NOT form because neither side initiates.",
+ we:"'On' mode is static and does not use LACP or PAgP — both ends must match 'on'. Desirable/Auto is Cisco PAgP, not LACP. Both sides Active also forms a channel, making Active-Active also correct, but Active-Passive is the most textbook answer for 'allows LACP to form'."},
+
+{id:7, cert:1, q:"What is the administrative distance of a route learned via OSPF?",
+ opts:["90","100","110","120"],
+ correct:[2],
+ exp:"OSPF has an administrative distance of 110. AD determines trustworthiness when multiple routing protocols learn the same destination. Lower AD wins: Connected=0, Static=1, EIGRP=90, OSPF=110, RIP=120.",
+ we:"90 is EIGRP internal AD. 100 is not assigned to any standard routing protocol. 120 is RIP's AD — the least trusted of the major protocols."},
+
+{id:8, cert:1, q:"Which FHRP feature ensures that a previously active router reclaims the Active role when it returns from a failure?",
+ opts:["Tracking","Preemption","Authentication","Virtual IP assignment"],
+ correct:[1],
+ exp:"Preemption allows a higher-priority router to reclaim the Active role when it comes back online. Without preemption enabled, the lower-priority router that became active will remain active even after the higher-priority router recovers.",
+ we:"Tracking monitors interface states and adjusts priority dynamically, but it doesn't control role reclamation. Authentication secures FHRP messages. Virtual IP is a basic configuration requirement, not a failback mechanism."},
+
+{id:9, cert:1, q:"A host needs to find a DHCP server on a different subnet. Which command on the router interface directs DHCP Discover broadcasts to the server?",
+ opts:["ip helper-address","ip dhcp relay","ip dhcp server","ip forward-protocol udp 67"],
+ correct:[0],
+ exp:"'ip helper-address <DHCP-server-IP>' configured on the router interface facing the clients converts DHCP broadcast Discover messages into directed unicast and forwards them to the specified DHCP server. This is standard DHCP relay agent functionality.",
+ we:"'ip dhcp relay' is not a valid Cisco IOS command. 'ip dhcp server' would configure the router as a DHCP server. 'ip forward-protocol udp 67' enables forwarding of specific UDP broadcasts but alone is not sufficient — ip helper-address is the standard command."},
+
+{id:10, cert:1, q:"An extended ACL should be placed as close to the ______ as possible to stop unwanted traffic early and conserve bandwidth.",
+ opts:["Destination","Source","Default gateway","Core switch"],
+ correct:[1],
+ exp:"Extended ACLs match on both source AND destination (plus protocol, port). Placing them close to the source stops traffic before it traverses the network. Standard ACLs match source IP only, so they must be placed near the destination to avoid over-blocking.",
+ we:"Standard ACLs go near the destination. Extended ACLs go near the source. Default gateway and core switch placement are network design considerations, not ACL placement rules."},
+
+{id:11, cert:1, q:"Which Layer 2 security feature prevents unauthorized DHCP servers from responding to client requests on untrusted switch ports?",
+ opts:["Dynamic ARP Inspection","Port Security","DHCP Snooping","802.1X"],
+ correct:[2],
+ exp:"DHCP Snooping designates ports as trusted (toward legitimate DHCP server) or untrusted (user-facing). DHCP Offer and Acknowledge packets arriving on untrusted ports are dropped, preventing rogue DHCP servers from assigning false IP configurations.",
+ we:"DAI (Dynamic ARP Inspection) prevents ARP poisoning — it relies on the DHCP Snooping binding table but doesn't block rogue DHCP directly. Port Security limits MACs per port. 802.1X is for user/device authentication, not DHCP control."},
+
+{id:12, cert:1, q:"A company wants to allow all traffic from 192.168.1.0/24 but deny SSH access from 10.0.0.0/8. Which ACL type and placement is correct?",
+ opts:["Standard ACL near the destination SSH server","Extended ACL near the source 10.0.0.0/8 network","Standard ACL near 10.0.0.0/8 source","Extended ACL near the destination SSH server"],
+ correct:[1],
+ exp:"Extended ACLs can match specific protocols (TCP port 22 = SSH) and source/destination addresses. Placing it near the source (10.0.0.0/8 side) prevents SSH traffic from ever traversing the network. Extended ACLs near the source are the correct combination.",
+ we:"Standard ACLs (A, C) can only match source IP — they cannot specify SSH port 22. Placing extended ACL near the destination (D) wastes bandwidth as SSH traffic traverses the network before being denied."},
+
+{id:13, cert:1, q:"Which 802.11 wireless standard introduced OFDMA and supports operation in the 6 GHz band?",
+ opts:["802.11ac (Wi-Fi 5)","802.11n (Wi-Fi 4)","802.11ax (Wi-Fi 6/6E)","802.11g"],
+ correct:[2],
+ exp:"802.11ax (Wi-Fi 6/Wi-Fi 6E) introduced OFDMA (Orthogonal Frequency-Division Multiple Access) for efficient multi-user operation. Wi-Fi 6E extends operation into the 6 GHz band (previously only 2.4 and 5 GHz).",
+ we:"802.11ac (Wi-Fi 5) uses MU-MIMO but not OFDMA, and is 5 GHz only. 802.11n (Wi-Fi 4) introduced MIMO and dual-band (2.4/5 GHz) but not OFDMA. 802.11g is 2.4 GHz only at up to 54 Mbps."},
+
+{id:14, cert:1, q:"What is the CAPWAP protocol used for in a Cisco wireless deployment?",
+ opts:["Encrypting 802.11 data frames between AP and clients","Communication between Lightweight APs and the Wireless LAN Controller (WLC)","Layer 2 discovery of APs across VLANs","QoS marking of wireless client traffic"],
+ correct:[1],
+ exp:"CAPWAP (Control And Provisioning of Wireless Access Points) carries control messages (UDP 5246) and data frames (UDP 5247) between Lightweight APs and the WLC. The WLC centrally configures all APs via CAPWAP tunnels.",
+ we:"AP-to-client encryption uses 802.11i/WPA2/WPA3, not CAPWAP. Layer 2 AP discovery uses LWAPP or CAPWAP discovery broadcasts, not the CAPWAP protocol itself. QoS marking is configured on the WLC and implemented at the AP, not a CAPWAP function."},
+
+{id:15, cert:1, q:"A company uses Ansible to automate router configuration. Which statement about Ansible is TRUE?",
+ opts:["Ansible requires a software agent installed on each managed device","Ansible uses XML-based manifests to define desired state","Ansible is push-based and communicates over SSH without an agent","Ansible uses a pull model — devices check in to download configuration"],
+ correct:[2],
+ exp:"Ansible is agentless (no software needed on managed devices) and uses SSH to push configurations. Playbooks are written in YAML. This makes it popular for network automation where installing agents on switches/routers may not be feasible.",
+ we:"Agent-based tools include Puppet and Chef, not Ansible. Puppet uses Ruby-based manifests (not XML). Pull-based tools are Puppet and Chef — Ansible is push-based."},
+
+{id:16, cert:1, q:"What is the purpose of an ALIAS record in Route 53 compared to a standard CNAME? (CCNA-level DNS concept)",
+ opts:["ALIAS records support IPv6; CNAME supports only IPv4","ALIAS records work at the zone apex; CNAME records cannot be placed at the zone apex","ALIAS records require a third-party DNS provider; CNAME is AWS-native","Both are functionally identical — ALIAS is just a shorter name"],
+ correct:[1],
+ exp:"The DNS specification forbids CNAME records at the zone apex (e.g., example.com). Route 53 ALIAS records are an AWS extension that works at the apex, pointing to AWS resources like ALBs, CloudFront, or S3. They resolve dynamically and return A records to clients.",
+ we:"Both ALIAS and CNAME work for IPv4 and IPv6. ALIAS is an AWS-native concept. They are not functionally identical — ALIAS has distinct behaviors at the zone apex."},
+
+{id:17, cert:1, q:"Which port state does PortFast place an access port into immediately, skipping Listening and Learning states?",
+ opts:["Blocking","Forwarding","Learning","Designated"],
+ correct:[1],
+ exp:"PortFast immediately moves an access port to the Forwarding state, bypassing the standard 30–50 second delay through Listening (15s) and Learning (15s) states. It should only be used on access ports connecting to end hosts, never on trunk ports.",
+ we:"Blocking is the state blocked ports enter to prevent loops — PortFast skips TO forwarding, not into blocking. Learning is a transitional state that PortFast skips. Designated is a port role, not a state."},
+
+{id:18, cert:1, q:"What is the effect of the 'port-security violation shutdown' command?",
+ opts:["The port drops violating frames and logs a syslog message but stays up","The port drops violating frames silently with no log","The port enters err-disabled state and must be manually re-enabled","The port reboots and re-learns MACs from scratch"],
+ correct:[2],
+ exp:"The 'shutdown' violation mode err-disables the port when a MAC violation is detected. The port must be manually recovered with 'shutdown' followed by 'no shutdown', or automatic recovery can be configured with 'errdisable recovery cause psecure-violation'.",
+ we:"'Restrict' mode drops frames and logs. 'Protect' mode drops silently with no log. Ports do not 'reboot' — they err-disable."},
+
+{id:19, cert:1, q:"A router has two routes to 10.10.0.0/24: one via OSPF and one via EIGRP. Which route is installed in the routing table?",
+ opts:["OSPF route — OSPF has lower administrative distance than EIGRP","EIGRP route — EIGRP has lower administrative distance than OSPF","Both routes are installed and ECMP load-balancing is used","The route with the lower metric is installed regardless of protocol"],
+ correct:[1],
+ exp:"EIGRP internal AD = 90; OSPF AD = 110. Lower AD wins. The EIGRP route is installed in the routing table. AD is compared before metric — metrics are only compared between routes from the same routing protocol.",
+ we:"OSPF AD (110) is higher than EIGRP AD (90). ECMP only occurs between routes of equal AD and equal metric from the same protocol. Metric comparison across different protocols is not done — AD is compared first."},
+
+{id:20, cert:1, q:"A NAT configuration uses overload. An inside host at 192.168.1.10 accesses the internet. What type of NAT is 'overload'?",
+ opts:["Static NAT — one-to-one mapping","Dynamic NAT — pool of public IPs","PAT (Port Address Translation) — many hosts share one public IP using port numbers","Bidirectional NAT — supports inbound and outbound sessions"],
+ correct:[2],
+ exp:"NAT overload (PAT — Port Address Translation) maps multiple inside hosts to a single public IP by differentiating sessions using unique source port numbers. It is the most common NAT type for SOHO and enterprise internet access.",
+ we:"Static NAT is a permanent one-to-one mapping (no overload). Dynamic NAT uses a pool of public IPs without port multiplexing. 'Bidirectional NAT' is not a standard NAT type in Cisco IOS."},
+
+{id:21, cert:1, q:"Which HTTP method is used to READ a resource via a REST API?",
+ opts:["POST","PUT","GET","DELETE"],
+ correct:[2],
+ exp:"REST API HTTP methods: GET = read/retrieve, POST = create new resource, PUT = update/replace existing resource, DELETE = remove resource. PATCH = partial update.",
+ we:"POST creates a new resource (e.g., add a new interface config). PUT replaces an existing resource. DELETE removes a resource."},
+
+{id:22, cert:1, q:"What does RSTP (802.1w) provide compared to legacy STP (802.1D)?",
+ opts:["More VLANs — up to 4094 per spanning tree instance","Faster convergence — typically 1–2 seconds vs 30–50 seconds for STP","Per-VLAN spanning trees instead of a single common spanning tree","Encryption of BPDUs to prevent topology spoofing"],
+ correct:[1],
+ exp:"RSTP (Rapid Spanning Tree Protocol) dramatically improves convergence from 30–50 seconds (STP) to approximately 1–2 seconds using proposal/agreement handshaking instead of timers. RSTP introduces new port roles (Alternate, Backup) and states (Discarding).",
+ we:"VLAN count is a feature of MST (802.1s), not RSTP itself. Per-VLAN instances are Rapid PVST+ (Cisco proprietary combining RSTP + PVST+). BPDU encryption is not a standard STP feature."},
+
+{id:23, cert:1, q:"What is the difference between the 'inside local' and 'inside global' addresses in a NAT translation?",
+ opts:["Inside local is the public IP; inside global is the private IP","Inside local is the private IP of the internal host; inside global is the public IP representing that host after NAT","Inside local and inside global are always identical — they differ only in routing context","Inside local is the IP in DNS; inside global is the IP in routing tables"],
+ correct:[1],
+ exp:"Inside local = the actual private IP of the internal host (e.g., 192.168.1.10). Inside global = the public IP that represents that host on the internet (e.g., 203.0.113.5). The NAT table maps one to the other.",
+ we:"Inside local is private, inside global is public — not reversed. Outside global is the real public IP of the destination server. DNS and routing table descriptions are not how these terms are defined."},
+
+{id:24, cert:1, q:"Which routing protocol has an administrative distance of 120 and uses hop count as its metric with a maximum of 15 hops?",
+ opts:["OSPF","EIGRP","RIP","IS-IS"],
+ correct:[2],
+ exp:"RIP (Routing Information Protocol) has AD 120 and uses hop count (max 15) as its metric. A destination 16 hops away is considered unreachable. RIP is distance-vector and sends full routing table updates every 30 seconds.",
+ we:"OSPF AD=110, uses cost (bandwidth-based). EIGRP AD=90, uses composite metric. IS-IS AD=115, uses cost."},
+
+{id:25, cert:1, q:"What is the purpose of Dynamic ARP Inspection (DAI)?",
+ opts:["Prevents unauthorized DHCP servers from assigning IP addresses","Validates ARP packets using the DHCP Snooping binding table to prevent ARP poisoning attacks","Limits the number of MAC addresses learned per port","Detects and blocks MAC address flooding attacks against the CAM table"],
+ correct:[1],
+ exp:"DAI intercepts ARP packets on untrusted ports and verifies them against the DHCP snooping binding table (IP-MAC-port-VLAN mappings). If an ARP response claims a MAC-IP mapping that doesn't match the binding table, the packet is dropped, preventing ARP spoofing/poisoning/MITM attacks.",
+ we:"DHCP snooping prevents rogue DHCP servers. Port security limits MACs per port. CAM table overflow (MAC flooding) is prevented by port security with a max MAC count — DAI focuses specifically on ARP validation."},
+
+// ══════════════════════════════════════════
+//  CCNP ENARSI 300-410
+// ══════════════════════════════════════════
+{id:26, cert:2, q:"What is the EIGRP Feasibility Condition (FC), and what does it guarantee?",
+ opts:["RD > FD — ensures the backup path is longer than the primary path","RD < FD — guarantees the feasible successor provides a loop-free backup path","RD = FD — ensures both paths have equal cost","RD < 0 — the route is directly connected"],
+ correct:[1],
+ exp:"The Feasibility Condition requires the Reported Distance (RD) from the neighbor to be less than the Feasible Distance (FD) of the current successor route. This mathematically guarantees the backup path is loop-free. When FC is met, instant failover to the feasible successor occurs without DUAL queries.",
+ we:"RD > FD would mean the backup path is worse than the current best — the condition would never provide a loop-free guarantee. RD = FD would be an equal-cost path. RD < 0 is not meaningful in EIGRP metric calculation."},
+
+{id:27, cert:2, q:"A spoke router in an EIGRP hub-and-spoke design is configured as a stub. What is the PRIMARY benefit?",
+ opts:["The spoke router generates more specific routes, improving path selection","The hub does not send DUAL queries to stub spokes during convergence, reducing query scope","The spoke router summarizes all its routes to reduce routing table size on the hub","Stub routers bypass EIGRP authentication requirements"],
+ correct:[1],
+ exp:"EIGRP stub routing prevents the hub from forwarding DUAL queries to stub spokes during a topology change. Stub routers cannot be transit — they have no alternate paths — so querying them wastes time and can cause query timeouts. This dramatically speeds convergence in large hub-and-spoke networks.",
+ we:"Stub routers advertise only connected/summary routes — they do not generate more specific routes. Route summarization is a separate feature. Stub routing has nothing to do with authentication."},
+
+{id:28, cert:2, q:"Which OSPF LSA type is generated by an ABR to describe routes in other areas?",
+ opts:["Type 1 — Router LSA","Type 2 — Network LSA","Type 3 — Summary LSA","Type 5 — AS External LSA"],
+ correct:[2],
+ exp:"Type 3 Summary LSAs are generated by ABRs (Area Border Routers) to describe routes from one area to routers in another area. They carry the prefix, mask, and cost to the destination. Type 1 and 2 are limited to a single area; Type 5 is for external routes.",
+ we:"Type 1 is generated by every router describing its own links within an area. Type 2 is generated by the DR on multi-access segments within an area. Type 5 is generated by ASBRs for routes redistributed from external sources."},
+
+{id:29, cert:2, q:"An OSPF area is configured as Totally Stubby. Which LSA types are blocked from entering the area?",
+ opts:["Type 5 only","Type 3 and Type 5","Type 3, Type 4, and Type 5","Type 1 and Type 2"],
+ correct:[2],
+ exp:"Totally Stubby areas (Cisco proprietary) block Type 3 (Summary), Type 4 (ASBR Summary), and Type 5 (External) LSAs. Only a single default route (Type 3 with 0.0.0.0/0) from the ABR enters the area, minimizing the LSDB and routing table size on stub routers.",
+ we:"Stub areas block only Type 5 (and Type 4). Type 3 is additionally blocked in Totally Stubby. Type 1 and Type 2 are always present in every area — they describe intra-area topology."},
+
+{id:30, cert:2, q:"What is the default OSPF Hello interval on a broadcast (Ethernet) segment?",
+ opts:["5 seconds","10 seconds","30 seconds","60 seconds"],
+ correct:[1],
+ exp:"OSPF Hello interval defaults: Broadcast and Point-to-Point networks = 10 seconds, Dead interval = 40 seconds (4× Hello). NBMA (non-broadcast multi-access) networks = 30 seconds Hello, 120 seconds Dead. Hello and Dead intervals must match between OSPF neighbors.",
+ we:"5 seconds is not a default OSPF Hello timer. 30 seconds is the NBMA Hello interval. 60 seconds is not a standard OSPF timer."},
+
+{id:31, cert:2, q:"A BGP engineer wants to prefer one eBGP peer over another on a specific router only, without affecting the rest of the AS. Which BGP attribute should they use?",
+ opts:["LOCAL_PREF — advertised to all iBGP peers AS-wide","MED — sent to the neighboring AS","Weight — Cisco-proprietary, local to the router only","AS_PATH prepending — reduces path length"],
+ correct:[2],
+ exp:"BGP Weight is a Cisco-proprietary attribute local to the router where it is set. Higher weight is preferred. It is NOT advertised to any BGP peer, making it perfect for local router path preference without affecting the rest of the AS. LOCAL_PREF is AS-wide via iBGP.",
+ we:"LOCAL_PREF is propagated to all iBGP routers in the AS — too wide in scope. MED is sent to neighboring ASes to influence their outbound routing. AS_PATH prepending affects preference for routes received from other ASes, not routes being sent out."},
+
+{id:32, cert:2, q:"What problem does a BGP Route Reflector (RR) solve in a large iBGP deployment?",
+ opts:["It reduces BGP update size by compressing route prefixes","It eliminates the need for iBGP full mesh by reflecting routes between clients","It provides redundancy — if one RR fails, another takes over immediately","It converts external BGP routes to internal routes automatically"],
+ correct:[1],
+ exp:"iBGP requires a full mesh (every router peers with every other router) because iBGP routes are not re-advertised between iBGP peers. A Route Reflector acts as a hub — it reflects routes between iBGP clients, eliminating the O(n²) full mesh requirement.",
+ we:"RR doesn't compress routes. RR redundancy requires deploying multiple RRs — automatic failover is not built into the protocol. RRs don't convert route types; external routes remain eBGP-learned."},
+
+{id:33, cert:2, q:"Which BGP attribute is used to influence AWS Direct Connect outbound path selection from the customer's perspective, where a LOWER value is preferred?",
+ opts:["LOCAL_PREF","Weight","MED (Multi-Exit Discriminator)","Origin"],
+ correct:[2],
+ exp:"MED (Multi-Exit Discriminator) is an optional non-transitive BGP attribute that a customer advertises to AWS to suggest the preferred entry point. Lower MED is preferred by the receiving AS (AWS). It allows the customer to steer AWS's outbound traffic through a preferred connection when multiple paths exist.",
+ we:"LOCAL_PREF is set by the receiving router internally — higher is preferred. Weight is Cisco-local and never advertised externally. Origin codes (IGP, EGP, incomplete) influence path selection but are not the right tool for entry-point preference across connections."},
+
+{id:34, cert:2, q:"In mutual redistribution between OSPF and EIGRP, which mechanism BEST prevents routing loops where redistributed routes are re-redistributed back into the originating protocol?",
+ opts:["Administrative distance adjustment — lower AD for the protocol's native routes","Route tags — mark redistributed routes so the other protocol ignores them on re-entry","Prefix lists to filter redistributed prefixes at each boundary","Passive interfaces on redistribution boundary routers"],
+ correct:[1],
+ exp:"Route tags are markers attached to routes during redistribution. A route-map can check for a specific tag when redistributing and deny any route carrying that tag. This prevents OSPF routes redistributed into EIGRP from being re-redistributed back into OSPF, breaking the potential loop.",
+ we:"AD adjustment can help distinguish native vs. redistributed routes but doesn't prevent re-redistribution across multiple paths. Prefix lists filter specific prefixes but require maintenance as prefixes change. Passive interfaces prevent routing protocol neighbor relationships, not redistribution."},
+
+{id:35, cert:2, q:"DMVPN Phase 2 allows spoke-to-spoke communication, but has one critical routing constraint at the hub. What is it?",
+ opts:["The hub must run OSPFv3 for spoke-to-spoke routing to work","The hub cannot summarize spoke routes — spokes need specific host routes to trigger NHRP resolution","The hub must be configured as an EIGRP stub","All spoke traffic must traverse the hub — NHRP shortcuts are not available in Phase 2"],
+ correct:[1],
+ exp:"DMVPN Phase 2 allows spokes to communicate directly via NHRP-resolved tunnels. However, if the hub summarizes spoke routes (e.g., into a supernet), spokes receive only the summary and cannot resolve the specific spoke address via NHRP. Spokes need specific prefix routes to trigger NHRP Next-Hop Override.",
+ we:"DMVPN works with EIGRP, OSPF, and BGP — OSPFv3 is not a requirement. Hub as EIGRP stub would prevent it from forwarding spoke routes. Phase 2 specifically enables spoke-to-spoke shortcuts via NHRP — hub transit is a Phase 1 characteristic."},
+
+{id:36, cert:2, q:"In MPLS L3VPN, what is the difference between an RD (Route Distinguisher) and an RT (Route Target)?",
+ opts:["RD controls which VRFs receive routes; RT makes overlapping prefixes unique in BGP","RD makes overlapping customer prefixes unique in MP-BGP; RT controls which VRFs import/export routes","Both RD and RT serve the same function — they are interchangeable terms","RD is used for IPv4 VPNs; RT is used for IPv6 VPNs only"],
+ correct:[1],
+ exp:"RD (Route Distinguisher) is prepended to customer prefixes to make them globally unique in the MP-BGP VPNv4 address family (multiple customers can use 10.0.0.0/24 — RDs differentiate them). RT (Route Target) is a BGP extended community that controls which PE VRFs import and export routes — implementing VPN topology.",
+ we:"RD makes routes unique; RT controls route distribution — not vice versa. They are not interchangeable. Both are used for IPv4 and IPv6 VPNs."},
+
+{id:37, cert:2, q:"An engineer configures uRPF strict mode on an upstream interface. Legitimate traffic is being dropped on an asymmetric network. What is the BEST remedy?",
+ opts:["Change to uRPF Loose mode — source IP only needs to exist anywhere in the routing table","Disable uRPF entirely — it is incompatible with asymmetric routing","Add static routes for all external source prefixes to force symmetric routing","Enable Cisco Express Forwarding (CEF) — uRPF strict mode requires CEF"],
+ correct:[0],
+ exp:"uRPF Strict mode requires inbound packets to arrive on the best-path interface back to the source — this fails in asymmetric routing environments. Loose mode only checks that the source IP exists in the routing table via any interface, which works with asymmetric routing while still blocking obviously spoofed addresses.",
+ we:"Disabling uRPF removes all anti-spoofing protection — not recommended. Adding static routes to force symmetric routing may not be feasible in complex networks. uRPF does require CEF, but that's a prerequisite, not a fix for asymmetric routing drops."},
+
+{id:38, cert:2, q:"What does CoPP (Control Plane Policing) protect against?",
+ opts:["DDoS attacks on end-hosts behind the router","CPU exhaustion caused by excessive traffic directed to the router's control plane","Routing protocol misconfiguration causing flapping","Unauthorized management access via SSH or Telnet"],
+ correct:[1],
+ exp:"CoPP uses Modular QoS CLI (MQC) to police traffic destined for the router's control plane (CPU). Without CoPP, a flood of ARP, BGP, SNMP, or routing protocol packets can exhaust the CPU, causing routing process failures. CoPP rate-limits or drops low-priority control-plane traffic.",
+ we:"CoPP protects the router's CPU, not end-hosts. It doesn't fix routing misconfigurations — that's a design/operational issue. Management access control is handled by ACLs and AAA, not CoPP (though CoPP can limit management plane traffic volume)."},
+
+{id:39, cert:2, q:"An engineer configures EIGRP variance 2. Which paths will EIGRP install in the routing table?",
+ opts:["Only the successor (best path)","All paths with metric ≤ 2× the successor's feasible distance AND meeting the feasibility condition","All paths regardless of metric, up to a maximum of 4","Paths within 2 hops of the successor"],
+ correct:[1],
+ exp:"EIGRP variance N installs unequal-cost paths into the routing table if: (1) the path's metric ≤ variance × successor FD, AND (2) the path meets the Feasibility Condition (is a feasible successor). Traffic is load-balanced inversely proportional to metric.",
+ we:"Without variance, only the successor is installed. Variance doesn't load-balance all paths — only feasible successors within the variance multiplier. 'Within 2 hops' is an RIP concept, not EIGRP."},
+
+{id:40, cert:2, q:"Policy-Based Routing (PBR) is configured to route packets matching ACL 100 out interface Gi0/1. When is PBR evaluated relative to the normal routing table lookup?",
+ opts:["After the routing table lookup — PBR overrides only if the routing table has no entry","Before the routing table lookup — PBR takes precedence over destination-based routing","PBR and routing table lookups occur simultaneously — PBR wins ties","PBR only applies to return traffic; the routing table handles initial packets"],
+ correct:[1],
+ exp:"PBR is evaluated BEFORE the normal routing table lookup. If a packet matches the PBR policy (ACL match + set action), it is forwarded per the policy regardless of what the routing table would select. If PBR doesn't match, the routing table is used normally.",
+ we:"PBR takes precedence over — not after — the routing table. They don't occur simultaneously. PBR applies to all traffic matching the criteria, including initial packets, not just return traffic."},
+
+{id:41, cert:2, q:"What type of OSPF external route does NOT add the internal cost to reach the ASBR to the external metric?",
+ opts:["E1 (External Type 1)","E2 (External Type 2)","N1 (NSSA Type 1)","O IA (inter-area summary)"],
+ correct:[1],
+ exp:"OSPF E2 (default for redistributed routes) uses only the external metric assigned at the ASBR. The internal cost to reach the ASBR is ignored. E1 routes add the internal cost to the ASBR to the external metric, making E1 prefer the closest ASBR when multiple exist.",
+ we:"E1 adds internal + external metric. N1 (NSSA) is like E1 — it adds internal cost. O IA routes are inter-area summaries, not external routes — they use normal OSPF cost."},
+
+{id:42, cert:2, q:"Which DMVPN phase uses NHRP Redirect messages at the hub to enable spoke-to-spoke shortcuts while allowing hub route summarization?",
+ opts:["Phase 1","Phase 2","Phase 3","Phase 4"],
+ correct:[2],
+ exp:"DMVPN Phase 3 introduces NHRP Redirect: when a hub sees a spoke-to-spoke packet, it sends an NHRP Redirect to the source spoke and an NHRP Resolution Request to the destination spoke. This enables direct tunnels between spokes WITHOUT the Phase 2 restriction of no hub summarization.",
+ we:"Phase 1 is hub-and-spoke only — no spoke-to-spoke. Phase 2 allows spoke-to-spoke but requires specific routes at the hub (no summarization). Phase 4 is not a standard DMVPN phase."},
+
+{id:43, cert:2, q:"OSPFv3 is configured on a router's IPv6 interfaces. What addressing is used for OSPFv3 neighbor relationships?",
+ opts:["Global unicast addresses configured on the interfaces","Link-local addresses (FE80::/10) of each interface","Loopback IPv6 addresses (::1)","The Router ID in IPv4 format"],
+ correct:[1],
+ exp:"OSPFv3 uses IPv6 link-local addresses for all neighbor relationships and routing protocol communication. Hello packets are sourced from and addressed to link-local addresses. This is a key difference from OSPFv2, which uses the IP address of the interface.",
+ we:"Global unicast addresses are routable but OSPFv3 uses link-local for neighbor communication. Loopback ::1 is not used for neighbor relationships. The Router ID is a 32-bit value (in IPv4 dotted decimal format) but is not used for neighbor addressing."},
+
+{id:44, cert:2, q:"An IP SLA is configured to test ICMP reachability to a remote host. A tracking object monitors the IP SLA state. A floating static route uses the tracking object. What happens when the tracked IP SLA fails?",
+ opts:["The floating static route is removed from the routing table, and a backup route with higher AD is installed","The floating static route is installed in the routing table since the primary path is down","The router sends a SNMP trap but makes no routing changes","The IP SLA automatically triggers EIGRP to query for an alternate path"],
+ correct:[0],
+ exp:"A floating static route paired with an IP SLA track object: when the IP SLA (monitoring the primary path) FAILS, the track goes down, and the floating static route (which tracks the object) is REMOVED from the routing table. This reveals the backup route (which has a higher AD and was previously less preferred).",
+ we:"When the IP SLA fails, the primary floating static is removed — not installed. The SNMP trap is a notification side effect, not the routing behavior. IP SLA triggers track objects, not EIGRP queries directly."},
+
+{id:45, cert:2, q:"An OSPF virtual link is required in which scenario?",
+ opts:["When two areas have more than 100 routers and require an additional ABR","When an area is not directly connected to Area 0 (the backbone area)","When intra-area OSPF routes need to traverse another area","When OSPF is redistributed into BGP across area boundaries"],
+ correct:[1],
+ exp:"All OSPF areas must connect to Area 0 (the backbone). If an area cannot connect directly (e.g., Area 2 connects to Area 1 which connects to Area 0), a virtual link through the transit area provides the logical connection to the backbone. Virtual links are a temporary fix — physical redesign is preferred.",
+ we:"Virtual links are not about router count. Intra-area routes don't require virtual links. Redistribution between OSPF and BGP doesn't require virtual links."},
+
+{id:46, cert:2, q:"BGP AS_PATH prepending is used to make a route less preferred. Which direction is this typically applied?",
+ opts:["Outbound — prepend your own AS number to routes advertised to neighbors, making the path appear longer to external ASes","Inbound — prepend external AS numbers to received routes to make them less preferred locally","Both inbound and outbound simultaneously for maximum effect","Only on iBGP sessions between internal routers"],
+ correct:[0],
+ exp:"AS_PATH prepending is applied OUTBOUND on routes you advertise to your BGP neighbors. By adding extra copies of your own ASN to the AS_PATH, you make the route appear to have more hops, causing other ASes to prefer shorter AS_PATHs through your other connections. Used to make a backup link less attractive.",
+ we:"You cannot legitimately prepend other ASes' numbers inbound (that would be AS_PATH manipulation). Applying prepending simultaneously inbound and outbound doesn't make sense operationally. AS_PATH prepending is an eBGP technique for influencing external path selection."},
+
+{id:47, cert:2, q:"What are the two IPsec protocols that provide data protection, and what does each offer?",
+ opts:["IKE and ISAKMP — IKE encrypts data, ISAKMP authenticates headers","ESP and AH — ESP provides encryption and authentication; AH provides authentication only (no encryption)","GRE and IPsec — GRE encrypts, IPsec authenticates","SSL and TLS — SSL provides encryption, TLS provides authentication"],
+ correct:[1],
+ exp:"ESP (Encapsulating Security Payload, IP protocol 50) provides confidentiality (encryption) + integrity + authentication. AH (Authentication Header, IP protocol 51) provides integrity and authentication only — NO encryption. ESP is used in most modern VPN deployments because it provides both encryption and authentication.",
+ we:"IKE/ISAKMP handle key exchange and SA negotiation — they don't directly protect data traffic. GRE is a tunneling protocol (no security by itself). SSL/TLS are not IPsec protocols."},
+
+{id:48, cert:2, q:"Which QoS classification marks packets at Layer 3 for end-to-end differentiated treatment across IP networks?",
+ opts:["CoS (Class of Service) — 3-bit 802.1Q field","DSCP (Differentiated Services Code Point) — 6-bit IP header field","MPLS EXP/TC bits — 3-bit MPLS label field","VLAN tag — 12-bit identifier"],
+ correct:[1],
+ exp:"DSCP uses 6 bits in the IP ToS field, providing 64 possible values. It is preserved end-to-end across routed networks. Key values: EF (46) for voice, CS3/AF31-33 for call signaling/video, BE (0) for best effort. DSCP is the standard for IP QoS marking.",
+ we:"CoS (802.1p) is a Layer 2 field in 802.1Q VLAN tags — it does not survive routing across Layer 3 boundaries. MPLS EXP/TC bits are Layer 2.5 and only exist within MPLS domains. VLAN tags are switched locally, not routed."},
+
+{id:49, cert:2, q:"EIGRP named mode replaces classic numbered mode. Which advantage does named mode provide?",
+ opts:["Named mode uses TCP for reliable EIGRP updates, unlike classic mode's UDP","Named mode supports both IPv4 and IPv6 address families in a single process configuration","Named mode has lower convergence times due to a revised DUAL algorithm","Named mode eliminates the need for authentication configuration"],
+ correct:[1],
+ exp:"EIGRP named mode (introduced in IOS 15.0/IOS-XE 3.2) uses a single 'router eigrp NAME' block with address-family sub-configuration for both IPv4 and IPv6. It supports all EIGRP features and is Cisco's recommended approach for new deployments. Classic mode requires separate IPv4 and IPv6 EIGRP processes.",
+ we:"Both classic and named EIGRP use RTP (Reliable Transport Protocol), not TCP or UDP directly. Named mode doesn't change the DUAL algorithm. Authentication is still configured in named mode — just under the af-interface submode."},
+
+{id:50, cert:2, q:"What is the purpose of the OSPF 'auto-cost reference-bandwidth' command?",
+ opts:["Sets the maximum bandwidth OSPF will allocate to routing updates","Adjusts the reference bandwidth so that GigabitEthernet and faster interfaces get different costs instead of all being cost 1","Controls how often SPF algorithm recalculations occur","Configures the administrative distance of OSPF routes"],
+ correct:[1],
+ exp:"OSPF cost = reference bandwidth / interface bandwidth. The default reference is 100 Mbps, so a GigabitEthernet (1000 Mbps) interface gets cost 1 — same as FastEthernet (100 Mbps). Setting 'auto-cost reference-bandwidth 1000' gives FastEthernet cost 10 and GigabitEthernet cost 1, differentiating speeds. Must be consistent across all routers.",
+ we:"OSPF doesn't 'allocate' bandwidth for updates. SPF recalculation timing is controlled by SPF throttle timers. AD is set with 'distance ospf' command."},
+
+// ══════════════════════════════════════════
+//  CCNP SCOR 350-701
+// ══════════════════════════════════════════
+{id:51, cert:3, q:"A company wants to protect the integrity of transmitted data to prevent unauthorized modification. Which security property addresses this requirement?",
+ opts:["Confidentiality","Integrity","Availability","Non-repudiation"],
+ correct:[1],
+ exp:"Integrity ensures data has not been modified in transit or storage. Mechanisms include cryptographic hashes (SHA-256), digital signatures, and HMAC. If an attacker modifies a packet, the hash or signature will fail verification.",
+ we:"Confidentiality prevents unauthorized disclosure (encryption). Availability ensures authorized access (redundancy, anti-DDoS). Non-repudiation proves a message originated from a specific sender and cannot be denied."},
+
+{id:52, cert:3, q:"Which cryptographic algorithm is symmetric and commonly used for bulk data encryption in VPNs?",
+ opts:["RSA","AES","SHA-256","ECDSA"],
+ correct:[1],
+ exp:"AES (Advanced Encryption Standard) is a symmetric cipher — the same key encrypts and decrypts data. It is extremely fast in hardware and is the standard for bulk encryption in IPsec VPNs, SSL/TLS, and disk encryption. Key sizes: 128, 192, or 256 bits.",
+ we:"RSA is asymmetric — used for key exchange and digital signatures, not bulk encryption. SHA-256 is a hash function, not an encryption algorithm. ECDSA is an asymmetric signature algorithm."},
+
+{id:53, cert:3, q:"A phishing email targets a specific VP of Finance with personalized details about their recent business travel. What type of attack is this?",
+ opts:["Phishing","Spear Phishing","Whaling","Vishing"],
+ correct:[1],
+ exp:"Spear Phishing is a targeted phishing attack against a specific individual or organization, using personalized information to increase credibility. Whaling specifically targets high-profile executives (C-suite). Vishing uses voice calls. Generic phishing targets many recipients with the same message.",
+ we:"Generic phishing sends mass emails without personalization. Whaling targets executives specifically (the VP of Finance could qualify, but 'personalized details about travel' more precisely describes spear phishing). Vishing uses telephone calls, not email."},
+
+{id:54, cert:3, q:"What is the ASA security level for the 'outside' interface by default?",
+ opts:["100","50","10","0"],
+ correct:[3],
+ exp:"Cisco ASA security levels: Outside = 0 (least trusted), Inside = 100 (most trusted). DMZ interfaces are typically assigned values between 1–99. Traffic flows freely from higher to lower security levels. Traffic from lower to higher security levels requires explicit ACL permit.",
+ we:"100 is the inside interface security level. 50 is a typical DMZ value. 10 would be a low-trust DMZ or second outside — not the default for a standard outside interface."},
+
+{id:55, cert:3, q:"What is the key architectural difference between Cisco ASA and Cisco Firepower Threat Defense (FTD)?",
+ opts:["ASA uses stateful inspection; FTD is stateless for higher performance","FTD combines ASA firewall functionality with Firepower IPS/NGFW in a single software image","ASA supports more VPN protocols than FTD","FTD is for cloud-only deployments; ASA is for on-premises"],
+ correct:[1],
+ exp:"FTD is a unified software combining ASA's stateful firewall engine with Firepower's NGIPS, application visibility/control (AVC), URL filtering, and malware protection (AMP). It runs on ASA hardware, Firepower appliances, and ISA series. Managed by FMC (multi-device) or FDM (single-device on-box).",
+ we:"Both ASA and FTD use stateful inspection. FTD supports the same VPN protocols as ASA (AnyConnect, site-to-site IPsec). FTD runs on physical and virtual hardware, not just cloud."},
+
+{id:56, cert:3, q:"What is the fundamental difference between IDS and IPS in terms of traffic handling?",
+ opts:["IDS uses signatures; IPS uses behavioral analysis","IDS is deployed inline and can block traffic; IPS is passive and only alerts","IDS is passive (out-of-band copy of traffic, alerts only); IPS is inline and can actively block malicious traffic","IPS requires a dedicated appliance; IDS can run as software only"],
+ correct:[2],
+ exp:"IDS (Intrusion Detection System) receives a copy of traffic (span/tap) — it cannot block traffic, only generate alerts. IPS (Intrusion Prevention System) sits inline in the traffic path and can drop malicious packets before they reach the destination. IPS introduces latency; IDS does not affect traffic.",
+ we:"Both IDS and IPS can use signatures and/or behavioral analysis. IPS is inline (not IDS). Both can run as software or hardware appliances."},
+
+{id:57, cert:3, q:"Cisco AnyConnect VPN uses DTLS for active tunnel transport. What is the advantage of DTLS over TLS for VPN tunnels?",
+ opts:["DTLS provides stronger encryption than TLS","DTLS uses UDP, reducing TCP head-of-line blocking and improving performance for real-time traffic like voice and video","DTLS supports more authentication methods than TLS","DTLS is faster because it skips encryption overhead"],
+ correct:[1],
+ exp:"DTLS (Datagram TLS) uses UDP instead of TCP. TCP-over-TCP (as in TLS VPN tunnels) causes head-of-line blocking — a lost packet stalls the entire stream. DTLS over UDP avoids this, dramatically improving performance for latency-sensitive traffic (voice, video) through the VPN tunnel. AnyConnect uses DTLS by default when available, falling back to TLS.",
+ we:"DTLS and TLS provide comparable encryption strength. DTLS doesn't add authentication methods. DTLS still performs full TLS encryption — the improvement is transport layer efficiency, not skipping encryption."},
+
+{id:58, cert:3, q:"In the cloud shared responsibility model, which responsibility is ALWAYS owned by the customer regardless of the service model (IaaS/PaaS/SaaS)?",
+ opts:["Operating system patching","Physical data center security","Customer data and identity/access management","Hypervisor maintenance"],
+ correct:[2],
+ exp:"Customer data and identity/access management (IAM) are ALWAYS the customer's responsibility across all cloud service models (IaaS, PaaS, SaaS). The cloud provider is responsible for physical security and hypervisor maintenance. OS patching responsibility shifts from customer (IaaS) to provider (SaaS).",
+ we:"OS patching is customer responsibility in IaaS but provider responsibility in SaaS/PaaS. Physical security is always the provider's responsibility. Hypervisor maintenance is always the provider's responsibility."},
+
+{id:59, cert:3, q:"Cisco Umbrella blocks threats at which layer, and what is its primary mechanism?",
+ opts:["Layer 7 HTTP inspection — inspects all web content after TCP connection","Layer 3 IP blocking — maintains blacklists of malicious IP addresses","DNS layer — blocks resolution of malicious domains before TCP connections are established","Layer 4 TCP blocking — terminates suspicious connections by TCP RST"],
+ correct:[2],
+ exp:"Cisco Umbrella is a cloud-based DNS security service. It intercepts DNS queries and blocks resolution for malicious, phishing, or policy-violating domains BEFORE any TCP connection is established. Because the threat is stopped at DNS, no malware download can begin. It also provides a Secure Web Gateway for deeper inspection.",
+ we:"Umbrella's primary mechanism is DNS-layer blocking — the connection never starts. It does not primarily work via HTTP content inspection, IP blacklists alone, or TCP reset injection."},
+
+{id:60, cert:3, q:"Which email authentication mechanism allows a domain owner to specify which mail servers are authorized to send email on behalf of the domain?",
+ opts:["DKIM","DMARC","SPF","S/MIME"],
+ correct:[2],
+ exp:"SPF (Sender Policy Framework) is a DNS TXT record listing authorized mail servers (by IP or hostname) for a domain. Receiving mail servers check the SPF record to verify the sending server is authorized. DKIM adds a cryptographic signature. DMARC defines policy for SPF/DKIM failures.",
+ we:"DKIM (DomainKeys Identified Mail) adds a cryptographic signature to emails — it doesn't specify authorized servers. DMARC uses SPF and DKIM to define handling policy (quarantine/reject). S/MIME encrypts email content — not an anti-spoofing mechanism."},
+
+{id:61, cert:3, q:"What does Cisco AMP (Secure Endpoint) 'retrospective detection' provide?",
+ opts:["It quarantines files before they are opened based on predicted behavior","When a file previously judged clean is later identified as malicious, AMP alerts and provides trajectory data for all endpoints that saw it","It blocks all unknown files from executing until a verdict is obtained","It scans email attachments before delivery to the endpoint"],
+ correct:[1],
+ exp:"AMP continuously tracks file activity even after initial verdicts. If threat intelligence is updated to classify a previously 'clean' file as malicious (e.g., a zero-day is identified after deployment), AMP retroactively alerts on all endpoints that executed or downloaded that file and provides device trajectory data for forensics.",
+ we:"Behavioral pre-execution quarantine is a separate sandbox feature. Blocking all unknown files is an optional 'prevalence' policy, not retrospective detection. Email scanning is done by ESA (Email Security Appliance), not endpoint AMP."},
+
+{id:62, cert:3, q:"An 802.1X deployment uses EAP-TLS for authentication. What does EAP-TLS require that makes it the most secure EAP method?",
+ opts:["A username and password with RADIUS server lookup","Digital certificates on BOTH the client (supplicant) and the authentication server — mutual certificate authentication","A one-time password token with RADIUS","Only the server certificate — client uses a password"],
+ correct:[1],
+ exp:"EAP-TLS requires both the server (RADIUS/ISE) AND the client (supplicant/endpoint) to present valid X.509 digital certificates. This provides mutual authentication — the client verifies the server is legitimate and the server verifies the client is a trusted device. It is the most secure EAP method but requires a PKI to issue client certs.",
+ we:"Username/password is used by PEAP and EAP-MSCHAPv2 — not EAP-TLS. One-time tokens are used by EAP-OTP. Server-only certificate is PEAP — the client authenticates with a password under the TLS tunnel."},
+
+{id:63, cert:3, q:"Which Cisco technology assigns a Security Group Tag (SGT) to a user or device at authentication and uses it for policy enforcement regardless of IP address?",
+ opts:["802.1X with dACL","Cisco ISE with TrustSec","Cisco Umbrella with roaming clients","MACsec with MKA"],
+ correct:[1],
+ exp:"Cisco TrustSec uses Cisco ISE to assign SGTs (16-bit tags) to users/devices upon authentication. SGTs are propagated inline or via SXP protocol across the network. Policy enforcement (SGACL) at egress devices uses SGTs instead of IP addresses, providing identity-based segmentation that survives IP changes.",
+ we:"802.1X with dACL assigns IP-based ACLs per session — not SGT-based. Umbrella provides DNS/web security, not network segmentation tags. MACsec provides Layer 2 encryption using MKA, not identity-based policy tags."},
+
+{id:64, cert:3, q:"MACsec (IEEE 802.1AE) operates at which OSI layer and what does it protect?",
+ opts:["Layer 3 — encrypts IP packets between routers","Layer 2 — encrypts all Ethernet frames between directly connected devices on each hop","Layer 4 — encrypts TCP sessions end-to-end","Layer 7 — encrypts application data in transit"],
+ correct:[1],
+ exp:"MACsec is a hop-by-hop Layer 2 encryption standard (IEEE 802.1AE). It encrypts all Ethernet frames between two directly connected devices (switch-to-switch or switch-to-endpoint). Each link is encrypted independently. MKA (MACsec Key Agreement) negotiates keys. It provides confidentiality, integrity, and replay protection at L2.",
+ we:"IPsec operates at Layer 3. TLS/SSL operates at Layer 4-7. Application encryption is Layer 7. MACsec is specifically Layer 2 and hop-by-hop — each link is a separate encryption domain."},
+
+{id:65, cert:3, q:"A Cisco ISE deployment performs posture assessment. An endpoint fails because its antivirus is out of date. What typically happens to this endpoint?",
+ opts:["The endpoint is immediately blocked with no network access","The endpoint is placed in a remediation VLAN or receives a restricted dACL with limited access until remediation","The endpoint receives full access — posture checks are advisory only","The endpoint is quarantined permanently until manually released by an administrator"],
+ correct:[1],
+ exp:"ISE posture assessment places non-compliant endpoints in a remediation state — typically a VLAN with access only to patching servers, AV updates, etc. Once the endpoint remediates (updates AV), ISE re-assesses and grants appropriate access. This enforces compliance without permanently blocking devices.",
+ we:"Immediate full block would impact productivity — remediation VLAN allows self-service fix. Posture checks are enforced, not advisory. Permanent quarantine requires manual intervention — automated remediation workflow is the standard ISE approach."},
+
+{id:66, cert:3, q:"Which attack technique is DMARC (Domain-based Message Authentication, Reporting & Conformance) specifically designed to combat?",
+ opts:["Email header injection and XSS in email clients","Domain spoofing in the 'From' header of emails — making phishing emails appear to come from legitimate domains","Malware delivery via email attachments","Man-in-the-middle interception of SMTP traffic"],
+ correct:[1],
+ exp:"DMARC builds on SPF and DKIM to specify a domain's policy for emails that fail authentication checks. It tells receiving servers to quarantine or reject emails that spoof the domain in the visible 'From' header. It also provides reporting to domain owners about abuse attempts.",
+ we:"Email header injection and XSS are web/application security issues, not DMARC's scope. Malware in attachments is detected by AV/sandboxing (ESA/AMP). SMTP encryption is handled by STARTTLS/TLS — not DMARC."},
+
+{id:67, cert:3, q:"A Cisco WSA (Web Security Appliance) is deployed in 'transparent' mode. How does client traffic reach the WSA?",
+ opts:["Clients are manually configured with the WSA IP address as a proxy","Traffic is redirected to the WSA via WCCP or policy-based routing — clients are unaware of the proxy","Clients use PAC (Proxy Auto-Config) files to discover and use the WSA","The WSA intercepts traffic using ARP spoofing at Layer 2"],
+ correct:[1],
+ exp:"In transparent mode, client traffic is redirected to the WSA without any client configuration using WCCP (Web Cache Communication Protocol) or PBR (policy-based routing) on a router/switch. Clients believe they are communicating directly with web servers. This enables proxy inspection without browser/OS configuration on every endpoint.",
+ we:"Manual proxy configuration is 'explicit' (not transparent) mode. PAC files are also an explicit proxy mechanism. ARP spoofing is a malicious technique — not a WSA deployment method."},
+
+{id:68, cert:3, q:"A company needs to detect and block command-and-control (C2) traffic to known malicious domains at the network DNS layer for all corporate devices. Which Cisco solution provides this?",
+ opts:["Cisco Firepower IPS with Snort DNS rules","Cisco Umbrella with DNS-layer security","Cisco ESA with URL filtering","Cisco ISE with TrustSec SGT policies"],
+ correct:[1],
+ exp:"Cisco Umbrella intercepts all DNS queries and blocks resolution for known malicious domains (C2 servers, malware distribution, phishing) using continuously updated threat intelligence. The roaming client ensures protection extends to devices off the corporate network. DNS-layer blocking prevents the connection before it starts.",
+ we:"Firepower IPS can detect C2 at the network layer but requires the connection to be established. ESA filters email URLs, not network DNS queries. ISE/TrustSec handles network access control, not DNS-layer threat filtering."},
+
+{id:69, cert:3, q:"Which attack exploits improperly sanitized SQL queries in web application input fields to gain unauthorized access to backend databases?",
+ opts:["Cross-Site Scripting (XSS)","SQL Injection","Buffer Overflow","CSRF (Cross-Site Request Forgery)"],
+ correct:[1],
+ exp:"SQL Injection inserts malicious SQL code into input fields (login forms, search boxes) that are passed directly to the database. If not sanitized, the database executes the injected SQL, potentially exposing all data, allowing authentication bypass, or enabling data deletion. Parameterized queries and input validation are the defenses.",
+ we:"XSS injects scripts into web pages viewed by other users. Buffer overflow overwrites memory boundaries to execute arbitrary code. CSRF tricks authenticated users into making unintended requests."},
+
+{id:70, cert:3, q:"What is the CVSS v3 score range that indicates a CRITICAL severity vulnerability?",
+ opts:["7.0 – 8.9","8.0 – 9.9","9.0 – 10.0","6.0 – 7.9"],
+ correct:[2],
+ exp:"CVSS (Common Vulnerability Scoring System) v3 severity ranges: None=0.0, Low=0.1-3.9, Medium=4.0-6.9, High=7.0-8.9, Critical=9.0-10.0. Critical vulnerabilities typically involve remote code execution without authentication, worm-like propagation, or complete system compromise.",
+ we:"7.0-8.9 is High severity. 8.0-9.9 crosses into Critical at 9.0. 6.0-7.9 spans Medium and High."},
+
+{id:71, cert:3, q:"An engineer configures Cisco ISE to return a downloadable ACL (dACL) after 802.1X authentication. What is the purpose of a dACL?",
+ opts:["To encrypt traffic between the switch and ISE during authentication","To assign a VLAN to the authenticated port","To dynamically apply a per-user ACL on the switch port without pre-configuring it on every switch","To enable MAB (MAC Authentication Bypass) as a fallback method"],
+ correct:[2],
+ exp:"A downloadable ACL (dACL) is defined in ISE and pushed to the authenticating switch (via RADIUS ACCEPT) after successful 802.1X authentication. The switch applies it on the access port for that specific session. This allows granular per-user traffic policies without pre-configuring hundreds of ACLs on every switch.",
+ we:"Traffic encryption is handled by MACsec/TLS. VLAN assignment is a different RADIUS attribute (Tunnel-Private-Group-ID). dACL is a dynamic per-user ACL, not a fallback method — MAB is configured separately as a fallback on the switch."},
+
+{id:72, cert:3, q:"What is the security advantage of deploying Cisco Firepower in 'inline' mode vs 'passive' mode?",
+ opts:["Inline mode provides full packet inspection; passive mode only inspects headers","Inline mode can actively drop malicious traffic in real-time; passive mode generates alerts only","Inline mode has lower latency than passive mode","Passive mode provides better performance for encrypted traffic inspection"],
+ correct:[1],
+ exp:"In inline mode, Firepower sits directly in the traffic path and can drop packets matching IPS signatures in real time before they reach the destination. In passive (tap/SPAN) mode, Firepower receives a copy of traffic — it can only generate alerts and cannot block. Inline provides active prevention; passive provides detection only.",
+ we:"Both modes inspect full packets. Passive mode cannot drop traffic — not block. Inline mode adds latency (due to processing delay); passive mode has no impact on traffic latency. Both modes can inspect encrypted traffic with SSL decryption configured."},
+
+{id:73, cert:3, q:"Which protocol does Cisco ISE use to communicate with network access devices (switches, WLCs) for AAA?",
+ opts:["TACACS+ only","RADIUS only","Both RADIUS and TACACS+, but RADIUS is standard for 802.1X NAC","LDAP"],
+ correct:[2],
+ exp:"Cisco ISE supports both RADIUS and TACACS+. RADIUS is the standard protocol for network access control (802.1X, MAB, VPN) — it uses UDP and combines authentication + authorization. TACACS+ is used for device administration (CLI access control, command authorization). ISE can serve both roles.",
+ we:"ISE supports both protocols. RADIUS is the standard for 802.1X/NAC. LDAP is used by ISE as an identity source (LDAP directory lookup) but is not used to communicate with network devices for AAA."},
+
+{id:74, cert:3, q:"A CVSS score of 9.8 is assigned to a vulnerability with the following: network-adjacent attack vector, no authentication required, high confidentiality/integrity/availability impact. A patch is not yet available. Which mitigation is MOST appropriate for immediate risk reduction?",
+ opts:["Accept the risk — wait for the vendor patch","Deploy a WAF rule to block the vulnerability's attack pattern","Segment the affected systems with firewall rules or ACLs to limit network-adjacent access","Enable verbose logging on affected systems"],
+ correct:[2],
+ exp:"For a critical vulnerability with no available patch, the immediate mitigation is to reduce the attack surface. Since the attack vector is network-adjacent, adding network segmentation (firewall rules, ACLs, VLAN isolation) limits which systems can reach the vulnerable service. This is a classic 'compensating control' when a patch isn't available.",
+ we:"Accepting a 9.8 CVSS risk without mitigation is not acceptable security practice. WAF rules are effective for web application vulnerabilities but may not cover all attack surfaces for a general network vulnerability. Logging alone is detective — it does not prevent exploitation."},
+
+{id:75, cert:3, q:"In a Cisco ISE 802.1X deployment, what is MAB (MAC Authentication Bypass) used for?",
+ opts:["To provide a secondary authentication factor after 802.1X succeeds","To authenticate devices that do not support 802.1X supplicant software (printers, cameras, IoT devices)","To bypass ISE authentication for trusted corporate assets","To allow guest users to authenticate with a web portal instead of certificates"],
+ correct:[1],
+ exp:"MAB allows devices without an 802.1X supplicant (IP phones, printers, cameras, IoT sensors) to authenticate using their MAC address. The switch sends the MAC address as the username/password to ISE via RADIUS. ISE looks up the MAC in its endpoint database and grants appropriate access. MAB is less secure than 802.1X (MAC addresses can be spoofed).",
+ we:"MAB is a fallback when 802.1X fails or times out — not a second factor. MAB is for non-supplicant devices, not a bypass for trusted assets (those would use EAP-TLS). Guest web portal authentication is CWA (Central Web Authentication), not MAB."}
+
+]; // end QUESTIONS
+
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+const CERT_NAMES = {
+  1: "CCNA 200-301",
+  2: "ENARSI 300-410",
+  3: "SCOR 350-701"
+};
+const CERT_CLASS  = { 1:"c1", 2:"c2", 3:"c3" };
+const CERT_COLORS = { 1:"#3b82f6", 2:"#22c55e", 3:"#ef4444" };
+const PASS_SCORE  = 82;  // ~825/1000 Cisco passing score
+const EXAM_MINS   = 90;
+const EXAM_Q      = 55;  // draw randomly per attempt
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let state = {
+  screen: "start",
+  mode: "timed",
+  certFilter: "all",
+  questions: [],
+  current: 0,
+  answers: {},
+  submitted: {},
+  startTime: null,
+  remaining: EXAM_MINS * 60,
+  timerID: null,
+  reviewIdx: null
+};
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function fmtTime(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function calcScore() {
+  const byCert = { 1:{t:0,c:0}, 2:{t:0,c:0}, 3:{t:0,c:0} };
+  let total = 0, correct = 0;
+  state.questions.forEach((q, i) => {
+    total++;
+    byCert[q.cert].t++;
+    const ans = state.answers[i] || new Set();
+    const cs  = new Set(q.correct);
+    const ok  = ans.size === cs.size && [...ans].every(v => cs.has(v));
+    if (ok) { correct++; byCert[q.cert].c++; }
+  });
+  return { total, correct, byCert };
+}
+
+// ─────────────────────────────────────────────
+//  TIMER
+// ─────────────────────────────────────────────
+function startTimer() {
+  if (state.mode !== "timed") return;
+  clearInterval(state.timerID);
+  state.timerID = setInterval(() => {
+    state.remaining--;
+    updateTimerDisplay();
+    if (state.remaining <= 0) { clearInterval(state.timerID); endExam(); }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const el = document.getElementById("timer");
+  if (!el) return;
+  el.textContent = fmtTime(state.remaining);
+  el.className = "";
+  if (state.remaining <= 300) el.classList.add("danger");
+  else if (state.remaining <= 600) el.classList.add("warning");
+}
+function stopTimer() { clearInterval(state.timerID); }
+
+// ─────────────────────────────────────────────
+//  ACTIONS
+// ─────────────────────────────────────────────
+function startExam(mode) {
+  const pool = state.certFilter === "all"
+    ? [...QUESTIONS]
+    : QUESTIONS.filter(q => q.cert === state.certFilter);
+  state.mode       = mode;
+  state.screen     = "exam";
+  state.current    = 0;
+  state.answers    = {};
+  state.submitted  = {};
+  state.questions  = shuffle(pool).slice(0, Math.min(EXAM_Q, pool.length));
+  state.startTime  = Date.now();
+  state.remaining  = EXAM_MINS * 60;
+  render();
+  if (mode === "timed") startTimer();
+}
+
+function selectOption(qIdx, optIdx) {
+  if (state.submitted[qIdx]) return;
+  const q = state.questions[qIdx];
+  const ans = state.answers[qIdx] = state.answers[qIdx] || new Set();
+  if (q.multi) { if (ans.has(optIdx)) ans.delete(optIdx); else ans.add(optIdx); }
+  else { ans.clear(); ans.add(optIdx); }
+  renderQuestion();
+}
+
+function submitAnswer() {
+  const i = state.current;
+  if (state.submitted[i] || !state.answers[i] || state.answers[i].size === 0) return;
+  state.submitted[i] = true;
+  renderQuestion();
+}
+
+function navigate(dir) {
+  state.current = Math.max(0, Math.min(state.questions.length - 1, state.current + dir));
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function endExam() { stopTimer(); state.screen = "results"; render(); }
+function showReview() { state.screen = "review"; state.reviewIdx = null; render(); }
+function showReviewQuestion(i) { state.reviewIdx = i; state.screen = "reviewq"; render(); }
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+  if      (state.screen === "start")   app.innerHTML = renderStart();
+  else if (state.screen === "exam")    app.innerHTML = renderExamShell();
+  else if (state.screen === "results") app.innerHTML = renderResults();
+  else if (state.screen === "review")  app.innerHTML = renderReviewList();
+  else if (state.screen === "reviewq") app.innerHTML = renderReviewQuestion();
+  attachListeners();
+}
+
+function renderStart() {
+  const certCounts = { all: QUESTIONS.length };
+  [1,2,3].forEach(c => certCounts[c] = QUESTIONS.filter(q => q.cert === c).length);
+  const certLabels = { all:"All Exams", 1:"CCNA 200-301", 2:"ENARSI 300-410", 3:"SCOR 350-701" };
+  const certBtns = ["all",1,2,3].map(c => {
+    const cls = state.certFilter == c ? "active" : "";
+    const clsName = c === "all" ? "all" : ["","ccna","enarsi","scor"][c];
+    return `<button class="cert-btn ${clsName} ${cls}" onclick="setCertFilter('${c}')">${certLabels[c]} (${certCounts[c]})</button>`;
+  }).join("");
+
+  return `
+<div class="screen">
+  <div class="cisco-logo">🔵</div>
+  <h1>Cisco Practice Exam</h1>
+  <p>CCNA 200-301 &nbsp;·&nbsp; CCNP ENARSI 300-410 &nbsp;·&nbsp; CCNP SCOR 350-701</p>
+
+  <div class="info-grid">
+    <div class="info-box"><div class="val">${Math.min(EXAM_Q, QUESTIONS.filter(q => state.certFilter === "all" || q.cert == state.certFilter).length)}</div><div class="lbl">Per Attempt</div></div>
+    <div class="info-box"><div class="val">${QUESTIONS.filter(q => state.certFilter === "all" || q.cert == state.certFilter).length}</div><div class="lbl">Pool Size</div></div>
+    <div class="info-box"><div class="val">${EXAM_MINS}m</div><div class="lbl">Time Limit</div></div>
+    <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Pass Score</div></div>
+  </div>
+
+  <p style="font-weight:600;margin-bottom:8px;">Filter by certification:</p>
+  <div class="cert-filter">${certBtns}</div>
+
+  <p style="font-weight:600;margin:16px 0 8px;">Select a mode:</p>
+  <div class="mode-grid">
+    <div class="mode-card ${selectedMode==='timed'?'active':''}" id="mode-timed" onclick="setMode('timed')">
+      <h3>⏱ Timed Exam</h3>
+      <p>Simulates the real exam with a ${EXAM_MINS}-minute countdown. Explanations revealed after submission or exam end.</p>
+    </div>
+    <div class="mode-card ${selectedMode==='practice'?'active':''}" id="mode-practice" onclick="setMode('practice')">
+      <h3>📚 Practice Mode</h3>
+      <p>No time limit. Explanations shown immediately after each answer.</p>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:8px;" onclick="startExam(selectedMode)">Start Exam</button>
+  <p style="margin-top:20px;font-size:13px;opacity:0.7;"><a href="cisco-study.html" style="color:var(--accent);text-decoration:none;font-weight:600;">← Back to Cisco Study Guide</a> &nbsp;·&nbsp; <a href="index.html" style="color:var(--muted);text-decoration:none;">AWS Practice Exam →</a></p>
+</div>`;
+}
+
+let selectedMode = "timed";
+function setMode(m) {
+  selectedMode = m;
+  document.querySelectorAll(".mode-card").forEach(c => c.classList.remove("active"));
+  document.getElementById("mode-" + m).classList.add("active");
+}
+
+function setCertFilter(v) {
+  state.certFilter = v == "all" ? "all" : parseInt(v);
+  render();
+}
+
+function renderExamShell() {
+  const pct = ((state.current + 1) / state.questions.length * 100).toFixed(1);
+  const answered = Object.keys(state.submitted).length;
+  return `
+<div class="exam-header">
+  <span class="exam-title">Cisco Practice Exam</span>
+  <div class="exam-meta">
+    <div class="stat"><div class="stat-val">${state.current+1}/${state.questions.length}</div><div class="stat-lbl">Question</div></div>
+    <div class="stat"><div class="stat-val">${answered}</div><div class="stat-lbl">Answered</div></div>
+    ${state.mode === "timed" ? `<div class="stat"><div id="timer" class="stat-val">${fmtTime(state.remaining)}</div><div class="stat-lbl">Remaining</div></div>` : ""}
+    <button class="btn btn-danger" onclick="if(confirm('End exam and see results?')) endExam()">End Exam</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+<div id="question-area">${renderQuestionHTML(state.current)}</div>`;
+}
+
+function renderQuestion() {
+  const el = document.getElementById("question-area");
+  if (el) el.innerHTML = renderQuestionHTML(state.current);
+  if (state.mode === "timed") updateTimerDisplay();
+  attachListeners();
+}
+
+function buildExplanationBlock(q, ans) {
+  const cs = new Set(q.correct);
+  const ok = ans.size === cs.size && [...ans].every(v => cs.has(v));
+  const isPractice = state.mode === "practice";
+  const correctLetters = q.correct.map(oi => String.fromCharCode(65+oi)).join(", ");
+  const wrongChosen = [...ans].filter(oi => !cs.has(oi));
+
+  let html = `<div class="exp-block">`;
+
+  if (isPractice && !ok && ans.size > 0) {
+    if (wrongChosen.length) {
+      html += `<div class="exp-section exp-wrong"><div class="exp-header">✗ Your incorrect selection${wrongChosen.length>1?"s":""}</div><div class="exp-wrong-opts">`;
+      wrongChosen.forEach(oi => { html += `<div class="exp-wrong-opt"><span class="exp-wrong-letter">${String.fromCharCode(65+oi)}.</span><span>${q.opts[oi]}</span></div>`; });
+      html += `</div></div>`;
+    }
+    if (q.we) html += `<div class="exp-section exp-wrong"><div class="exp-header">Why these are wrong</div>${q.we}</div>`;
+    html += `<div class="exp-section exp-correct"><div class="exp-header">✓ Correct answer${q.correct.length>1?"s":""}: ${correctLetters}</div>${q.exp}</div>`;
+  } else if (isPractice && ok) {
+    html += `<div class="exp-section exp-correct"><div class="exp-header">✓ Correct!</div>${q.exp}</div>`;
+  } else {
+    html += `<div class="exp-section exp-neutral"><div class="exp-header">Explanation &nbsp;·&nbsp; Correct: ${correctLetters}</div>${q.exp}</div>`;
+    if (q.we && ans.size > 0 && !ok) html += `<div class="exp-section exp-wrong"><div class="exp-header">Why the distractors fail</div>${q.we}</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function renderQuestionHTML(i) {
+  const q   = state.questions[i];
+  const ans = state.answers[i] || new Set();
+  const sub = state.submitted[i];
+  const cs  = new Set(q.correct);
+
+  const opts = q.opts.map((opt, oi) => {
+    let cls = "option";
+    if (sub) { cls += " disabled"; if (cs.has(oi)) cls += " correct"; else if (ans.has(oi)) cls += " incorrect"; }
+    else if (ans.has(oi)) cls += " selected";
+    return `<div class="${cls}" data-qi="${i}" data-oi="${oi}"><div class="option-letter">${String.fromCharCode(65+oi)}</div><div class="option-text">${opt}</div></div>`;
+  }).join("");
+
+  const multiHint = q.multi ? `<div class="multi-hint">★ Select ${q.correct.length} answers</div>` : "";
+  const expBlock  = sub ? buildExplanationBlock(q, ans) : "";
+  const canSubmit = ans.size > 0 && !sub;
+  const isLast    = i === state.questions.length - 1;
+
+  return `
+<div class="question-card">
+  <div class="question-num">Question ${i+1} of ${state.questions.length}</div>
+  <span class="cert-badge ${CERT_CLASS[q.cert]}">${CERT_NAMES[q.cert]}</span>
+  <div class="question-text">${q.q}</div>
+  ${multiHint}
+  <div class="options">${opts}</div>
+  ${expBlock}
+</div>
+<div class="nav-row">
+  <button class="btn btn-secondary" onclick="navigate(-1)" ${i===0?"disabled":""}>← Previous</button>
+  <div style="display:flex;gap:10px;">
+    ${!sub ? `<button class="btn btn-primary" onclick="submitAnswer()" ${!canSubmit?"disabled":""}>Check Answer</button>` : ""}
+    ${sub && isLast ? `<button class="btn btn-primary" onclick="endExam()">View Results</button>` : ""}
+    ${i < state.questions.length-1 ? `<button class="btn btn-secondary" onclick="navigate(1)">Next →</button>` : ""}
+  </div>
+</div>`;
+}
+
+function renderResults() {
+  const { total, correct, byCert } = calcScore();
+  const pct  = Math.round(correct / total * 100);
+  const pass = pct >= PASS_SCORE;
+  const circ = 2 * Math.PI * 60;
+  const dash = circ * (1 - pct / 100);
+  const color = pass ? "#2ecc71" : "#e74c3c";
+
+  const certBars = [1,2,3].map(c => {
+    const {t, cv: cvv} = { t: byCert[c].t, cv: byCert[c].c };
+    const ct = byCert[c].t;
+    if (ct === 0) return "";
+    const cc = byCert[c].c;
+    const dp = Math.round(cc/ct*100);
+    const dc = dp >= PASS_SCORE ? "#2ecc71" : "#e74c3c";
+    return `<div class="domain-row">
+      <div class="domain-label"><span>${CERT_NAMES[c]}</span><span>${cc}/${ct} (${dp}%)</span></div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${dp}%;background:${dc}"></div></div>
+    </div>`;
+  }).join("");
+
+  return `
+<div class="screen">
+  <h1>Exam Complete</h1>
+  <p>${pass ? "Congratulations! You passed." : "Keep practicing — you'll get there."}</p>
+  <div class="score-ring">
+    <svg width="160" height="160" viewBox="0 0 160 160">
+      <circle class="ring-bg" cx="80" cy="80" r="60"/>
+      <circle class="ring-val" cx="80" cy="80" r="60" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${dash}"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" style="color:${color}">${pct}%</div>
+      <div class="ring-pass" style="color:${color}">${pass?"PASS":"FAIL"}</div>
+    </div>
+  </div>
+  <div class="info-grid">
+    <div class="info-box"><div class="val" style="color:var(--green)">${correct}</div><div class="lbl">Correct</div></div>
+    <div class="info-box"><div class="val" style="color:var(--red)">${total-correct}</div><div class="lbl">Incorrect</div></div>
+    <div class="info-box"><div class="val">${total}</div><div class="lbl">Total</div></div>
+    <div class="info-box"><div class="val" style="color:${color}">${pct}%</div><div class="lbl">Score</div></div>
+  </div>
+  <div class="domain-scores">${certBars}</div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <button class="btn btn-secondary" onclick="showReview()">Review Answers</button>
+    <button class="btn btn-primary" onclick="state.screen='start';render()">New Exam</button>
+  </div>
+</div>`;
+}
+
+function renderReviewList() {
+  const { byCert } = calcScore();
+  const items = state.questions.map((q, i) => {
+    const ans = state.answers[i] || new Set();
+    const sub = state.submitted[i];
+    const cs  = new Set(q.correct);
+    const ok  = sub && ans.size === cs.size && [...ans].every(v => cs.has(v));
+    const cls = !sub ? "r-skipped" : ok ? "r-correct" : "r-incorrect";
+    const mark = !sub ? "—" : ok ? "✓" : "✗";
+    return `<div class="review-item"><div class="review-q" onclick="showReviewQuestion(${i})">
+      <div class="review-icon ${cls}">${mark}</div>
+      <div><span style="color:var(--muted);font-size:11px;">${CERT_NAMES[q.cert]}</span><br>${q.q}</div>
+    </div></div>`;
+  }).join("");
+
+  return `
+<div class="screen" style="text-align:left;max-height:none;">
+  <h1 style="text-align:center;margin-bottom:8px;">Answer Review</h1>
+  <p style="text-align:center;">Click a question to see the explanation.</p>
+  <div style="margin-top:16px;">${items}</div>
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn btn-primary" onclick="state.screen='results';render()">← Back to Results</button>
+  </div>
+</div>`;
+}
+
+function renderReviewQuestion() {
+  const i   = state.reviewIdx;
+  const q   = state.questions[i];
+  const ans = state.answers[i] || new Set();
+  const cs  = new Set(q.correct);
+
+  const opts = q.opts.map((opt, oi) => {
+    let cls = "option disabled";
+    if (cs.has(oi)) cls += " correct";
+    else if (ans.has(oi)) cls += " incorrect";
+    return `<div class="${cls}"><div class="option-letter">${String.fromCharCode(65+oi)}</div><div class="option-text">${opt}</div></div>`;
+  }).join("");
+
+  const sub = state.submitted[i] !== undefined;
+
+  return `
+<div class="question-card">
+  <div class="question-num">Review: Question ${i+1} of ${state.questions.length}</div>
+  <span class="cert-badge ${CERT_CLASS[q.cert]}">${CERT_NAMES[q.cert]}</span>
+  <div class="question-text">${q.q}</div>
+  <div class="options">${opts}</div>
+  ${buildExplanationBlock(q, ans)}
+</div>
+<div class="nav-row">
+  <button class="btn btn-secondary" onclick="${i > 0 ? `showReviewQuestion(${i-1})` : "showReview()"}">← Prev</button>
+  <button class="btn btn-secondary" onclick="showReview()">List</button>
+  <button class="btn btn-secondary" onclick="${i < state.questions.length-1 ? `showReviewQuestion(${i+1})` : "showReview()"}">Next →</button>
+</div>`;
+}
+
+function attachListeners() {
+  document.querySelectorAll(".option[data-qi]").forEach(el => {
+    el.addEventListener("click", () => {
+      selectOption(parseInt(el.dataset.qi), parseInt(el.dataset.oi));
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", render);
+</script>
+</body>
+</html>
