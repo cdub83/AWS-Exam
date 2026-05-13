@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cisco Training — CCNA · ENARSI · SCOR Study Guide & Flashcards</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #1d9bf0; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3b82f6; --yellow: #f39c12; --purple: #9b59b6;
+    --ccna: #3b82f6; --enarsi: #22c55e; --scor: #ef4444;
+    --ccna-dim: #1a2744; --enarsi-dim: #142814; --scor-dim: #2a1414;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  /* ── Top Nav ── */
+  .top-nav {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 24px; display: flex; align-items: center; gap: 0; position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { font-size: 13px; font-weight: 700; color: var(--accent); padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 4px; white-space: nowrap; }
+  .nav-tab {
+    padding: 16px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-bottom: 3px solid transparent; color: var(--muted); transition: color .15s, border-color .15s;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-spacer { flex: 1; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: color .15s, border-color .15s; }
+  .nav-link:hover { color: var(--text); border-color: var(--muted); }
+
+  /* ── Layout ── */
+  #app { max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Cert section headers ── */
+  .cert-banner {
+    padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;
+  }
+  .cert-banner.ccna  { background: #0d1a33; border: 1px solid #1e3a6e; }
+  .cert-banner.enarsi { background: #0d2010; border: 1px solid #1a4a20; }
+  .cert-banner.scor  { background: #2a0d0d; border: 1px solid #5a1a1a; }
+  .cert-title { font-size: 18px; font-weight: 800; }
+  .cert-title.ccna  { color: var(--ccna); }
+  .cert-title.enarsi { color: var(--enarsi); }
+  .cert-title.scor  { color: var(--scor); }
+  .cert-sub { font-size: 13px; color: var(--muted); }
+
+  /* ── Domain sections ── */
+  .domain-section { margin-bottom: 16px; }
+  .domain-header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 0 0;
+    cursor: pointer; user-select: none;
+  }
+  .domain-header:hover { border-color: var(--accent); }
+  .domain-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .domain-title { font-size: 15px; font-weight: 700; flex: 1; }
+  .domain-pct { font-size: 12px; color: var(--muted); }
+  .chevron { color: var(--muted); transition: transform .2s; font-size: 12px; }
+  .domain-header.open .chevron { transform: rotate(180deg); }
+  .domain-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 24px; display: none; }
+  .domain-body.open { display: block; }
+
+  /* ── Concept cards ── */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .concept-card h4 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .concept-card ul { list-style: none; }
+  .concept-card li { font-size: 13px; color: var(--text); padding: 3px 0; padding-left: 14px; position: relative; }
+  .concept-card li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+  .concept-card .key { color: var(--accent); font-weight: 600; }
+
+  /* ── Trap / Tip boxes ── */
+  .trap-box { background: #1f1210; border: 1px solid #7f2020; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .trap-box .trap-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--red); margin-bottom: 6px; }
+  .tip-box  { background: #0e1f12; border: 1px solid #1f7f20; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .tip-box  .tip-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--green); margin-bottom: 6px; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); font-weight: 700; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  td { padding: 9px 12px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: #1c1f2e; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no  { color: var(--red);   font-weight: 600; }
+  .val { color: var(--accent); font-weight: 600; }
+
+  /* ── Section heading ── */
+  .sg-heading { font-size: 14px; font-weight: 700; color: var(--text); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+  /* ── Cert divider ── */
+  .cert-divider { border: none; border-top: 2px solid var(--border); margin: 36px 0 28px; }
+
+  /* ── Flashcard tab ── */
+  .fc-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .fc-filter-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; cursor: pointer; background: var(--surface2);
+    color: var(--muted); transition: all .15s;
+  }
+  .fc-filter-btn:hover { color: var(--text); }
+  .fc-filter-btn.active { color: #000; }
+  .fc-filter-btn.active.f-all    { background: var(--accent); border-color: var(--accent); }
+  .fc-filter-btn.active.f-ccna   { background: var(--ccna);   border-color: var(--ccna); }
+  .fc-filter-btn.active.f-enarsi { background: var(--enarsi); border-color: var(--enarsi); }
+  .fc-filter-btn.active.f-scor   { background: var(--scor);   border-color: var(--scor); }
+
+  .fc-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .fc-prog-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .fc-prog-fill { height: 100%; background: var(--green); transition: width .3s; }
+
+  .fc-scene { width: 100%; perspective: 1000px; margin-bottom: 16px; cursor: pointer; }
+  .fc-card-wrap { position: relative; width: 100%; transition: transform 0.5s; transform-style: preserve-3d; min-height: 240px; }
+  .fc-card-wrap.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; width: 100%; min-height: 240px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fc-front { background: var(--surface); border: 1px solid var(--border); }
+  .fc-back  { background: #0e1f12;        border: 1px solid #2a5a2a; transform: rotateY(180deg); }
+  .fc-category { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+  .fc-q { font-size: 17px; font-weight: 600; line-height: 1.5; }
+  .fc-a { font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+  .fc-detail { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .fc-hint { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+  .fc-nav { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary   { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-green     { background: var(--green);  color: #000; }
+  .btn-muted     { background: var(--border); color: var(--muted); }
+
+  .fc-stats { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 12px; }
+  .fc-stat  { text-align: center; }
+  .fc-stat-val { font-size: 20px; font-weight: 700; }
+  .fc-stat-lbl { color: var(--muted); font-size: 11px; }
+
+  @media(max-width:600px) { .fc-q { font-size: 15px; } .fc-a { font-size: 14px; } .fc-face { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">Cisco Training</div>
+  <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
+  <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="index.html">← AWS Practice Exam</a>
+</nav>
+
+<div id="app">
+
+<!-- ══════════════════════════════════════════════ STUDY GUIDE ══ -->
+<div id="tab-guide" class="tab-pane active">
+
+<!-- ═══════════════════════════════════════════════════ CCNA ══ -->
+<div class="cert-banner ccna">
+  <div>
+    <div class="cert-title ccna">CCNA 200-301</div>
+    <div class="cert-sub">Cisco Certified Network Associate · 6 domains · 120 minutes · 100–120 questions</div>
+  </div>
+</div>
+
+<!-- CCNA D1: Network Fundamentals -->
+<div class="domain-section">
+  <div class="domain-header open" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#3b82f6"></div>
+    <div class="domain-title">CCNA Domain 1 — Network Fundamentals</div>
+    <div class="domain-pct">20% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body open">
+
+    <div class="sg-heading">OSI & TCP/IP Models</div>
+    <div class="table-wrap"><table>
+      <tr><th>OSI Layer</th><th>Name</th><th>Protocol / Device</th><th>PDU</th></tr>
+      <tr><td>7</td><td>Application</td><td>HTTP, HTTPS, DNS, DHCP, FTP, SMTP, SNMP</td><td>Data</td></tr>
+      <tr><td>6</td><td>Presentation</td><td>SSL/TLS, JPEG, ASCII</td><td>Data</td></tr>
+      <tr><td>5</td><td>Session</td><td>NetBIOS, RPC, SQL sessions</td><td>Data</td></tr>
+      <tr><td>4</td><td>Transport</td><td>TCP (reliable), UDP (unreliable)</td><td>Segment</td></tr>
+      <tr><td>3</td><td>Network</td><td>IP, ICMP, OSPF, EIGRP — Router</td><td>Packet</td></tr>
+      <tr><td>2</td><td>Data Link</td><td>Ethernet, 802.11, PPP — Switch/Bridge</td><td>Frame</td></tr>
+      <tr><td>1</td><td>Physical</td><td>RJ-45, fiber, coax, repeater/hub</td><td>Bits</td></tr>
+    </table></div>
+
+    <div class="sg-heading">IPv4 Subnetting Quick Reference</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Subnet Math</h4><ul>
+        <li>Hosts per subnet = <span class="key">2^h − 2</span> (h = host bits)</li>
+        <li>Subnets = <span class="key">2^s</span> (s = borrowed subnet bits)</li>
+        <li>/24 → 254 hosts; /25 → 126; /26 → 62; /27 → 30; /28 → 14; /29 → 6; /30 → 2</li>
+        <li>Broadcast = last address of subnet block</li>
+        <li>Network = first address; router usually .1</li>
+      </ul></div>
+      <div class="concept-card"><h4>Private Ranges (RFC 1918)</h4><ul>
+        <li><span class="key">10.0.0.0/8</span> — Class A private</li>
+        <li><span class="key">172.16.0.0/12</span> — Class B private (172.16–172.31)</li>
+        <li><span class="key">192.168.0.0/16</span> — Class C private</li>
+        <li>127.0.0.0/8 — loopback</li>
+        <li>169.254.0.0/16 — APIPA (link-local)</li>
+      </ul></div>
+      <div class="concept-card"><h4>IPv6 Basics</h4><ul>
+        <li>128-bit address, colon-hex notation</li>
+        <li><span class="key">::1</span> — loopback</li>
+        <li><span class="key">FE80::/10</span> — link-local (mandatory on every interface)</li>
+        <li><span class="key">FF00::/8</span> — multicast</li>
+        <li><span class="key">2000::/3</span> — global unicast (public)</li>
+        <li>EUI-64: uses MAC address to auto-generate interface ID</li>
+      </ul></div>
+    </div>
+    <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>TCP guarantees delivery with ACKs, sequencing, and retransmission. UDP does not — it is connectionless and used when speed matters more than reliability (DNS, VoIP, streaming). Confusing these on scenario questions costs marks.</div>
+
+    <div class="sg-heading">Ethernet Fundamentals</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>MAC Addresses</h4><ul>
+        <li>48-bit (6-byte) burned-in address (BIA)</li>
+        <li>First 3 bytes = OUI (vendor); last 3 = device identifier</li>
+        <li>FF:FF:FF:FF:FF:FF = broadcast</li>
+        <li>Switches learn MACs from source frames and populate CAM table</li>
+        <li>Unknown unicast = flooded out all ports except source</li>
+      </ul></div>
+      <div class="concept-card"><h4>Half vs Full Duplex</h4><ul>
+        <li>Half duplex → CSMA/CD collision detection (hubs)</li>
+        <li>Full duplex → no collisions; both directions simultaneously</li>
+        <li>Modern switches always operate in full duplex</li>
+        <li>Auto-negotiation mismatch (one side full, other half) causes errors</li>
+      </ul></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CCNA D2: Network Access -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#60a5fa"></div>
+    <div class="domain-title">CCNA Domain 2 — Network Access</div>
+    <div class="domain-pct">20% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+
+    <div class="sg-heading">VLANs & Trunking</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>VLAN Basics</h4><ul>
+        <li>VLANs segment broadcast domains at Layer 2</li>
+        <li>Default VLAN = <span class="key">VLAN 1</span> (avoid using it — security risk)</li>
+        <li>Native VLAN: untagged frames on a trunk (default VLAN 1; must match both ends)</li>
+        <li>Access port: carries one VLAN, no tags</li>
+        <li>Trunk port: carries multiple VLANs using 802.1Q tagging</li>
+      </ul></div>
+      <div class="concept-card"><h4>Inter-VLAN Routing</h4><ul>
+        <li><span class="key">Router-on-a-Stick</span>: single physical link, subinterfaces per VLAN</li>
+        <li><span class="key">Layer 3 Switch</span>: SVIs (switched virtual interfaces) per VLAN</li>
+        <li>SVI: virtual interface on L3 switch — acts as default gateway for VLAN</li>
+        <li>L3 switch requires <code>ip routing</code> command</li>
+      </ul></div>
+      <div class="concept-card"><h4>VTP (VLAN Trunking Protocol)</h4><ul>
+        <li><span class="key">Server</span>: creates/modifies/deletes VLANs, sends updates</li>
+        <li><span class="key">Client</span>: receives and applies updates, cannot modify</li>
+        <li><span class="key">Transparent</span>: local VLANs only, forwards updates</li>
+        <li>VTP revision number: higher wins — joining a rogue switch can wipe VLANs</li>
+        <li>Best practice: use VTP transparent or disable VTP</li>
+      </ul></div>
+    </div>
+    <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Native VLAN must match on both ends of a trunk. A mismatch causes a CDP warning and traffic from the mismatched VLAN crosses silently into the wrong VLAN — a VLAN hopping vector.</div>
+
+    <div class="sg-heading">Spanning Tree Protocol (STP)</div>
+    <div class="table-wrap"><table>
+      <tr><th>STP Variant</th><th>Standard</th><th>Instance</th><th>Convergence</th></tr>
+      <tr><td>STP (802.1D)</td><td>Original</td><td>1 tree (CST)</td><td>~30–50 seconds</td></tr>
+      <tr><td>PVST+</td><td>Cisco proprietary</td><td>One per VLAN</td><td>~30–50 seconds</td></tr>
+      <tr><td>RSTP (802.1w)</td><td>IEEE</td><td>1 tree</td><td>~1–2 seconds</td></tr>
+      <tr><td>Rapid PVST+</td><td>Cisco + RSTP</td><td>One per VLAN</td><td>~1–2 seconds</td></tr>
+      <tr><td>MST (802.1s)</td><td>IEEE</td><td>Multiple instances</td><td>~1–2 seconds</td></tr>
+    </table></div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>STP Port Roles</h4><ul>
+        <li><span class="key">Root Port (RP)</span>: best path toward root bridge (non-root switches)</li>
+        <li><span class="key">Designated Port (DP)</span>: best port on each segment toward root</li>
+        <li><span class="key">Blocked / Alternate</span>: prevents loops</li>
+        <li>Root bridge: lowest Bridge ID (priority + MAC). Default priority = <span class="key">32768</span></li>
+        <li>Lowest Bridge ID wins root election</li>
+      </ul></div>
+      <div class="concept-card"><h4>STP Security</h4><ul>
+        <li><span class="key">PortFast</span>: skip listening/learning on access ports (immediate forwarding)</li>
+        <li><span class="key">BPDU Guard</span>: shut port if BPDU received (protects access ports)</li>
+        <li><span class="key">Root Guard</span>: prevents inferior switch from becoming root on a port</li>
+        <li><span class="key">Loop Guard</span>: prevents unidirectional link failures from creating loops</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">EtherChannel</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>EtherChannel Protocols</h4><ul>
+        <li><span class="key">LACP (802.3ad)</span>: IEEE standard; Active/Passive modes</li>
+        <li><span class="key">PAgP</span>: Cisco proprietary; Desirable/Auto modes</li>
+        <li>Static: "on" mode — no negotiation (both ends must be "on")</li>
+        <li>Up to 8 active links; load-balance by src/dst MAC, IP, or port</li>
+        <li>All ports must match: speed, duplex, VLAN config, trunk settings</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">Wireless LAN (802.11)</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Standards</h4><ul>
+        <li>802.11a: 5 GHz, up to 54 Mbps</li>
+        <li>802.11b: 2.4 GHz, up to 11 Mbps</li>
+        <li>802.11g: 2.4 GHz, up to 54 Mbps</li>
+        <li>802.11n (Wi-Fi 4): 2.4/5 GHz, up to 600 Mbps (MIMO)</li>
+        <li>802.11ac (Wi-Fi 5): 5 GHz, up to 3.5 Gbps (MU-MIMO)</li>
+        <li>802.11ax (Wi-Fi 6): 2.4/5/6 GHz, OFDMA, up to 9.6 Gbps</li>
+      </ul></div>
+      <div class="concept-card"><h4>Wireless Architecture</h4><ul>
+        <li><span class="key">Autonomous AP</span>: standalone, self-configured</li>
+        <li><span class="key">Lightweight AP (LWAP)</span>: managed by WLC via CAPWAP</li>
+        <li>CAPWAP: UDP 5246 (control), 5247 (data)</li>
+        <li>WLC centrally configures SSIDs, channels, power</li>
+        <li>BSS: single AP cell; ESS: multiple APs, same SSID</li>
+      </ul></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CCNA D3: IP Connectivity -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#93c5fd"></div>
+    <div class="domain-title">CCNA Domain 3 — IP Connectivity</div>
+    <div class="domain-pct">25% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+
+    <div class="sg-heading">Routing Fundamentals</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Administrative Distance</h4><ul>
+        <li><span class="key">Connected</span>: 0</li>
+        <li><span class="key">Static</span>: 1 (floating static: higher AD for backup)</li>
+        <li><span class="key">EIGRP Summary</span>: 5</li>
+        <li><span class="key">eBGP</span>: 20</li>
+        <li><span class="key">EIGRP internal</span>: 90</li>
+        <li><span class="key">OSPF</span>: 110</li>
+        <li><span class="key">RIP</span>: 120</li>
+        <li><span class="key">EIGRP external</span>: 170</li>
+        <li><span class="key">iBGP</span>: 200</li>
+      </ul></div>
+      <div class="concept-card"><h4>Static Routes</h4><ul>
+        <li><code>ip route network mask {next-hop | exit-if}</code></li>
+        <li>Default route: <span class="key">0.0.0.0 0.0.0.0</span></li>
+        <li>Floating static: set AD higher than dynamic protocol</li>
+        <li>Recursive lookup: router must resolve next-hop to exit interface</li>
+        <li>Directly connected static (exit-if): faster but may have proxy ARP issues</li>
+      </ul></div>
+      <div class="concept-card"><h4>OSPF Basics (CCNA)</h4><ul>
+        <li>Link-state, Dijkstra SPF algorithm</li>
+        <li>Uses areas — Area 0 = backbone (mandatory)</li>
+        <li>Metric: <span class="key">cost = 10^8 / bandwidth</span></li>
+        <li>DR/BDR election on multi-access networks (highest priority wins, then highest Router ID)</li>
+        <li>Hello: 10 s (broadcast); Dead: 40 s. Must match on segment.</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">First Hop Redundancy Protocols (FHRP)</div>
+    <div class="table-wrap"><table>
+      <tr><th>Protocol</th><th>Standard</th><th>Virtual IP</th><th>Preemption</th><th>Load Balancing</th></tr>
+      <tr><td>HSRP v1/v2</td><td>Cisco</td><td>Configurable</td><td>Off by default</td><td>Multiple groups</td></tr>
+      <tr><td>VRRP</td><td>IEEE 802.1s</td><td>Can use real IP</td><td>On by default</td><td>Multiple groups</td></tr>
+      <tr><td>GLBP</td><td>Cisco</td><td>Configurable</td><td>On by default</td><td>Native (AVF)</td></tr>
+    </table></div>
+    <div class="tip-box"><div class="tip-label">✓ Key Concept</div>HSRP default priority is <strong>100</strong>. Higher priority wins Active role. Preemption must be explicitly enabled — without it, a lower-priority router stays active even if a higher-priority router comes back online.</div>
+
+  </div>
+</div>
+
+<!-- CCNA D4+5: IP Services & Security Fundamentals -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#bfdbfe"></div>
+    <div class="domain-title">CCNA Domains 4 & 5 — IP Services & Security Fundamentals</div>
+    <div class="domain-pct">25% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+
+    <div class="sg-heading">NAT / PAT</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>NAT Types</h4><ul>
+        <li><span class="key">Static NAT</span>: one-to-one permanent mapping</li>
+        <li><span class="key">Dynamic NAT</span>: pool of public IPs, first-come first-served</li>
+        <li><span class="key">PAT (Overload)</span>: many-to-one using port numbers (most common)</li>
+        <li>Inside local: private IP of internal host</li>
+        <li>Inside global: public IP seen by internet (after NAT)</li>
+        <li>Outside global: public IP of destination server</li>
+      </ul></div>
+      <div class="concept-card"><h4>DHCP</h4><ul>
+        <li>DORA: Discover → Offer → Request → Acknowledge</li>
+        <li>DHCP server can be on separate subnet with <span class="key">ip helper-address</span></li>
+        <li>ip helper-address configured on router interface toward clients</li>
+        <li>DHCP snooping: validates DHCP messages; trusted vs untrusted ports</li>
+      </ul></div>
+      <div class="concept-card"><h4>NTP</h4><ul>
+        <li>Stratum 0: reference clock (GPS, atomic); Stratum 1: server synced to stratum 0</li>
+        <li>Cisco default: <code>ntp server &lt;ip&gt;</code></li>
+        <li>Critical for: syslog timestamps, certificate validity, Kerberos auth</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">Access Control Lists (ACLs)</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>ACL Types</h4><ul>
+        <li><span class="key">Standard (1–99, 1300–1999)</span>: source IP only; place CLOSE to destination</li>
+        <li><span class="key">Extended (100–199, 2000–2699)</span>: src/dst IP, protocol, port; place CLOSE to source</li>
+        <li>Named ACLs: can insert/delete individual entries with sequence numbers</li>
+        <li>Implicit deny all at end of every ACL</li>
+        <li>Process top-to-bottom; first match wins</li>
+      </ul></div>
+      <div class="concept-card"><h4>Wildcard Masks</h4><ul>
+        <li>Inverse of subnet mask: 0 = must match, 1 = don't care</li>
+        <li>/24 → wildcard <span class="key">0.0.0.255</span></li>
+        <li>/16 → wildcard <span class="key">0.0.255.255</span></li>
+        <li>Any host: <span class="key">host 10.1.1.1</span> or <span class="key">10.1.1.1 0.0.0.0</span></li>
+        <li>Any: <span class="key">any</span> or <span class="key">0.0.0.0 255.255.255.255</span></li>
+      </ul></div>
+    </div>
+    <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Standard ACLs should be placed <strong>close to the destination</strong> (they can only match source IP and would block too much if placed at the source). Extended ACLs should be placed <strong>close to the source</strong> to stop unwanted traffic early.</div>
+
+    <div class="sg-heading">Layer 2 Security</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Port Security</h4><ul>
+        <li>Limits MAC addresses per port</li>
+        <li><span class="key">Restrict</span>: drops, logs, port stays up</li>
+        <li><span class="key">Protect</span>: drops silently, no log</li>
+        <li><span class="key">Shutdown</span>: err-disables port (default)</li>
+        <li>Sticky: dynamically learned MACs saved to running config</li>
+      </ul></div>
+      <div class="concept-card"><h4>DHCP Snooping / DAI</h4><ul>
+        <li>DHCP snooping: blocks rogue DHCP servers on untrusted ports</li>
+        <li>Builds binding table: MAC, IP, port, VLAN</li>
+        <li><span class="key">Dynamic ARP Inspection (DAI)</span>: validates ARP against DHCP snooping table</li>
+        <li>DAI prevents ARP poisoning / MITM attacks</li>
+        <li>Uplink to DHCP server = trusted port</li>
+      </ul></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CCNA D6: Automation -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#dbeafe"></div>
+    <div class="domain-title">CCNA Domain 6 — Automation & Programmability</div>
+    <div class="domain-pct">10% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Configuration Management</h4><ul>
+        <li><span class="key">Ansible</span>: agentless, YAML playbooks, SSH, push-based</li>
+        <li><span class="key">Puppet</span>: agent-based, Ruby DSL manifests, pull-based</li>
+        <li><span class="key">Chef</span>: agent-based, Ruby DSL recipes, pull-based</li>
+        <li>Ansible is most common in Cisco exams (agentless = no software on device)</li>
+      </ul></div>
+      <div class="concept-card"><h4>REST APIs</h4><ul>
+        <li>HTTP methods: GET (read), POST (create), PUT (update), DELETE (remove)</li>
+        <li>JSON and XML data formats</li>
+        <li>YANG: data modeling language for network configuration</li>
+        <li>NETCONF: uses YANG models over SSH for config management</li>
+        <li>RESTCONF: REST + YANG over HTTP/S</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cisco DNA Center / SD-Access</h4><ul>
+        <li>DNA Center: centralized network management and automation platform</li>
+        <li>Northbound API: DNA Center exposes REST API to orchestration tools</li>
+        <li>Southbound API: DNA Center talks to devices via NETCONF, SNMP, CLI</li>
+        <li>Intent-based networking: define desired state, platform configures devices</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<hr class="cert-divider">
+
+<!-- ═══════════════════════════════════════════════ ENARSI ══ -->
+<div class="cert-banner enarsi">
+  <div>
+    <div class="cert-title enarsi">CCNP ENARSI 300-410</div>
+    <div class="cert-sub">Enterprise Advanced Routing & Services · 90 minutes · 55–65 questions</div>
+  </div>
+</div>
+
+<!-- ENARSI D1: Layer 3 Technologies -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#22c55e"></div>
+    <div class="domain-title">ENARSI Domain 1 — Layer 3 Technologies</div>
+    <div class="domain-pct">40% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+
+    <div class="sg-heading">EIGRP (Enhanced IGRP)</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>EIGRP Metrics & Feasibility</h4><ul>
+        <li>Composite metric: <span class="key">K1×BW + K3×Delay</span> (default; K1=K3=1, others=0)</li>
+        <li>Successor: best path (lowest FD — Feasible Distance)</li>
+        <li>Feasible Successor: backup path; <span class="key">RD &lt; FD</span> of current successor (Feasibility Condition)</li>
+        <li>If FC met → instant failover to FS (no query sent)</li>
+        <li>If FC not met → DUAL query process (slower convergence)</li>
+      </ul></div>
+      <div class="concept-card"><h4>EIGRP Named Mode</h4><ul>
+        <li>Single config block: <code>router eigrp NAME</code></li>
+        <li>Supports IPv4 and IPv6 in same process</li>
+        <li>Address families: <code>address-family ipv4 unicast autonomous-system X</code></li>
+        <li>Per-interface settings under <code>af-interface</code></li>
+        <li>Recommended over classic (numbered) mode for new deployments</li>
+      </ul></div>
+      <div class="concept-card"><h4>EIGRP Stub & Variance</h4><ul>
+        <li><span class="key">Stub routing</span>: spoke advertises only connected/summary; hub won't query stub</li>
+        <li>Stub types: connected, summary, static, redistributed, receive-only</li>
+        <li><span class="key">Variance</span>: load-balance over unequal-cost paths (variance multiplier × successor metric)</li>
+        <li>EIGRP summarization: creates null0 summary route to prevent routing loops</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">OSPF Multi-Area</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>LSA Types</h4><ul>
+        <li><span class="key">Type 1</span>: Router LSA — intra-area links (every router)</li>
+        <li><span class="key">Type 2</span>: Network LSA — DR-generated for multi-access segment</li>
+        <li><span class="key">Type 3</span>: Summary LSA — ABR summarizes inter-area routes</li>
+        <li><span class="key">Type 4</span>: ASBR Summary — ABR advertises ASBR reachability</li>
+        <li><span class="key">Type 5</span>: External LSA — ASBR redistributes external routes (E1/E2)</li>
+        <li><span class="key">Type 7</span>: NSSA External — for NSSA areas (converted to Type 5 at ABR)</li>
+      </ul></div>
+      <div class="concept-card"><h4>OSPF Special Areas</h4><ul>
+        <li><span class="key">Stub</span>: no Type 5; default route injected by ABR</li>
+        <li><span class="key">Totally Stubby</span>: no Type 3, 4, or 5; only default route (Cisco proprietary)</li>
+        <li><span class="key">NSSA</span>: allows redistribution of external routes as Type 7; blocks Type 5</li>
+        <li><span class="key">Totally NSSA</span>: no Type 3 either; external routes as Type 7 (Cisco)</li>
+        <li>Backbone area (Area 0): all areas must connect to it directly or via virtual link</li>
+      </ul></div>
+      <div class="concept-card"><h4>OSPF Metric Tuning</h4><ul>
+        <li>Cost = reference BW / interface BW</li>
+        <li>Default reference BW: <span class="key">100 Mbps</span> — change with <code>auto-cost reference-bandwidth</code></li>
+        <li>On Gigabit links, all have cost 1 unless reference BW is increased (e.g., 1000 or 10000)</li>
+        <li>Summarization at ABR: <code>area X range</code>; at ASBR: <code>summary-address</code></li>
+        <li>Virtual link: connects discontiguous Area 0 through transit area</li>
+      </ul></div>
+    </div>
+    <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>OSPF E2 (default for external routes) uses the external metric only — the cost to reach the ASBR is ignored. E1 adds the internal cost to reach the ASBR. When two ASBR paths exist with different internal costs, E1 will prefer the closer ASBR; E2 will not.</div>
+
+    <div class="sg-heading">BGP (CCNP Level)</div>
+    <div class="table-wrap"><table>
+      <tr><th>Attribute</th><th>Type</th><th>Scope</th><th>Higher = ?</th><th>Purpose</th></tr>
+      <tr><td>Weight</td><td>Cisco-only</td><td>Local router only</td><td class="yes">Preferred</td><td>Prefer outbound path on this router</td></tr>
+      <tr><td>LOCAL_PREF</td><td>Well-known discretionary</td><td>AS-wide</td><td class="yes">Preferred</td><td>Prefer outbound path for whole AS</td></tr>
+      <tr><td>AS_PATH length</td><td>Well-known mandatory</td><td>Between ASes</td><td class="no">Less preferred</td><td>Loop prevention; path selection</td></tr>
+      <tr><td>Origin</td><td>Well-known mandatory</td><td>Between ASes</td><td>IGP &gt; EGP &gt; ?</td><td>How route entered BGP</td></tr>
+      <tr><td>MED</td><td>Optional non-transitive</td><td>Adjacent AS</td><td class="no">Less preferred</td><td>Influence inbound traffic from neighbor AS</td></tr>
+      <tr><td>eBGP over iBGP</td><td>—</td><td>Local</td><td>eBGP wins</td><td>Prefer externally learned routes</td></tr>
+    </table></div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>BGP Essentials</h4><ul>
+        <li>iBGP: same AS; TCP 179; requires full mesh (or RR/confederation)</li>
+        <li>eBGP: different AS; next-hop changes on eBGP peering by default</li>
+        <li><span class="key">next-hop-self</span>: iBGP peers set themselves as next-hop for eBGP routes</li>
+        <li>Route Reflector (RR): solves iBGP full-mesh; RR reflects routes between clients</li>
+        <li>Synchronization: off by default in modern IOS; required trust between IGP and BGP</li>
+      </ul></div>
+      <div class="concept-card"><h4>BGP Route Control</h4><ul>
+        <li><span class="key">Prefix lists</span>: match specific prefixes with exact or range matching</li>
+        <li><span class="key">AS_PATH access lists</span>: regex matching on AS_PATH string</li>
+        <li><span class="key">Route maps</span>: match + set; can modify attributes in/out</li>
+        <li><span class="key">BGP communities</span>: tag routes for policy; 32-bit value (AA:NN format)</li>
+        <li>Well-known communities: no-export, no-advertise, local-AS</li>
+      </ul></div>
+    </div>
+
+    <div class="sg-heading">Route Redistribution & Path Control</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Redistribution</h4><ul>
+        <li>Redistribute between protocols using <code>redistribute</code> command under target protocol</li>
+        <li>Must set a seed metric when redistributing into EIGRP (default metric or per-command)</li>
+        <li>Into OSPF: default metric 20 (E2); specify with <code>metric</code> or <code>default-metric</code></li>
+        <li><span class="key">Route tags</span>: mark redistributed routes to prevent re-redistribution loops</li>
+        <li>Mutual redistribution (two-way) requires careful loop prevention</li>
+      </ul></div>
+      <div class="concept-card"><h4>Policy-Based Routing (PBR)</h4><ul>
+        <li>Override routing table decisions based on match criteria (ACL, length)</li>
+        <li>Applied inbound on interface with <code>ip policy route-map</code></li>
+        <li>set ip next-hop: forward to specific next-hop</li>
+        <li>set interface: forward out specific interface</li>
+        <li>Local PBR: <code>ip local policy route-map</code> (for router-generated traffic)</li>
+      </ul></div>
+      <div class="concept-card"><h4>IP SLA & Tracking</h4><ul>
+        <li>IP SLA: measures network performance (ICMP echo, UDP jitter, TCP connect)</li>
+        <li>Track object: monitors IP SLA state (up/down)</li>
+        <li>Floating static route: track object + higher AD → automatically fails over</li>
+        <li>PBR + track: change policy when primary path fails</li>
+      </ul></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ENARSI D2: VPN Technologies -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#4ade80"></div>
+    <div class="domain-title">ENARSI Domain 2 — VPN Technologies</div>
+    <div class="domain-pct">20% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>DMVPN Phases</h4><ul>
+        <li><span class="key">Phase 1</span>: hub-and-spoke only; spokes never communicate directly</li>
+        <li><span class="key">Phase 2</span>: spoke-to-spoke via NHRP resolution; spoke routes must not be summarized at hub</li>
+        <li><span class="key">Phase 3</span>: spoke-to-spoke with NHRP redirect; hub summarizes (scalable); no split-horizon issue</li>
+        <li>mGRE + NHRP + IPsec = DMVPN components</li>
+        <li>NHRP: Next Hop Resolution Protocol — resolves tunnel IP to physical IP</li>
+      </ul></div>
+      <div class="concept-card"><h4>MPLS L3VPN Concepts</h4><ul>
+        <li>CE-PE-P-PE-CE architecture; P routers only see MPLS labels</li>
+        <li><span class="key">VRF</span>: separate routing table per customer on PE router</li>
+        <li><span class="key">RD (Route Distinguisher)</span>: makes overlapping customer prefixes unique in BGP</li>
+        <li><span class="key">RT (Route Target)</span>: import/export policies control VRF route leaking</li>
+        <li>MP-BGP carries VPNv4 routes between PE routers</li>
+      </ul></div>
+      <div class="concept-card"><h4>IPsec Fundamentals</h4><ul>
+        <li>IKE Phase 1: establishes secure channel (ISAKMP SA); Main or Aggressive mode</li>
+        <li>IKE Phase 2: negotiates IPsec SA (data protection parameters)</li>
+        <li><span class="key">ESP</span>: encrypts payload + authenticates; IP protocol 50</li>
+        <li><span class="key">AH</span>: authenticates only (no encryption); IP protocol 51</li>
+        <li>Transport mode: encrypts payload only; Tunnel mode: encrypts entire IP packet</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENARSI D3+4: Infrastructure Security & Services -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#86efac"></div>
+    <div class="domain-title">ENARSI Domains 3 & 4 — Infrastructure Security & Services</div>
+    <div class="domain-pct">40% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>uRPF (Unicast RPF)</h4><ul>
+        <li>Drops packets where source IP has no valid return path (anti-spoofing)</li>
+        <li><span class="key">Strict mode</span>: packet must arrive on best-path interface back to source</li>
+        <li><span class="key">Loose mode</span>: source IP just needs to exist in routing table (any interface)</li>
+        <li>Loose mode safer for asymmetric routing environments</li>
+      </ul></div>
+      <div class="concept-card"><h4>CoPP (Control Plane Policing)</h4><ul>
+        <li>Protects router CPU from traffic directed to control plane</li>
+        <li>Uses MQC (Modular QoS CLI): class-maps + policy-maps</li>
+        <li>Applied to control plane with <code>service-policy input</code> under <code>control-plane</code></li>
+        <li>Prioritize: routing protocols, SNMP, management SSH over bulk traffic</li>
+      </ul></div>
+      <div class="concept-card"><h4>Device Management & QoS</h4><ul>
+        <li>SNMPv3 provides authentication (SHA) and encryption (AES/DES) — use over v1/v2c</li>
+        <li><span class="key">DSCP</span>: 6-bit field in IP header for QoS marking (EF=46 for voice; AF classes for data)</li>
+        <li>QoS models: IntServ (RSVP per-flow), DiffServ (class-based, scalable)</li>
+        <li>Queuing: CBWFQ/LLQ; LLQ = strict priority queue for voice traffic</li>
+      </ul></div>
+    </div>
+    <div class="sg-heading">IPv6 Routing</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>OSPFv3</h4><ul>
+        <li>Runs over IPv6; uses IPv6 link-local addresses for neighbor relationships</li>
+        <li>Supports both IPv4 and IPv6 with address families (IOS XE)</li>
+        <li>Router IDs still 32-bit (IPv4 format)</li>
+        <li>LSA types 8 (Link LSA) and 9 (Intra-Area Prefix LSA) added vs OSPFv2</li>
+      </ul></div>
+      <div class="concept-card"><h4>EIGRPv6</h4><ul>
+        <li>Same DUAL algorithm as IPv4 EIGRP</li>
+        <li>Uses IPv6 link-local addresses for neighbor relationships</li>
+        <li>Must enable with <code>ipv6 router eigrp X</code> and <code>no shutdown</code></li>
+        <li>Per-interface activation: <code>ipv6 eigrp X</code> under interface</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<hr class="cert-divider">
+
+<!-- ═══════════════════════════════════════════════ SCOR ══ -->
+<div class="cert-banner scor">
+  <div>
+    <div class="cert-title scor">CCNP SCOR 350-701</div>
+    <div class="cert-sub">Implementing and Operating Cisco Security Core Technologies · 120 minutes · 90–110 questions</div>
+  </div>
+</div>
+
+<!-- SCOR D1: Security Concepts -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#ef4444"></div>
+    <div class="domain-title">SCOR Domain 1 — Security Concepts</div>
+    <div class="domain-pct">25% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>CIA Triad</h4><ul>
+        <li><span class="key">Confidentiality</span>: prevent unauthorized disclosure (encryption, ACLs)</li>
+        <li><span class="key">Integrity</span>: prevent unauthorized modification (hashing, digital signatures)</li>
+        <li><span class="key">Availability</span>: ensure authorized access (redundancy, DDoS protection)</li>
+      </ul></div>
+      <div class="concept-card"><h4>Common Attack Types</h4><ul>
+        <li><span class="key">Phishing</span>: email-based social engineering to steal credentials</li>
+        <li><span class="key">Spear Phishing</span>: targeted phishing against specific individuals</li>
+        <li><span class="key">MITM</span>: intercepts communication between two parties</li>
+        <li><span class="key">SQL Injection</span>: malicious SQL in web input fields</li>
+        <li><span class="key">XSS</span>: inject scripts into web pages viewed by other users</li>
+        <li><span class="key">DDoS</span>: overwhelm resources; volumetric / protocol / application layer</li>
+        <li><span class="key">Buffer overflow</span>: overwrite memory to execute arbitrary code</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cryptography Fundamentals</h4><ul>
+        <li><span class="key">Symmetric</span>: same key for encrypt/decrypt (AES, 3DES); fast, scalable key distribution problem</li>
+        <li><span class="key">Asymmetric</span>: key pair — public encrypts, private decrypts (RSA, ECDSA); slower, solves key exchange</li>
+        <li><span class="key">Hash</span>: one-way (SHA-256, SHA-384, MD5); integrity verification</li>
+        <li><span class="key">HMAC</span>: hash + shared secret → message authentication</li>
+        <li><span class="key">PKI</span>: Certificate Authorities issue X.509 certs; chain of trust</li>
+      </ul></div>
+    </div>
+    <div class="sg-heading">Security Models & Frameworks</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Defense in Depth</h4><ul>
+        <li>Multiple overlapping security layers — no single point of failure</li>
+        <li>Layers: perimeter firewall → IPS → network segmentation → host AV → data encryption</li>
+        <li>Zero Trust: "never trust, always verify"; no implicit trust based on network location</li>
+        <li>Principle of Least Privilege: grant minimum access required</li>
+      </ul></div>
+      <div class="concept-card"><h4>CVSS & Vulnerability Scoring</h4><ul>
+        <li>CVSS (Common Vulnerability Scoring System): 0–10 scale</li>
+        <li>Critical: 9.0–10.0; High: 7.0–8.9; Medium: 4.0–6.9; Low: 0.1–3.9</li>
+        <li>CVE: Common Vulnerabilities and Exposures — unique ID per vulnerability</li>
+        <li>NVD (National Vulnerability Database): public CVE repository</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCOR D2: Network Security -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#f87171"></div>
+    <div class="domain-title">SCOR Domain 2 — Network Security</div>
+    <div class="domain-pct">20% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="sg-heading">Cisco ASA vs Firepower (FTD)</div>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Cisco ASA</th><th>Cisco FTD (Firepower)</th></tr>
+      <tr><td>Management</td><td>ASDM / CLI</td><td>FMC (Firepower Management Center) or FDM</td></tr>
+      <tr><td>Stateful Firewall</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+      <tr><td>IPS/IDS</td><td>ASA + FirePOWER module</td><td class="yes">Native (Snort engine)</td></tr>
+      <tr><td>AVC (App Visibility)</td><td class="no">No (native)</td><td class="yes">Yes</td></tr>
+      <tr><td>URL Filtering</td><td class="no">No (native)</td><td class="yes">Yes (with subscription)</td></tr>
+      <tr><td>SSL/TLS Inspection</td><td>Limited</td><td class="yes">Yes (decrypt/re-encrypt)</td></tr>
+      <tr><td>Platform</td><td>ASA hardware/virtual</td><td>FTD software (on ASA, ISA, FPR hardware)</td></tr>
+    </table></div>
+
+    <div class="sg-heading">Firewall Zones & Policies</div>
+    <div class="concept-grid">
+      <div class="concept-card"><h4>ASA Security Levels</h4><ul>
+        <li>0–100 scale; higher = more trusted</li>
+        <li>Outside: <span class="key">0</span>; Inside: <span class="key">100</span>; DMZ: typically 50</li>
+        <li>Traffic flows freely from higher to lower security level by default</li>
+        <li>Traffic from lower to higher requires explicit ACL permit</li>
+        <li>same-security-traffic permit: allows inter-interface traffic at same level</li>
+      </ul></div>
+      <div class="concept-card"><h4>IPS vs IDS</h4><ul>
+        <li><span class="key">IDS</span> (Intrusion Detection): passive; monitors copy of traffic; alerts only</li>
+        <li><span class="key">IPS</span> (Intrusion Prevention): inline; can drop malicious traffic in real time</li>
+        <li>Signature-based: matches known attack patterns</li>
+        <li>Anomaly-based: detects deviations from baseline (behavioral)</li>
+        <li>False positive: legitimate traffic blocked; False negative: attack not detected</li>
+      </ul></div>
+      <div class="concept-card"><h4>Network VPN Technologies</h4><ul>
+        <li><span class="key">AnyConnect SSL VPN</span>: remote access; client-based; TLS/DTLS</li>
+        <li><span class="key">Clientless SSL VPN</span>: browser-based portal; no client required</li>
+        <li><span class="key">IPsec IKEv2</span>: site-to-site or remote access; faster IKEv2 negotiation</li>
+        <li><span class="key">FlexVPN</span>: IKEv2-based framework; hub-and-spoke or point-to-point</li>
+        <li>SSL VPN uses TCP (reliable but higher overhead); DTLS uses UDP (better for real-time)</li>
+      </ul></div>
+    </div>
+    <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>On Cisco ASA, the <strong>security level</strong> determines traffic flow by default, but ACLs always override security levels. An ACL on the outside interface denying traffic takes precedence over the security level difference. Traffic inspection state is maintained per connection.</div>
+  </div>
+</div>
+
+<!-- SCOR D3+4: Cloud & Content Security -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#fca5a5"></div>
+    <div class="domain-title">SCOR Domains 3 & 4 — Cloud Security & Content Security</div>
+    <div class="domain-pct">30% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Cloud Shared Responsibility</h4><ul>
+        <li>Provider responsible: physical hardware, hypervisor, facilities</li>
+        <li>Customer responsible: data, identities, applications, OS (IaaS), network config</li>
+        <li>SaaS: provider manages nearly everything; customer manages data and access</li>
+        <li>PaaS: customer manages apps and data; provider manages runtime/OS</li>
+        <li>IaaS: customer manages OS, middleware, apps, data; provider manages infra</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cisco Umbrella</h4><ul>
+        <li>Cloud-based DNS security and Secure Web Gateway</li>
+        <li>Blocks malicious domains at DNS resolution layer (before TCP connection)</li>
+        <li>Uses Anycast DNS (208.67.222.222 / 208.67.220.220)</li>
+        <li>Roaming client for protection off-network</li>
+        <li>Investigate: threat intelligence platform; shows domain relationships</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cisco Email Security (ESA)</h4><ul>
+        <li>Protects against spam, phishing, malware in email</li>
+        <li>Inbound: anti-spam, anti-virus, Advanced Malware Protection (AMP), DLP</li>
+        <li>Outbound: DLP (Data Loss Prevention), email encryption</li>
+        <li>SPF, DKIM, DMARC: email authentication to prevent spoofing</li>
+        <li>SBRS (SenderBase Reputation Score): sender reputation filtering</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cisco Web Security (WSA / SWG)</h4><ul>
+        <li>Proxy-based; controls web traffic by category, reputation, and content</li>
+        <li>Explicit proxy: client configured to use WSA</li>
+        <li>Transparent proxy: traffic redirected via WCCP or policy routing</li>
+        <li>SSL/TLS decryption: man-in-the-middle to inspect HTTPS</li>
+        <li>AMP for Endpoints integration: file reputation and sandboxing</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCOR D5+6: Endpoint Protection & Secure Access -->
+<div class="domain-section">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:#fecaca"></div>
+    <div class="domain-title">SCOR Domains 5 & 6 — Endpoint Protection & Secure Network Access</div>
+    <div class="domain-pct">25% of exam</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="concept-grid">
+      <div class="concept-card"><h4>Cisco AMP for Endpoints (Secure Endpoint)</h4><ul>
+        <li>Advanced Malware Protection: continuous file monitoring beyond initial verdict</li>
+        <li>File reputation: cloud lookup against known good/bad hash database</li>
+        <li>Behavioral analysis: detects malware by behavior, not just signature</li>
+        <li>Device trajectory: timeline of file activity on endpoint for forensics</li>
+        <li>Retrospective detection: alerts if a previously "good" file later turns malicious</li>
+      </ul></div>
+      <div class="concept-card"><h4>Cisco ISE (Identity Services Engine)</h4><ul>
+        <li>AAA server: Authentication, Authorization, Accounting</li>
+        <li>RADIUS protocol for 802.1X wired/wireless authentication</li>
+        <li>Posture assessment: checks endpoint compliance before granting access</li>
+        <li>Profiling: identifies device type based on attributes (DHCP, HTTP, etc.)</li>
+        <li>Guest access, BYOD onboarding, device registration</li>
+      </ul></div>
+      <div class="concept-card"><h4>802.1X Authentication Flow</h4><ul>
+        <li>Supplicant (endpoint) ↔ Authenticator (switch/AP) ↔ Authentication Server (ISE/RADIUS)</li>
+        <li>EAP methods: EAP-TLS (cert-based, most secure), PEAP (password + server cert), EAP-FAST</li>
+        <li>MAB (MAC Authentication Bypass): for devices without 802.1X supplicant</li>
+        <li>dACL (downloadable ACL): ISE sends ACL to switch post-authentication</li>
+        <li>VLAN assignment: ISE assigns VLAN based on auth result</li>
+      </ul></div>
+      <div class="concept-card"><h4>TrustSec & MACsec</h4><ul>
+        <li><span class="key">TrustSec</span>: SGT (Security Group Tag) assigned at ingress; policy enforced at egress</li>
+        <li>SGTs replace IP-based ACLs with identity-based segmentation</li>
+        <li><span class="key">MACsec (802.1AE)</span>: Layer 2 hop-by-hop encryption</li>
+        <li>MACsec encrypts all frames between directly connected devices</li>
+        <li>Key exchange: MKA (MACsec Key Agreement) protocol</li>
+      </ul></div>
+    </div>
+    <div class="tip-box"><div class="tip-label">✓ Key Concept</div>Cisco ISE, TrustSec, and Cisco DNA Center work together: <strong>ISE authenticates and assigns SGTs</strong>, <strong>TrustSec enforces SGT-based policy</strong> across the network, and <strong>DNA Center</strong> provides centralized visibility and automation. This is the core of Cisco Software-Defined Access (SD-Access).</div>
+  </div>
+</div>
+
+<!-- Quick Reference -->
+<div class="domain-section" style="margin-top:28px;">
+  <div class="domain-header" onclick="toggleDomain(this)">
+    <div class="domain-dot" style="background:var(--accent)"></div>
+    <div class="domain-title">Quick Reference — Key Numbers & Facts</div>
+    <div class="domain-pct">all three exams</div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="domain-body">
+    <div class="table-wrap"><table>
+      <tr><th>Item</th><th>Value</th><th>Exam</th></tr>
+      <tr><td>STP default bridge priority</td><td class="val">32768</td><td>CCNA</td></tr>
+      <tr><td>HSRP default priority</td><td class="val">100</td><td>CCNA</td></tr>
+      <tr><td>STP PortFast — use on</td><td class="val">Access ports only (not trunks)</td><td>CCNA</td></tr>
+      <tr><td>OSPF default reference bandwidth</td><td class="val">100 Mbps</td><td>CCNA / ENARSI</td></tr>
+      <tr><td>OSPF Hello / Dead (broadcast)</td><td class="val">10 s / 40 s</td><td>CCNA / ENARSI</td></tr>
+      <tr><td>OSPF Hello / Dead (P2P)</td><td class="val">10 s / 40 s</td><td>ENARSI</td></tr>
+      <tr><td>OSPF Hello / Dead (NBMA)</td><td class="val">30 s / 120 s</td><td>ENARSI</td></tr>
+      <tr><td>BGP Weight — Cisco default for locally originated</td><td class="val">32768</td><td>ENARSI</td></tr>
+      <tr><td>BGP Weight — learned from neighbor default</td><td class="val">0</td><td>ENARSI</td></tr>
+      <tr><td>BGP LOCAL_PREF default</td><td class="val">100</td><td>ENARSI</td></tr>
+      <tr><td>EIGRP AD — internal / external</td><td class="val">90 / 170</td><td>CCNA / ENARSI</td></tr>
+      <tr><td>DMVPN — Phase 2 requirement</td><td class="val">No summarization at hub (spokes need specific routes)</td><td>ENARSI</td></tr>
+      <tr><td>IPsec ESP protocol number</td><td class="val">50</td><td>ENARSI / SCOR</td></tr>
+      <tr><td>IPsec AH protocol number</td><td class="val">51</td><td>SCOR</td></tr>
+      <tr><td>CAPWAP control / data UDP ports</td><td class="val">5246 / 5247</td><td>CCNA</td></tr>
+      <tr><td>ASA outside security level</td><td class="val">0</td><td>SCOR</td></tr>
+      <tr><td>ASA inside security level</td><td class="val">100</td><td>SCOR</td></tr>
+      <tr><td>Cisco Umbrella DNS IPs</td><td class="val">208.67.222.222 / 208.67.220.220</td><td>SCOR</td></tr>
+      <tr><td>MACsec IEEE standard</td><td class="val">802.1AE</td><td>SCOR</td></tr>
+      <tr><td>802.1X IEEE standard</td><td class="val">802.1X (port-based NAC)</td><td>CCNA / SCOR</td></tr>
+      <tr><td>CVSS Critical score range</td><td class="val">9.0 – 10.0</td><td>SCOR</td></tr>
+    </table></div>
+  </div>
+</div>
+
+</div><!-- /tab-guide -->
+
+<!-- ══════════════════════════════════════════════ FLASHCARDS ══ -->
+<div id="tab-flash" class="tab-pane">
+
+  <div class="fc-controls">
+    <button class="fc-filter-btn active f-all"    onclick="setFilter('all',this)">All</button>
+    <button class="fc-filter-btn f-ccna"          onclick="setFilter('ccna',this)">CCNA 200-301</button>
+    <button class="fc-filter-btn f-enarsi"        onclick="setFilter('enarsi',this)">ENARSI 300-410</button>
+    <button class="fc-filter-btn f-scor"          onclick="setFilter('scor',this)">SCOR 350-701</button>
+    <button class="fc-filter-btn f-all" style="margin-left:auto" onclick="shuffleDeck()">🔀 Shuffle</button>
+  </div>
+
+  <div class="fc-progress">
+    <span id="fc-pos">1 / 0</span>
+    <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-fill" style="width:0%"></div></div>
+    <span id="fc-learned-count">0 learned</span>
+  </div>
+
+  <div class="fc-scene" onclick="flipCard()">
+    <div class="fc-card-wrap" id="fc-card">
+      <div class="fc-face fc-front">
+        <div class="fc-category" id="fc-cat"></div>
+        <div class="fc-q" id="fc-q"></div>
+        <div class="fc-hint">Click to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-category" id="fc-cat2"></div>
+        <div class="fc-a" id="fc-a"></div>
+        <div class="fc-detail" id="fc-detail"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-nav" id="fc-nav">
+    <button class="btn btn-secondary" onclick="prevCard()">← Prev</button>
+    <button class="btn btn-green"     onclick="markLearned()">✓ Learned</button>
+    <button class="btn btn-muted"     onclick="nextCard()">Skip →</button>
+    <button class="btn btn-primary"   onclick="nextCard()">Next →</button>
+  </div>
+
+  <div class="fc-stats" style="margin-top:16px;">
+    <div class="fc-stat"><div class="fc-stat-val" id="fc-total-count">0</div><div class="fc-stat-lbl">Total</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--green)" id="fc-learned">0</div><div class="fc-stat-lbl">Learned</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--yellow)" id="fc-remaining">0</div><div class="fc-stat-lbl">Remaining</div></div>
+  </div>
+
+</div><!-- /tab-flash -->
+
+</div><!-- /app -->
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleDomain(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ─── FLASHCARD DATA ───
+const CARDS = [
+  // CCNA
+  {cert:'ccna', cat:'OSI Model', q:'At which OSI layer does a switch operate, and what does it use to forward frames?', a:'Layer 2 (Data Link) — uses MAC addresses in the CAM table', detail:'Switches learn source MACs and forward frames to the port associated with the destination MAC. Unknown unicast frames are flooded to all ports except the source.'},
+  {cert:'ccna', cat:'Subnetting', q:'How many usable host addresses does a /26 subnet provide?', a:'62 usable hosts (2^6 − 2 = 62)', detail:'/26 = 6 host bits. 2^6=64 total, minus network and broadcast = 62 usable.'},
+  {cert:'ccna', cat:'Subnetting', q:'What is the private address range for Class B (RFC 1918)?', a:'172.16.0.0 to 172.31.255.255 (/12)', detail:'172.16.0.0/12 covers 172.16.x.x through 172.31.x.x — 16 Class B networks.'},
+  {cert:'ccna', cat:'IPv6', q:'What is the purpose of an IPv6 link-local address (FE80::/10)?', a:'Required on every IPv6 interface for neighbor discovery and routing protocol communication — never routed off-link', detail:'Link-local addresses are used for OSPF/EIGRP neighbor relationships, NDP (replaces ARP), and default gateway address. They are auto-configured from the MAC (EUI-64) or randomly.'},
+  {cert:'ccna', cat:'VLANs', q:'What is the native VLAN on an 802.1Q trunk, and why is it a security risk?', a:'Untagged VLAN on a trunk — VLAN 1 by default. Risk: VLAN hopping if native VLAN differs on trunk endpoints.', detail:'An attacker on the native VLAN can send double-tagged frames to reach another VLAN. Best practice: change native VLAN to an unused VLAN and tag it explicitly.'},
+  {cert:'ccna', cat:'STP', q:'What is the STP default bridge priority, and how is the root bridge elected?', a:'32768 — lowest Bridge ID wins (priority + VLAN number + MAC address)', detail:'To control root bridge election: lower priority with "spanning-tree vlan X priority 4096". Increment priority in steps of 4096.'},
+  {cert:'ccna', cat:'STP', q:'What does BPDU Guard do, and where should it be configured?', a:'Err-disables a port if a BPDU is received — configure on PortFast-enabled access ports', detail:'PortFast + BPDU Guard together prevent unauthorized switches from connecting to access ports and disrupting the STP topology.'},
+  {cert:'ccna', cat:'EtherChannel', q:'What is the difference between LACP Active and Passive modes?', a:'Active: initiates LACP negotiation. Passive: responds only. Active-Active or Active-Passive works; Passive-Passive does NOT.', detail:'LACP (802.3ad) is the IEEE standard. PAgP (Cisco) uses Desirable/Auto. Both sides "on" bypasses negotiation but risks mismatched configs going undetected.'},
+  {cert:'ccna', cat:'Routing', q:'What is the administrative distance of OSPF?', a:'110', detail:'AD order (lower = preferred): Connected 0, Static 1, EIGRP summary 5, eBGP 20, EIGRP internal 90, OSPF 110, RIP 120, EIGRP external 170, iBGP 200.'},
+  {cert:'ccna', cat:'OSPF', q:'What is the OSPF default metric formula, and what is the default reference bandwidth?', a:'Cost = 10^8 / interface bandwidth. Default reference: 100 Mbps — Gigabit and faster all get cost 1 unless increased.', detail:'Fix with: "auto-cost reference-bandwidth 1000" (for Gbps) or 10000 (for 10Gbps) under the OSPF process. Must be consistent across all routers in the area.'},
+  {cert:'ccna', cat:'FHRP', q:'HSRP preemption is off by default — what does this mean operationally?', a:'If the active router fails and recovers, it will NOT reclaim the active role unless preemption is explicitly configured', detail:'Without "standby X preempt", a lower-priority router that became active stays active even when the higher-priority router returns online.'},
+  {cert:'ccna', cat:'NAT', q:'What is the difference between inside local and inside global in NAT?', a:'Inside local: private IP of internal host. Inside global: public IP representing that host after NAT translation.', detail:'Outside global: real public IP of external destination server. Outside local = outside global in most basic NAT scenarios.'},
+  {cert:'ccna', cat:'ACLs', q:'Why should standard ACLs be placed close to the destination, not the source?', a:'Standard ACLs match only source IP — placing them at the source would block all traffic from that source to every destination', detail:'Extended ACLs match source AND destination, so they can be safely placed close to the source to stop unwanted traffic early without over-blocking.'},
+  {cert:'ccna', cat:'Security', q:'What is the difference between DHCP Snooping and Dynamic ARP Inspection (DAI)?', a:'DHCP Snooping: prevents rogue DHCP servers. DAI: uses snooping binding table to validate ARP packets and prevent ARP poisoning.', detail:'Both require designating trusted ports (uplinks). DHCP Snooping builds the binding table (IP-MAC-port). DAI uses that table to verify ARP responses are legitimate.'},
+  {cert:'ccna', cat:'Automation', q:'Which configuration management tool is agentless and uses YAML playbooks?', a:'Ansible — communicates over SSH, no software agent required on managed devices', detail:'Puppet and Chef are agent-based. Ansible is push-based (controller pushes config). Puppet/Chef are pull-based (agent checks in to pull config).'},
+  {cert:'ccna', cat:'Wireless', q:'What protocol does a Lightweight AP use to communicate with a WLC?', a:'CAPWAP — UDP port 5246 (control) and 5247 (data)', detail:'CAPWAP replaced the older LWAPP protocol. The WLC centrally manages channel, power, SSIDs, and security policies for all associated APs.'},
+
+  // ENARSI
+  {cert:'enarsi', cat:'EIGRP', q:'What is the EIGRP Feasibility Condition, and why does it matter?', a:'A feasible successor requires RD (Reported Distance from neighbor) < FD (Feasible Distance of current successor). Guarantees loop-free backup path.', detail:'When the FC is met, the backup path is instantly installed upon failure with no DUAL query. If FC is not met, EIGRP must run DUAL queries to find a new path, causing slower convergence.'},
+  {cert:'enarsi', cat:'EIGRP', q:'What problem does EIGRP stub routing solve in hub-and-spoke networks?', a:'Prevents hub from sending DUAL queries to stub spokes (which have no alternate paths), reducing query scope and convergence time', detail:'Stub routers advertise only their connected/summary routes. The hub marks them as stub neighbors and will not forward queries to them, avoiding query timeouts.'},
+  {cert:'enarsi', cat:'OSPF', q:'What LSA type does an ABR generate to advertise inter-area routes?', a:'Type 3 Summary LSA — describes routes from one area to another', detail:'Type 1 = Router (intra-area). Type 2 = Network (DR on multi-access). Type 3 = Summary (inter-area by ABR). Type 5 = External (from ASBR). Type 7 = NSSA External.'},
+  {cert:'enarsi', cat:'OSPF', q:'What is the difference between OSPF E1 and E2 external route types?', a:'E2 (default): uses only the external metric. E1: adds the internal cost to reach the ASBR to the external metric.', detail:'E1 is better when multiple ASBRs exist with different internal path costs — it routes toward the closest ASBR. E2 ignores internal cost, so all paths appear equal.'},
+  {cert:'enarsi', cat:'OSPF', q:'What is the purpose of a Totally Stubby area in OSPF?', a:'Blocks Type 3, 4, and 5 LSAs — only a single default route from the ABR enters the area, minimizing the LSDB size', detail:'Totally Stubby is Cisco proprietary. Spokes/branches with no need to choose specific inter-area routes benefit most. The default route handles all external traffic.'},
+  {cert:'enarsi', cat:'BGP', q:'What is the BGP Weight attribute, and what is its scope?', a:'Cisco-proprietary attribute; higher is preferred; local to the router only — not advertised to any BGP peer', detail:'Weight is the first BGP decision criterion. Set it inbound via route-map to prefer one eBGP peer over another. LOCAL_PREF is used when the preference must apply AS-wide.'},
+  {cert:'enarsi', cat:'BGP', q:'What is the function of "next-hop-self" on an iBGP peer?', a:'Tells the router to advertise itself as the next-hop for eBGP-learned routes when sending to iBGP peers', detail:'Without next-hop-self, iBGP peers receive the external next-hop IP which they cannot reach (no IGP route to it). next-hop-self makes the peering router the next-hop, which is reachable via IGP.'},
+  {cert:'enarsi', cat:'BGP', q:'What BGP problem does a Route Reflector (RR) solve?', a:'Eliminates the iBGP full-mesh requirement — RR reflects routes between clients without split-horizon restriction', detail:'In a full iBGP mesh, every router must peer with every other. RR allows a hub router to forward routes between spoke iBGP clients, dramatically reducing peering count in large ASes.'},
+  {cert:'enarsi', cat:'Redistribution', q:'Why are route tags important in mutual redistribution between two routing protocols?', a:'Tags mark redistributed routes so the originating protocol does not re-learn and re-advertise them, preventing routing loops', detail:'Without tags, Route A redistributed from OSPF to EIGRP could be re-redistributed back into OSPF as an external route, overriding the internal OSPF route and creating a loop.'},
+  {cert:'enarsi', cat:'Path Control', q:'What is the difference between PBR (Policy-Based Routing) and standard routing table lookup?', a:'PBR forwards based on match criteria (ACL, packet length, etc.) regardless of routing table; standard routing uses only the destination IP', detail:'PBR is configured inbound on an interface. Use case: route voice traffic over a low-latency link, web traffic over a high-bandwidth link, regardless of the routing table\'s destination-based decision.'},
+  {cert:'enarsi', cat:'DMVPN', q:'What is the key difference between DMVPN Phase 2 and Phase 3?', a:'Phase 2: spokes communicate directly but hub cannot summarize (spokes need host routes). Phase 3: hub summarizes with NHRP redirect — more scalable.', detail:'Phase 3 uses NHRP redirect messages: hub tells spoke to build direct tunnel to destination spoke, then sends a summary route. Hub summarization is now possible unlike Phase 2.'},
+  {cert:'enarsi', cat:'MPLS', q:'What is the difference between an RD and an RT in MPLS L3VPN?', a:'RD (Route Distinguisher): makes overlapping prefixes unique in MP-BGP. RT (Route Target): community attribute controlling which VRFs import/export routes.', detail:'Multiple customers with 192.168.1.0/24 become unique in BGP with different RDs. RT import/export controls which PE VRFs receive which routes — enabling VPN connectivity policies.'},
+  {cert:'enarsi', cat:'uRPF', q:'When should you use uRPF Loose mode instead of Strict mode?', a:'When routing is asymmetric — strict mode would drop legitimate packets that arrive on a non-best-path interface', detail:'Strict mode requires inbound interface == best-path back to source. In asymmetric routing (where request and response use different paths), strict uRPF drops valid packets. Loose mode only checks if source IP exists in the routing table.'},
+
+  // SCOR
+  {cert:'scor', cat:'Security Concepts', q:'What is the difference between a vulnerability, threat, and risk?', a:'Vulnerability: weakness. Threat: potential to exploit vulnerability. Risk: likelihood × impact of a threat exploiting a vulnerability.', detail:'Risk management: identify assets → identify vulnerabilities → identify threats → assess risk (likelihood × impact) → apply controls to reduce risk to acceptable level.'},
+  {cert:'scor', cat:'Cryptography', q:'What is the purpose of HMAC, and how does it differ from a plain hash?', a:'HMAC combines a hash function with a shared secret key, providing both integrity AND authentication — a plain hash only provides integrity', detail:'An attacker who intercepts a plain hash can replace both the message and the hash. HMAC prevents this because the attacker does not know the shared key and cannot forge a valid HMAC.'},
+  {cert:'scor', cat:'Cryptography', q:'What problem does asymmetric cryptography solve that symmetric cryptography cannot?', a:'Secure key exchange — public/private key pair allows sharing the public key openly without exposing the private key', detail:'In symmetric encryption, both parties must share a secret key securely first — the key distribution problem. Asymmetric crypto solves this: encrypt with recipient\'s public key; only their private key can decrypt.'},
+  {cert:'scor', cat:'Firewall', q:'What is the default traffic flow behavior between ASA security levels?', a:'Traffic flows freely from higher to lower security level (inside→outside). Traffic from lower to higher requires an explicit ACL permit.', detail:'ASA security levels: Inside=100, DMZ=50, Outside=0. Higher to lower = permitted. ACLs always override security-level decisions in either direction.'},
+  {cert:'scor', cat:'Firewall', q:'What is the main architectural difference between Cisco ASA and Cisco FTD?', a:'FTD is a unified software combining ASA firewall with FirePOWER IPS/NGFW features; managed by FMC or FDM', detail:'ASA uses ASDM for management. FTD uses FMC (multi-device) or FDM (single-device). FTD adds: Application Visibility and Control, URL filtering, SSL inspection, Snort-based IPS.'},
+  {cert:'scor', cat:'IPS', q:'What is the difference between an IDS and an IPS in terms of deployment and function?', a:'IDS: passive (out of band), detects and alerts only. IPS: inline (in-band), can actively drop malicious traffic.', detail:'IDS receives a copy of traffic (span port). If it misses an attack, traffic still reaches the destination. IPS is inline — higher protection but also risk of false positives dropping legitimate traffic.'},
+  {cert:'scor', cat:'VPN', q:'What transport protocols does Cisco AnyConnect use and why?', a:'TLS (TCP 443) for reliability; DTLS (UDP 443) for better performance with real-time traffic — AnyConnect prefers DTLS when available', detail:'TLS over TCP is reliable but adds retransmission overhead. DTLS over UDP avoids TCP head-of-line blocking, improving latency for voice/video through the VPN tunnel.'},
+  {cert:'scor', cat:'Cloud Security', q:'In cloud security, what is the Shared Responsibility Model?', a:'Provider secures the infrastructure (physical, hypervisor); customer secures their data, identities, and applications. Scope varies by service model (IaaS/PaaS/SaaS).', detail:'SaaS: customer only responsible for data and user access. PaaS: customer manages apps and data. IaaS: customer manages OS, middleware, runtime, apps, data. Physical security always provider.'},
+  {cert:'scor', cat:'Cisco Umbrella', q:'How does Cisco Umbrella stop threats differently from a traditional firewall?', a:'Blocks threats at the DNS layer — before any TCP connection is established — for all devices including those off-network via the roaming client', detail:'Traditional firewalls inspect packets after TCP connections are established. Umbrella denies DNS resolution for malicious/phishing domains, preventing the connection attempt entirely.'},
+  {cert:'scor', cat:'Email Security', q:'What do SPF, DKIM, and DMARC protect against?', a:'SPF: authorizes which servers can send email for a domain. DKIM: signs email with private key (receiver verifies). DMARC: policy to handle SPF/DKIM failures (quarantine/reject).', detail:'Together they prevent email spoofing. SPF in DNS TXT records. DKIM signature in email header. DMARC alignment check + reporting. Cisco ESA can enforce all three for inbound filtering.'},
+  {cert:'scor', cat:'Cisco ISE', q:'What is posture assessment in Cisco ISE?', a:'Checks endpoint compliance (AV up-to-date, OS patches, disk encryption) before granting full network access', detail:'Non-compliant endpoints are placed in a remediation VLAN/DACL with limited access. After remediation, re-authentication grants full access. Requires the AnyConnect posture module on endpoints.'},
+  {cert:'scor', cat:'802.1X', q:'What is the 802.1X authentication flow, and what are the three roles?', a:'Supplicant (endpoint) authenticates via Authenticator (switch/AP) to Authentication Server (ISE/RADIUS)', detail:'The switch (authenticator) blocks all traffic except EAP until authentication succeeds. EAP-TLS is most secure (mutual cert). PEAP uses server cert only. MAB bypasses 802.1X for legacy devices using MAC.'},
+  {cert:'scor', cat:'TrustSec', q:'What is a Security Group Tag (SGT) and how is it used in TrustSec?', a:'A 16-bit tag assigned to a user/device at authentication, propagated across the network, and used to enforce policy regardless of IP address', detail:'SGTs replace IP-based ACLs with identity-based segmentation. ISE assigns the SGT at 802.1X auth. SGT policy (SGACL) is enforced at egress. Enables consistent policy even as users roam between subnets.'},
+  {cert:'scor', cat:'MACsec', q:'What does MACsec (802.1AE) protect, and what protocol handles key exchange?', a:'Encrypts all Layer 2 frames between directly connected devices; MKA (MACsec Key Agreement) handles key negotiation', detail:'MACsec is hop-by-hop — each link is encrypted independently. It provides confidentiality, integrity, and replay protection. Unlike IPsec (network layer), MACsec operates at Layer 2 only.'},
+  {cert:'scor', cat:'AMP', q:'What is retrospective detection in Cisco AMP (Secure Endpoint)?', a:'AMP alerts when a file previously judged clean is later identified as malicious — continuous monitoring after initial verdict', detail:'Traditional AV only checks at file entry. AMP continuously monitors file behavior. If a cloud verdict changes (file is now known malicious), AMP alerts and provides trajectory data for all endpoints that saw it.'},
+];
+
+// ─── FLASHCARD LOGIC ───
+let deck      = [];
+let filtered  = [];
+let deckIdx   = 0;
+let learned   = new Set();
+let flipped   = false;
+let filterVal = 'all';
+
+function initDeck() {
+  deck     = [...CARDS];
+  filtered = deck.filter(c => filterVal === 'all' || c.cert === filterVal);
+  deckIdx  = 0;
+  learned.clear();
+  flipped  = false;
+  showCard();
+}
+
+function setFilter(val, btn) {
+  filterVal = val;
+  document.querySelectorAll('.fc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filtered = deck.filter(c => val === 'all' || c.cert === val);
+  filtered = filtered.filter(c => !learned.has(c));
+  deckIdx  = 0;
+  flipped  = false;
+  showCard();
+}
+
+function shuffleDeck() {
+  for (let i = filtered.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+  }
+  deckIdx = 0;
+  flipped = false;
+  showCard();
+}
+
+function showCard() {
+  const card = document.getElementById('fc-card');
+  card.classList.remove('flipped');
+  flipped = false;
+  const remaining = filtered.filter(c => !learned.has(c));
+  updateStats();
+  if (remaining.length === 0) { showDone(); return; }
+  while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++;
+  if (deckIdx >= filtered.length) { deckIdx = 0; while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++; }
+  if (deckIdx >= filtered.length) { showDone(); return; }
+  const c = filtered[deckIdx];
+  const certLabel = {ccna:'CCNA 200-301', enarsi:'ENARSI 300-410', scor:'SCOR 350-701'}[c.cert];
+  document.getElementById('fc-cat').textContent    = c.cat + ' · ' + certLabel;
+  document.getElementById('fc-cat2').textContent   = c.cat + ' · ' + certLabel;
+  document.getElementById('fc-q').textContent      = c.q;
+  document.getElementById('fc-a').textContent      = c.a;
+  document.getElementById('fc-detail').textContent = c.detail || '';
+  document.getElementById('fc-nav').style.display  = 'flex';
+  const pos = remaining.indexOf(c) + 1;
+  document.getElementById('fc-pos').textContent = pos + ' / ' + remaining.length;
+  const pct = (1 - remaining.length / (filtered.length || 1)) * 100;
+  document.getElementById('fc-fill').style.width = pct + '%';
+}
+
+function updateStats() {
+  const domainFiltered = deck.filter(c => filterVal === 'all' || c.cert === filterVal);
+  const learnedInFilter = domainFiltered.filter(c => learned.has(c)).length;
+  document.getElementById('fc-total-count').textContent  = domainFiltered.length;
+  document.getElementById('fc-learned').textContent      = learnedInFilter;
+  document.getElementById('fc-remaining').textContent    = domainFiltered.length - learnedInFilter;
+  document.getElementById('fc-learned-count').textContent = learnedInFilter + ' learned';
+}
+
+function flipCard() {
+  const card = document.getElementById('fc-card');
+  flipped = !flipped;
+  flipped ? card.classList.add('flipped') : card.classList.remove('flipped');
+}
+
+function markLearned() {
+  if (filtered[deckIdx]) learned.add(filtered[deckIdx]);
+  nextCard();
+}
+
+function nextCard() {
+  deckIdx++;
+  while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++;
+  if (deckIdx >= filtered.length) { deckIdx = 0; while (deckIdx < filtered.length && learned.has(filtered[deckIdx])) deckIdx++; }
+  flipped = false;
+  showCard();
+}
+
+function prevCard() {
+  deckIdx--;
+  if (deckIdx < 0) deckIdx = filtered.length - 1;
+  while (deckIdx >= 0 && learned.has(filtered[deckIdx])) deckIdx--;
+  if (deckIdx < 0) deckIdx = 0;
+  flipped = false;
+  showCard();
+}
+
+function showDone() {
+  document.getElementById('fc-nav').style.display = 'none';
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-back" style="position:relative;transform:none;backface-visibility:visible;">
+      <div class="fc-a">All cards learned!</div>
+      <div class="fc-detail" style="margin-top:8px;">You've gone through all cards in this filter.</div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="resetDeck()">Reset & Repeat</button>
+    </div>`;
+}
+
+function resetDeck() {
+  learned.clear();
+  deckIdx = 0;
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front">
+      <div class="fc-category" id="fc-cat"></div>
+      <div class="fc-q" id="fc-q"></div>
+      <div class="fc-hint">Click to reveal answer</div>
+    </div>
+    <div class="fc-face fc-back">
+      <div class="fc-category" id="fc-cat2"></div>
+      <div class="fc-a" id="fc-a"></div>
+      <div class="fc-detail" id="fc-detail"></div>
+    </div>`;
+  document.getElementById('fc-card').onclick = flipCard;
+  document.getElementById('fc-nav').style.display = 'flex';
+  showCard();
+}
+
+document.addEventListener('DOMContentLoaded', () => { initDeck(); shuffleDeck(); });
+</script>
+</body>
+</html>
