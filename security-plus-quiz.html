@@ -251,7 +251,7 @@ const QUESTIONS = [
  we:"DoS attacks disrupt availability. SQL injection targets databases. Replay attacks resend captured valid data — distinct from actively intercepting live communication."},
 
 {id:12, domain:2,
- q:"A web application allows users to enter their name in a form field. An attacker enters '<script>alert(1)</script>' and the script executes in other users' browsers. What vulnerability is this?",
+ q:"A web application allows users to enter their name in a form field. An attacker enters a malicious script tag and the script executes in other users' browsers. What vulnerability is this?",
  opts:["SQL Injection","Cross-Site Scripting (XSS)","Command Injection","Directory Traversal"],
  correct:[1],
  exp:"Cross-Site Scripting (XSS) occurs when malicious scripts are injected into web pages and executed in victims' browsers. This is stored or reflected XSS depending on whether it's persisted in the database.",
