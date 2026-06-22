@@ -87,6 +87,11 @@
   .exp-wrong-opts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
   .exp-wrong-opt  { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: #ccc; }
   .exp-wrong-letter { flex-shrink:0; font-weight:700; color: var(--red); min-width:16px; }
+  .exp-refs     { background: #111827; }
+  .exp-refs     .exp-header { color: #60a5fa; }
+  .exp-refs ul  { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .exp-refs a   { color: #60a5fa; text-decoration: none; font-size: 13px; padding: 3px 10px; background: #1a2744; border-radius: 20px; display: inline-block; transition: background .15s; }
+  .exp-refs a:hover { background: #243560; }
 
   .btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
   .btn:hover { opacity: .85; }
@@ -1126,6 +1131,13 @@ function renderExam() {
       exp += `<div class="exp-section exp-wrong">
         <div class="exp-header">Why the other options are wrong</div>
         <div>${q.we}</div>
+      </div>`;
+    }
+    if (q.refs && !correct) {
+      const links = q.refs.map(r => `<li><a href="${r.url}" target="_blank" rel="noopener">📖 ${r.text}</a></li>`).join('');
+      exp += `<div class="exp-section exp-refs">
+        <div class="exp-header">📚 Read More</div>
+        <ul>${links}</ul>
       </div>`;
     }
     exp += `</div>`;
