@@ -1139,6 +1139,48 @@ const QUESTIONS = [
   exp:"AWS honors BGP communities on routes received from customers over Direct Connect to set LOCAL_PREF on the AWS side: 7224:7100 → LP 100 (low), 7224:7200 → LP 200 (default), 7224:7300 → LP 300 (high). Tagging the us-east-1 routes with 7224:7300 sets LOCAL_PREF 300, making AWS prefer that path over us-west-2 (which receives default LP 200 or is tagged 7224:7100). Community 7224:9300 controls route propagation scope, not preference."
 }
 
+,
+// ═══════════════════════════════════════
+//  BLUEPRINT ADDITIONS  (Q126–Q130)
+//  Covering Task 2.4 (IaC/Automation) and Task 4.3 (Data Confidentiality)
+// ═══════════════════════════════════════
+{
+  id:126, domain:2,
+  q:"A network team wants to deploy identical VPC configurations (subnets, route tables, NACLs, security groups) across 50 AWS accounts using infrastructure as code. Which AWS service achieves this with the least operational overhead?",
+  opts:["Write a boto3 Python script and run it manually against each account","AWS CloudFormation StackSets to deploy a VPC template across all accounts and Regions from a central management account","Use the AWS CLI with a shell script calling create-vpc in a loop for each account","Manually configure one VPC and export the configuration as a JSON file"],
+  correct:[1],
+  exp:"CloudFormation StackSets deploys a single CloudFormation template to multiple accounts and Regions in a single operation, supports automatic deployment to new accounts joining an AWS Organization, and provides drift detection. Manual scripts or CLI loops offer no state management, no drift detection, and require re-running on every change."
+},
+{
+  id:127, domain:2,
+  q:"A company wants to automatically add a DENY rule to a Network ACL when Amazon GuardDuty generates a finding for a malicious source IP. No manual intervention should be required. Which architecture implements this event-driven network automation?",
+  opts:["Amazon GuardDuty → Amazon EventBridge rule → AWS Lambda function (calls ec2:CreateNetworkAclEntry)","AWS Config auto-remediation SSM document that queries GuardDuty daily","AWS CloudTrail → Amazon CloudWatch alarm → Amazon SNS email notification","AWS Trusted Advisor → AWS Systems Manager Automation runbook"],
+  correct:[0],
+  exp:"Event-driven network automation in AWS follows the pattern: event source → EventBridge → Lambda (or Step Functions). GuardDuty publishes findings as events to EventBridge; an EventBridge rule filters for the relevant finding type and triggers a Lambda function that calls the EC2 API to insert a NACL DENY rule for the offending IP. CloudTrail/CloudWatch/SNS (C) is notification-only, not automated remediation."
+},
+{
+  id:128, domain:2,
+  q:"A network engineer writes a CloudFormation template for a VPC that hardcodes a specific Elastic IP allocation ID (eipalloc-0abc123) for a NAT Gateway. The template is later deployed to a different AWS account for a staging environment. What problem does this hardcoding cause?",
+  opts:["CloudFormation ignores hardcoded resource IDs and always allocates new resources automatically","The deployment fails because the Elastic IP allocation ID does not exist in the target account; account-specific resource IDs must be passed as parameters, stored in SSM Parameter Store, or resolved via dynamic references","Hardcoded IDs work correctly as long as the target account is in the same AWS Organization","The template deploys successfully but creates a duplicate Elastic IP in the staging account"],
+  correct:[1],
+  exp:"A key IaC anti-pattern is embedding account-specific or environment-specific resource identifiers directly in templates. Elastic IP allocation IDs, AMI IDs, VPC IDs, and similar values are unique per account and Region. Best practice is to pass them as CloudFormation Parameters, look them up in a Mappings section keyed by account/Region, or resolve them at deploy time using AWS Systems Manager Parameter Store dynamic references ({{resolve:ssm:/network/eip-id}})."
+},
+{
+  id:129, domain:4,
+  q:"A company's compliance policy requires all data transferred over their AWS Direct Connect connection to be encrypted at the network layer. Direct Connect does not encrypt traffic by default. Which TWO options provide encryption for Direct Connect traffic? (Choose TWO)",
+  opts:["Configure an IPsec VPN tunnel whose endpoints are reachable over the Direct Connect private VIF","Enable SSL/TLS termination on the Direct Connect virtual interface in the AWS console","Enable MACsec (IEEE 802.1AE) on a supported dedicated Direct Connect connection","Direct Connect automatically encrypts traffic when BGP MD5 authentication is configured"],
+  correct:[0,2],
+  multi:true,
+  exp:"Two valid encryption options for Direct Connect: (1) IPsec VPN over Direct Connect — establish an IPsec tunnel with endpoints reachable via the private VIF; this provides Layer 3 encryption and works on all Direct Connect connection types. (2) MACsec (IEEE 802.1AE) — Layer 2 encryption available on 10 Gbps and 100 Gbps dedicated connections at supported locations, providing line-rate encryption with no throughput penalty. BGP MD5 (D) authenticates the BGP control-plane session but does not encrypt data traffic."
+},
+{
+  id:130, domain:4,
+  q:"A company runs internal microservices across multiple VPCs and accounts that need private TLS certificates for mutual TLS (mTLS) authentication. The certificates must use an internal domain (app.internal.corp) that is not publicly verifiable. Which AWS service provides a managed private certificate authority for issuing these certificates?",
+  opts:["AWS Certificate Manager (ACM) — request a public certificate for app.internal.corp","AWS Private Certificate Authority (AWS Private CA)","AWS IAM server certificates uploaded via the CLI","Let's Encrypt certificates stored in AWS Secrets Manager"],
+  correct:[1],
+  exp:"AWS Private CA (formerly ACM PCA) is a managed, highly available private certificate authority service. It issues private TLS/SSL certificates for internal hostnames, private domains, and mTLS without requiring public DNS validation. Private CA supports hierarchical CA chains, automated certificate revocation (CRL/OCSP), and integrates with ACM for automated certificate deployment to AWS services. ACM public certificates (A) require publicly verifiable domain ownership and cannot issue certificates for .internal domains."
+}
+
 ]; // end QUESTIONS
 
 // ─────────────────────────────────────────────
@@ -1270,7 +1312,12 @@ const WRONG_EXP = {
   122: "API Gateway resource policies with country IP ranges (A) — maintaining country-level IP range lists (thousands of CIDRs per country, constantly changing) is operationally impractical. Route 53 geolocation with blackhole (C) — geolocation routing changes DNS responses but can be bypassed by clients using the API endpoint's IP directly. Security Groups with country IPs (D) — API Gateway is a managed service; Security Groups don't attach to it directly, and maintaining IP lists is impractical.",
   123: "TGW doesn't support VPC-to-VPC routing (A) — false; VPC-to-VPC routing is Transit Gateway's primary use case. SG blocking VPC-3 (C) — possible but Security Group misconfig would be instance-level; the more common and likely architectural cause is TGW route table isolation. VPC peering still required (D) — false; TGW replaces full-mesh VPC peering.",
   124: "pkt-srcaddr always identical to srcaddr (A) — only true when no NAT device is in the path. pkt-srcaddr is for IPv6 only (C) — both standard and pkt-level fields are available for both IPv4 and IPv6 traffic. pkt-srcaddr only for rejected traffic (D) — the pkt-level fields are populated for all traffic regardless of action.",
-  125: "Config rule to detect and terminate (A) — Config is detective, not preventive; there is a window during which instances with public IPs exist before remediation. Firewall Manager blocking public IP assignment (C) — Firewall Manager manages WAF, SG policies, Network Firewall, and Shield; it does not prevent public IP assignment at EC2 launch. Subnet-level auto-assign disabled via StackSets (D) — subnet defaults can be overridden per-instance at launch using the API parameter; SCPs are a harder preventive control."
+  125: "Config rule to detect and terminate (A) — Config is detective, not preventive; there is a window during which instances with public IPs exist before remediation. Firewall Manager blocking public IP assignment (C) — Firewall Manager manages WAF, SG policies, Network Firewall, and Shield; it does not prevent public IP assignment at EC2 launch. Subnet-level auto-assign disabled via StackSets (D) — subnet defaults can be overridden per-instance at launch using the API parameter; SCPs are a harder preventive control.",
+  126: "boto3 script (A) requires manual execution per account, provides no state management, and fails silently. AWS CLI loop (C) has the same problems — no drift detection, no rollback, no stack lifecycle. Exporting JSON (D) captures a point-in-time snapshot but cannot be deployed to other accounts as IaC.",
+  127: "AWS Config auto-remediation (B) addresses Config rule violations, not GuardDuty findings; bridging the two still requires EventBridge and Lambda. CloudTrail → CloudWatch → SNS (C) sends a notification to a human but takes no automated network action. Trusted Advisor → Systems Manager (D) is not a supported automation path for GuardDuty-triggered NACL changes.",
+  128: "CloudFormation does NOT automatically replace hardcoded resource IDs (A) — it passes them verbatim to the API, which returns an error if the resource does not exist in the target account. Same-Organization accounts (C) still have separate resource namespaces — resources in one account do not exist in another. Duplicate EIP creation (D) is impossible — CloudFormation would fail with 'InvalidAllocationID.NotFound' before creating anything.",
+  129: "SSL/TLS on a VIF (B) is not a configurable option — virtual interfaces are BGP-based Layer 2/3 constructs; TLS is application-layer and cannot be applied at the VIF level. BGP MD5 authentication (D) authenticates the BGP control-plane session against spoofing but does not encrypt the data flowing over the Direct Connect connection.",
+  130: "ACM public certificates (A) require publicly verifiable domain ownership — internal hostnames like 'app.internal.corp' will fail DNS/email validation. IAM server certificates (C) are a legacy upload mechanism with no CA functionality or managed renewal. Let's Encrypt in Secrets Manager (D) requires custom ACME tooling, doesn't support private domains, and adds operational complexity with no managed CA hierarchy."
 };
 
 // ─────────────────────────────────────────────
@@ -1401,7 +1448,12 @@ const REFS = {
   122:[{t:"WAF Geo Match Condition",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"},{t:"Geographic Blocking with WAF",u:"https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"}],
   123:[{t:"TGW Route Table Troubleshooting",u:"https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"},{t:"TGW Route Propagation",u:"https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html"}],
   124:[{t:"Flow Log pkt-srcaddr Field",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html"},{t:"VPC Flow Logs Custom Format",u:"https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records"}],
-  125:[{t:"SCP Examples – VPC Controls",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_vpc.html"},{t:"Preventing Public IPs with SCPs",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"}]
+  125:[{t:"SCP Examples – VPC Controls",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_vpc.html"},{t:"Preventing Public IPs with SCPs",u:"https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"}],
+  126:[{t:"CloudFormation StackSets",u:"https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"},{t:"StackSets with AWS Organizations",u:"https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-activate-trusted-access.html"}],
+  127:[{t:"EventBridge with GuardDuty",u:"https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html"},{t:"Event-Driven Automation",u:"https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html"}],
+  128:[{t:"CloudFormation Best Practices",u:"https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html"},{t:"SSM Dynamic References in CloudFormation",u:"https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html"}],
+  129:[{t:"VPN over Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"},{t:"MACsec on Direct Connect",u:"https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"}],
+  130:[{t:"AWS Private CA",u:"https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html"},{t:"Private CA for mTLS",u:"https://docs.aws.amazon.com/privateca/latest/userguide/PcaKubernetes.html"}]
 };
 
 // ─────────────────────────────────────────────
@@ -1410,7 +1462,7 @@ const REFS = {
 const DOMAIN_NAMES = {
   1: "Domain 1 – Network Design",
   2: "Domain 2 – Network Implementation",
-  3: "Domain 3 – Management & Operations",
+  3: "Domain 3 – Network Management & Operation",
   4: "Domain 4 – Security & Compliance"
 };
 const DOMAIN_CLASS     = { 1:"d1", 2:"d2", 3:"d3", 4:"d4" };
