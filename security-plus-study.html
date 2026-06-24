@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security+ SY0-701 — Study Guide &amp; Flashcards</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #e74c3c; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3498db; --yellow: #f39c12; --purple: #9b59b6;
+    --d1: #a855f7; --d2: #ef4444; --d3: #3b82f6; --d4: #22c55e; --d5: #f59e0b;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  .top-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 0; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { font-size: 13px; font-weight: 700; color: var(--accent); padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 4px; white-space: nowrap; }
+  .nav-tab { padding: 16px 20px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; color: var(--muted); transition: color .15s, border-color .15s; background: none; border-top: none; border-left: none; border-right: none; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-spacer { flex: 1; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: color .15s, border-color .15s; }
+  .nav-link:hover { color: var(--text); border-color: var(--muted); }
+
+  #app { max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .domain-section { margin-bottom: 40px; }
+  .domain-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 0 0; cursor: pointer; user-select: none; }
+  .domain-header:hover { border-color: var(--accent); }
+  .domain-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .domain-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .domain-pct { font-size: 12px; color: var(--muted); }
+  .chevron { color: var(--muted); transition: transform .2s; font-size: 12px; }
+  .domain-header.open .chevron { transform: rotate(180deg); }
+  .domain-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 24px; display: none; }
+  .domain-body.open { display: block; }
+
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .concept-card h4 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .concept-card ul { list-style: none; }
+  .concept-card li { font-size: 13px; color: var(--text); padding: 3px 0; padding-left: 14px; position: relative; }
+  .concept-card li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+  .concept-card .key { color: var(--accent); font-weight: 600; }
+
+  .trap-box { background: #1f1210; border: 1px solid #7f2020; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .trap-box .trap-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--red); margin-bottom: 6px; }
+  .tip-box  { background: #0e1f12; border: 1px solid #1f7f20; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .tip-box  .tip-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--green); margin-bottom: 6px; }
+
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); font-weight: 700; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  td { padding: 9px 12px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: #1c1f2e; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no  { color: var(--red); font-weight: 600; }
+  .val { color: var(--accent); font-weight: 600; }
+
+  .sg-heading { font-size: 14px; font-weight: 700; color: var(--text); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+  /* Flashcard styles */
+  .fc-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .fc-filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .15s; }
+  .fc-filter-btn:hover, .fc-filter-btn.active { color: #000; }
+  .fc-filter-btn.active.f-all { background: var(--accent); border-color: var(--accent); }
+  .fc-filter-btn.active.f-d1 { background: var(--d1); border-color: var(--d1); }
+  .fc-filter-btn.active.f-d2 { background: var(--d2); border-color: var(--d2); }
+  .fc-filter-btn.active.f-d3 { background: var(--d3); border-color: var(--d3); }
+  .fc-filter-btn.active.f-d4 { background: var(--d4); border-color: var(--d4); color: #000; }
+  .fc-filter-btn.active.f-d5 { background: var(--d5); border-color: var(--d5); color: #000; }
+  .fc-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .fc-prog-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .fc-prog-fill { height: 100%; background: var(--green); transition: width .3s; }
+  .fc-scene { width: 100%; perspective: 1000px; margin-bottom: 16px; cursor: pointer; }
+  .fc-card-wrap { position: relative; width: 100%; transition: transform 0.5s; transform-style: preserve-3d; min-height: 240px; }
+  .fc-card-wrap.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; width: 100%; min-height: 240px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fc-front { background: var(--surface); border: 1px solid var(--border); }
+  .fc-back  { background: #0e1f12; border: 1px solid #2a5a2a; transform: rotateY(180deg); }
+  .fc-category { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+  .fc-q { font-size: 17px; font-weight: 600; line-height: 1.5; }
+  .fc-a { font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+  .fc-detail { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .fc-hint { font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .fc-nav { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary   { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-green     { background: var(--green); color: #000; }
+  .btn-muted     { background: var(--border); color: var(--muted); }
+  .fc-stats { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 12px; }
+  .fc-stat  { text-align: center; }
+  .fc-stat-val { font-size: 20px; font-weight: 700; }
+  .fc-stat-lbl { color: var(--muted); font-size: 11px; }
+  .fc-done-screen { text-align: center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .fc-done-screen h2 { font-size: 22px; margin-bottom: 8px; }
+  .fc-done-screen p { color: var(--muted); margin-bottom: 20px; }
+  @media(max-width:600px) { .fc-q { font-size: 15px; } .fc-a { font-size: 14px; } .fc-face { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">SY0-701 Training</div>
+  <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
+  <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="security-plus-quiz.html">← Practice Exam</a>
+</nav>
+
+<div id="app">
+
+<!-- ══════════════════════ STUDY GUIDE ══════════════════════ -->
+<div id="tab-guide" class="tab-pane active">
+
+  <!-- D1 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header open" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d1)"></div>
+      <div class="domain-title">Domain 1 — General Security Concepts</div>
+      <div class="domain-pct">12% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body open">
+
+      <div class="sg-heading">Security Control Categories &amp; Types</div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Know the <strong>two axes</strong>: Category (Technical, Managerial, Operational, Physical) vs Type (Preventive, Detective, Corrective, Deterrent, Compensating, Directive). A camera is Physical + Detective. A policy is Managerial + Directive. A fence is Physical + Deterrent.</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Control Types</h4><ul>
+          <li><span class="key">Preventive</span> — stops an incident (firewall, lock)</li>
+          <li><span class="key">Detective</span> — identifies an incident (IDS, camera, audit log)</li>
+          <li><span class="key">Corrective</span> — restores after incident (backup restore, patch)</li>
+          <li><span class="key">Deterrent</span> — discourages attack (warning sign, guard)</li>
+          <li><span class="key">Compensating</span> — alternative when primary can't be used</li>
+          <li><span class="key">Directive</span> — instructs behaviour (policy, procedure)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Control Categories</h4><ul>
+          <li><span class="key">Technical</span> — firewalls, encryption, IDS/IPS, MFA</li>
+          <li><span class="key">Managerial</span> — policies, risk assessments, awareness training</li>
+          <li><span class="key">Operational</span> — procedures, background checks, security guards</li>
+          <li><span class="key">Physical</span> — locks, fences, cameras, mantraps, badge readers</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Cryptography Fundamentals</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Symmetric Encryption</h4><ul>
+          <li>Same key encrypts &amp; decrypts</li>
+          <li><span class="key">AES</span> — 128/192/256-bit; current standard</li>
+          <li><span class="key">3DES</span> — legacy; being phased out</li>
+          <li>Fast; used for bulk data encryption</li>
+          <li>Key distribution problem — how to share key securely?</li>
+        </ul></div>
+        <div class="concept-card"><h4>Asymmetric Encryption</h4><ul>
+          <li>Key pair: <span class="key">public</span> (encrypt) + <span class="key">private</span> (decrypt)</li>
+          <li><span class="key">RSA</span> — 2048/4096-bit; key exchange &amp; signatures</li>
+          <li><span class="key">ECC</span> — smaller keys, same strength; efficient on mobile</li>
+          <li>Slower; used for key exchange &amp; signatures</li>
+          <li>Encrypt with recipient's public key → only private key decrypts</li>
+        </ul></div>
+        <div class="concept-card"><h4>Hashing</h4><ul>
+          <li>One-way; cannot be reversed</li>
+          <li><span class="key">SHA-256 / SHA-3</span> — current standard</li>
+          <li><span class="key">MD5</span> — broken; do not use for security</li>
+          <li>Same input → same hash (deterministic)</li>
+          <li>Used for: file integrity, password storage (with salting), digital signatures</li>
+        </ul></div>
+        <div class="concept-card"><h4>Digital Signatures</h4><ul>
+          <li>Sign with <span class="key">sender's private key</span></li>
+          <li>Verify with <span class="key">sender's public key</span></li>
+          <li>Provides: <span class="key">authentication</span>, <span class="key">integrity</span>, <span class="key">non-repudiation</span></li>
+          <li>Does NOT provide confidentiality</li>
+          <li>Process: hash the data → encrypt hash with private key</li>
+        </ul></div>
+        <div class="concept-card"><h4>Key Management</h4><ul>
+          <li><span class="key">Key escrow</span> — copy of key stored with trusted third party</li>
+          <li><span class="key">Key stretching</span> — PBKDF2, bcrypt, Argon2 (make weak passwords stronger)</li>
+          <li><span class="key">Salting</span> — random value added before hashing to prevent rainbow tables</li>
+          <li><span class="key">HSM</span> — hardware security module; tamper-resistant key storage</li>
+        </ul></div>
+        <div class="concept-card"><h4>Obfuscation &amp; Data Hiding</h4><ul>
+          <li><span class="key">Steganography</span> — hide data inside a carrier file (image, audio)</li>
+          <li><span class="key">Tokenisation</span> — replace sensitive value with random token; no math relationship</li>
+          <li><span class="key">Data masking</span> — obscure part of data for display (****1234)</li>
+          <li><span class="key">Obfuscation</span> — make code/data harder to understand</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Authentication &amp; Identity</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>MFA Factors</h4><ul>
+          <li><span class="key">Something you know</span> — password, PIN</li>
+          <li><span class="key">Something you have</span> — smart card, OTP token, phone</li>
+          <li><span class="key">Something you are</span> — biometrics (fingerprint, retina, voice)</li>
+          <li><span class="key">Somewhere you are</span> — geolocation, IP range</li>
+          <li>MFA = two or more different factors</li>
+          <li>TOTP (time-based OTP) — 30-sec code via authenticator app; more secure than SMS</li>
+        </ul></div>
+        <div class="concept-card"><h4>Federation &amp; SSO</h4><ul>
+          <li><span class="key">SAML 2.0</span> — XML-based identity federation; IdP issues assertion to SP</li>
+          <li><span class="key">OAuth 2.0</span> — authorisation framework (not authentication)</li>
+          <li><span class="key">OIDC</span> — authentication layer on top of OAuth 2.0</li>
+          <li><span class="key">Kerberos</span> — Windows domain SSO; uses tickets (TGT → TGS)</li>
+          <li>SSO: authenticate once, access many systems</li>
+        </ul></div>
+        <div class="concept-card"><h4>Access Control Models</h4><ul>
+          <li><span class="key">DAC</span> — owner controls access (Windows NTFS permissions)</li>
+          <li><span class="key">MAC</span> — system enforces labels (Top Secret, Secret, etc.)</li>
+          <li><span class="key">RBAC</span> — access based on role (most common in enterprises)</li>
+          <li><span class="key">ABAC</span> — access based on attributes (time, location, device)</li>
+          <li><span class="key">Rule-based AC</span> — firewall rules; not the same as RBAC</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">PKI &amp; Certificates</div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div><strong>Certificate pinning</strong> bypasses normal certificate chain validation — the app only trusts a specific cert or CA, not the system trust store. This prevents MitM even with a rogue trusted CA. <strong>OCSP</strong> is real-time revocation checking (better than CRL for time-sensitivity).</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>PKI Components</h4><ul>
+          <li><span class="key">CA</span> — Certificate Authority; issues &amp; signs certs</li>
+          <li><span class="key">Root CA</span> — top of the trust hierarchy; often offline</li>
+          <li><span class="key">Intermediate CA</span> — issues end-entity certs; online</li>
+          <li><span class="key">CRL</span> — Certificate Revocation List; periodic download</li>
+          <li><span class="key">OCSP</span> — Online Certificate Status Protocol; real-time revocation check</li>
+          <li><span class="key">CSR</span> — Certificate Signing Request; sent to CA for signing</li>
+        </ul></div>
+        <div class="concept-card"><h4>Certificate Types</h4><ul>
+          <li><span class="key">DV</span> — Domain Validated; proves domain control only</li>
+          <li><span class="key">OV</span> — Organisation Validated; includes org identity</li>
+          <li><span class="key">EV</span> — Extended Validation; highest assurance</li>
+          <li><span class="key">Wildcard</span> — *.domain.com; covers all subdomains</li>
+          <li><span class="key">SAN</span> — Subject Alternative Name; multiple domains per cert</li>
+          <li><span class="key">Self-signed</span> — signed by own private key; not trusted by default</li>
+        </ul></div>
+      </div>
+
+    </div><!-- /D1 body -->
+  </div><!-- /D1 -->
+
+  <!-- D2 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d2)"></div>
+      <div class="domain-title">Domain 2 — Threats, Vulnerabilities &amp; Mitigations</div>
+      <div class="domain-pct">22% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Threat Actor Types</div>
+      <div class="table-wrap"><table>
+        <tr><th>Actor</th><th>Motivation</th><th>Sophistication</th><th>Resources</th></tr>
+        <tr><td><span class="val">Nation-State / APT</span></td><td>Espionage, sabotage, geopolitical</td><td class="yes">Very High</td><td class="yes">Unlimited</td></tr>
+        <tr><td><span class="val">Organised Crime</span></td><td>Financial gain (ransomware, fraud)</td><td>High</td><td>High</td></tr>
+        <tr><td><span class="val">Hacktivist</span></td><td>Ideology, politics, social causes</td><td>Medium</td><td>Varies</td></tr>
+        <tr><td><span class="val">Insider Threat</span></td><td>Financial, revenge, negligence</td><td>Varies</td><td>Privileged access</td></tr>
+        <tr><td><span class="val">Script Kiddie</span></td><td>Notoriety, curiosity</td><td class="no">Low</td><td class="no">Low</td></tr>
+        <tr><td><span class="val">Shadow IT</span></td><td>Productivity; bypasses IT controls</td><td>N/A</td><td>Dept budget</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Social Engineering &amp; Phishing</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Phishing Variants</h4><ul>
+          <li><span class="key">Phishing</span> — bulk email to random targets</li>
+          <li><span class="key">Spear phishing</span> — targeted; uses personal details</li>
+          <li><span class="key">Whaling</span> — targets C-suite executives (as victims)</li>
+          <li><span class="key">Vishing</span> — voice / phone-based</li>
+          <li><span class="key">Smishing</span> — SMS text messages</li>
+          <li><span class="key">BEC</span> — impersonates executive to request wire transfer</li>
+        </ul></div>
+        <div class="concept-card"><h4>Other Social Engineering</h4><ul>
+          <li><span class="key">Pretexting</span> — fabricated scenario to obtain info</li>
+          <li><span class="key">Baiting</span> — leaving infected USB drives; promise of reward</li>
+          <li><span class="key">Quid pro quo</span> — offer help in exchange for info/access</li>
+          <li><span class="key">Tailgating/Piggybacking</span> — following through a secure door</li>
+          <li><span class="key">Typosquatting</span> — lookalike domain (micros0ft.com)</li>
+          <li><span class="key">Watering hole</span> — compromise a site the target visits</li>
+        </ul></div>
+        <div class="concept-card"><h4>SE Principles (Why It Works)</h4><ul>
+          <li><span class="key">Authority</span> — impersonates boss/police/IT</li>
+          <li><span class="key">Urgency</span> — "act now or lose access"</li>
+          <li><span class="key">Social proof</span> — "everyone else has agreed"</li>
+          <li><span class="key">Scarcity</span> — "only 1 spot left"</li>
+          <li><span class="key">Liking/familiarity</span> — appears as a friend or colleague</li>
+          <li><span class="key">Fear</span> — "you'll be arrested if you don't…"</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Malware Types</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Common Malware</h4><ul>
+          <li><span class="key">Virus</span> — attaches to file; requires human action to spread</li>
+          <li><span class="key">Worm</span> — self-replicates across network; no host file needed</li>
+          <li><span class="key">Trojan</span> — disguised as legitimate software</li>
+          <li><span class="key">Ransomware</span> — encrypts files; demands payment</li>
+          <li><span class="key">Spyware</span> — steals data/keystrokes silently</li>
+          <li><span class="key">Adware</span> — unwanted ads; may include spyware</li>
+        </ul></div>
+        <div class="concept-card"><h4>Advanced Malware</h4><ul>
+          <li><span class="key">Rootkit</span> — hides its own presence; modifies OS; hard to detect</li>
+          <li><span class="key">RAT</span> — Remote Access Trojan; full remote control</li>
+          <li><span class="key">Keylogger</span> — records keystrokes (passwords, PINs)</li>
+          <li><span class="key">Logic bomb</span> — triggers on a condition (date, login, file deletion)</li>
+          <li><span class="key">Fileless malware</span> — lives in memory; no disk footprint; evades AV</li>
+          <li><span class="key">Botnet/zombie</span> — compromised host under C2 control</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Network &amp; Password Attacks</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Password Attacks</h4><ul>
+          <li><span class="key">Brute force</span> — try all combinations</li>
+          <li><span class="key">Dictionary</span> — wordlist of common passwords</li>
+          <li><span class="key">Password spray</span> — one common password against many accounts (avoids lockout)</li>
+          <li><span class="key">Credential stuffing</span> — leaked username+password pairs from other breaches</li>
+          <li><span class="key">Rainbow table</span> — precomputed hash lookups; defeated by salting</li>
+          <li><span class="key">Kerberoasting</span> — request SPN tickets; crack offline for service account passwords</li>
+        </ul></div>
+        <div class="concept-card"><h4>Network Attacks</h4><ul>
+          <li><span class="key">DDoS</span> — volumetric (UDP flood), protocol (SYN flood), application (HTTP flood)</li>
+          <li><span class="key">On-path (MitM)</span> — intercepts and potentially modifies traffic</li>
+          <li><span class="key">Session hijacking</span> — steals authenticated session token</li>
+          <li><span class="key">Replay attack</span> — captures and retransmits valid auth data</li>
+          <li><span class="key">ARP spoofing</span> — poisons ARP cache to redirect LAN traffic</li>
+          <li><span class="key">DNS poisoning</span> — injects false DNS records into resolver cache</li>
+        </ul></div>
+        <div class="concept-card"><h4>Application Attacks</h4><ul>
+          <li><span class="key">SQL injection</span> — malicious SQL in input fields</li>
+          <li><span class="key">XSS</span> — injects scripts into pages viewed by other users</li>
+          <li><span class="key">CSRF</span> — tricks victim's browser into making unintended requests</li>
+          <li><span class="key">Buffer overflow</span> — overwrite adjacent memory; can execute code</li>
+          <li><span class="key">Path traversal</span> — ../../etc/passwd to access restricted files</li>
+          <li><span class="key">IDOR</span> — insecure direct object reference; access unauthorised records</li>
+        </ul></div>
+      </div>
+
+      <div class="tip-box"><div class="tip-label">✓ Key Differentiator</div><strong>Password spray vs credential stuffing vs brute force:</strong> Spray = 1 password, many accounts. Credential stuffing = known pairs from another breach. Brute force = all combinations against one account. Spray avoids lockout; stuffing relies on password reuse.</div>
+
+    </div>
+  </div>
+
+  <!-- D3 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d3)"></div>
+      <div class="domain-title">Domain 3 — Security Architecture</div>
+      <div class="domain-pct">18% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Cloud Security</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Cloud Service Models</h4><ul>
+          <li><span class="key">IaaS</span> — you manage OS up; provider manages hardware &amp; hypervisor</li>
+          <li><span class="key">PaaS</span> — you manage app &amp; data; provider manages runtime &amp; OS</li>
+          <li><span class="key">SaaS</span> — you manage data &amp; users only; provider manages everything else</li>
+          <li>Shared responsibility model — security "of" vs "in" the cloud</li>
+        </ul></div>
+        <div class="concept-card"><h4>Cloud Deployment Models</h4><ul>
+          <li><span class="key">Public</span> — multi-tenant; shared infrastructure</li>
+          <li><span class="key">Private</span> — single-tenant; dedicated resources</li>
+          <li><span class="key">Hybrid</span> — on-premises + public cloud integration</li>
+          <li><span class="key">Community</span> — shared among organisations with common interests</li>
+          <li><span class="key">Multi-cloud</span> — use multiple cloud providers</li>
+        </ul></div>
+        <div class="concept-card"><h4>Cloud Security Tools</h4><ul>
+          <li><span class="key">CASB</span> — Cloud Access Security Broker; visibility &amp; control over SaaS</li>
+          <li><span class="key">CSPM</span> — Cloud Security Posture Management; find misconfigurations</li>
+          <li><span class="key">CWPP</span> — Cloud Workload Protection Platform; runtime protection</li>
+          <li><span class="key">SWG</span> — Secure Web Gateway; filter outbound web traffic</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Network Architecture Patterns</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Segmentation &amp; Isolation</h4><ul>
+          <li><span class="key">DMZ</span> — semi-trusted zone between internet and internal</li>
+          <li><span class="key">Screened subnet</span> — another name for DMZ</li>
+          <li><span class="key">Microsegmentation</span> — workload-level firewall policies; limits lateral movement</li>
+          <li><span class="key">VLAN</span> — logical network separation at Layer 2</li>
+          <li><span class="key">Air gap</span> — physical isolation; no network connection</li>
+        </ul></div>
+        <div class="concept-card"><h4>Zero Trust &amp; SASE</h4><ul>
+          <li><span class="key">Zero Trust</span> — "never trust, always verify"; no implicit trust from location</li>
+          <li>Key components: strong identity, device posture, least privilege, microsegmentation</li>
+          <li><span class="key">SASE</span> — SD-WAN + FWaaS + CASB + SWG + ZTNA in one cloud service</li>
+          <li>SASE eliminates hairpinning; security at the edge near users</li>
+        </ul></div>
+        <div class="concept-card"><h4>Infrastructure as Code (IaC)</h4><ul>
+          <li>Terraform, CloudFormation, Ansible — define infra in code files</li>
+          <li>IaC vulnerability: <span class="key">hardcoded secrets</span> in config files committed to repos</li>
+          <li>Mitigation: use secrets managers, env variables, vault references</li>
+          <li>Enables consistent, repeatable, auditable deployments</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Data Security &amp; Resilience</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Data States</h4><ul>
+          <li><span class="key">Data at rest</span> — stored on disk/database; protect with encryption (AES-256)</li>
+          <li><span class="key">Data in transit</span> — moving over network; protect with TLS/HTTPS/VPN</li>
+          <li><span class="key">Data in use</span> — in memory/CPU; protect with enclaves, access controls</li>
+        </ul></div>
+        <div class="concept-card"><h4>Data Classification</h4><ul>
+          <li><span class="key">Public</span> — no restrictions; freely shareable</li>
+          <li><span class="key">Internal/Private</span> — internal use only; some restrictions</li>
+          <li><span class="key">Confidential</span> — business-sensitive; need-to-know basis</li>
+          <li><span class="key">Top Secret/Restricted</span> — highest sensitivity; strictly controlled</li>
+          <li><span class="key">PII</span> — personally identifiable information</li>
+          <li><span class="key">PHI</span> — protected health information (HIPAA)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Backup &amp; Recovery</h4><ul>
+          <li><span class="key">3-2-1 rule</span> — 3 copies, 2 media types, 1 offsite/offline</li>
+          <li><span class="key">RTO</span> — Recovery Time Objective: max acceptable downtime</li>
+          <li><span class="key">RPO</span> — Recovery Point Objective: max acceptable data loss</li>
+          <li><span class="key">MTD</span> — Maximum Tolerable Downtime: hard limit before catastrophic</li>
+          <li>Immutable backup / air-gapped copy is key defence against ransomware</li>
+        </ul></div>
+        <div class="concept-card"><h4>HA &amp; Site Types</h4><ul>
+          <li><span class="key">Hot site</span> — fully operational duplicate; immediate failover</li>
+          <li><span class="key">Warm site</span> — partially configured; hours to activate</li>
+          <li><span class="key">Cold site</span> — empty facility; days/weeks to bring up</li>
+          <li><span class="key">RAID 1</span> — mirror; RAID 5 — parity; RAID 10 — mirror+stripe</li>
+          <li>Geographic diversity — different power grid, flood zone, etc.</li>
+        </ul></div>
+      </div>
+
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div><strong>RTO vs RPO vs MTD:</strong> RTO is how fast you must restore. RPO is how much data loss is acceptable. MTD is the absolute maximum — if exceeded, the business fails. MTD &gt; RTO always.</div>
+
+    </div>
+  </div>
+
+  <!-- D4 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d4)"></div>
+      <div class="domain-title">Domain 4 — Security Operations</div>
+      <div class="domain-pct">28% of exam — largest domain</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Enterprise Security Tools</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>SIEM, SOAR, EDR, XDR</h4><ul>
+          <li><span class="key">SIEM</span> — aggregates &amp; correlates logs; generates alerts; requires analyst</li>
+          <li><span class="key">SOAR</span> — executes automated playbooks in response to alerts (no human needed)</li>
+          <li><span class="key">EDR</span> — endpoint behavioural monitoring, detection, threat hunting, automated response</li>
+          <li><span class="key">XDR</span> — EDR + network + cloud + email in unified platform</li>
+        </ul></div>
+        <div class="concept-card"><h4>Network Security</h4><ul>
+          <li><span class="key">IDS</span> — detects intrusions; passive; alerts only</li>
+          <li><span class="key">IPS</span> — inline; actively blocks intrusions</li>
+          <li><span class="key">WAF</span> — HTTP/HTTPS layer protection; OWASP Top 10</li>
+          <li><span class="key">NAC</span> — evaluates device posture before network admission; quarantines non-compliant</li>
+          <li><span class="key">DNS filtering</span> — blocks resolution of malicious domains; covers entire network</li>
+          <li><span class="key">DLP</span> — prevents sensitive data leaving the organisation</li>
+        </ul></div>
+        <div class="concept-card"><h4>Endpoint Security</h4><ul>
+          <li><span class="key">MDM</span> — manages full device: enforce policies, remote wipe, push configs</li>
+          <li><span class="key">MAM</span> — manages specific apps only (BYOD-friendly)</li>
+          <li><span class="key">HIDS</span> — host-based IDS; monitors files, processes, registry</li>
+          <li><span class="key">Application control / whitelisting</span> — only approved software runs</li>
+          <li><span class="key">Secure boot</span> — UEFI verifies bootloader integrity before loading OS</li>
+        </ul></div>
+        <div class="concept-card"><h4>Privileged Access</h4><ul>
+          <li><span class="key">PAM</span> — Privileged Access Management; vaults admin credentials</li>
+          <li><span class="key">Just-in-time (JIT) access</span> — elevate privilege only when needed; auto-expires</li>
+          <li><span class="key">Least privilege</span> — users get only the access they need</li>
+          <li><span class="key">Separation of duties</span> — no single person controls entire process</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Vulnerability Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>CVSS Scores</h4><ul>
+          <li>0.1–3.9 = <span class="key">Low</span></li>
+          <li>4.0–6.9 = <span class="key">Medium</span></li>
+          <li>7.0–8.9 = <span class="key">High</span></li>
+          <li>9.0–10.0 = <span class="key">Critical</span></li>
+          <li>Base score = exploitability + impact</li>
+          <li>Use CVSS + asset criticality + exploitability (CISA KEV) to prioritise</li>
+        </ul></div>
+        <div class="concept-card"><h4>Scanning Types</h4><ul>
+          <li><span class="key">Credentialed scan</span> — logs in; sees installed software, configs, patches</li>
+          <li><span class="key">Non-credentialed</span> — external view; simulates attacker without login</li>
+          <li><span class="key">Active scan</span> — sends packets to probe; may cause disruption</li>
+          <li><span class="key">Passive</span> — captures traffic; no probing; no disruption</li>
+          <li><span class="key">SAST</span> — static application security testing (source code)</li>
+          <li><span class="key">DAST</span> — dynamic application security testing (running app)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Pen Test Phases</h4><ul>
+          <li>1. <span class="key">Planning/Scoping</span> — rules of engagement, authorisation</li>
+          <li>2. <span class="key">Reconnaissance</span> — passive (OSINT) then active</li>
+          <li>3. <span class="key">Scanning</span> — identify open ports, services, vulnerabilities</li>
+          <li>4. <span class="key">Exploitation</span> — gain initial access</li>
+          <li>5. <span class="key">Post-exploitation</span> — lateral movement, privilege escalation</li>
+          <li>6. <span class="key">Reporting</span> — findings, remediation recommendations</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Incident Response &amp; Digital Forensics</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>IR Lifecycle (NIST)</h4><ul>
+          <li>1. <span class="key">Preparation</span> — IR plan, tools, training, contacts</li>
+          <li>2. <span class="key">Detection &amp; Analysis</span> — identify and confirm the incident</li>
+          <li>3. <span class="key">Containment</span> — limit the damage (short-term + long-term)</li>
+          <li>4. <span class="key">Eradication</span> — remove malware, close access</li>
+          <li>5. <span class="key">Recovery</span> — restore systems; monitor for recurrence</li>
+          <li>6. <span class="key">Lessons learned</span> — post-incident review; improve defences</li>
+        </ul></div>
+        <div class="concept-card"><h4>Order of Volatility</h4><ul>
+          <li>1. <span class="key">CPU registers &amp; cache</span> — milliseconds</li>
+          <li>2. <span class="key">RAM / memory</span> — processes, keys, network sockets</li>
+          <li>3. <span class="key">Active network connections</span></li>
+          <li>4. <span class="key">Running processes</span></li>
+          <li>5. <span class="key">Temp files / swap</span></li>
+          <li>6. <span class="key">Hard drive image</span> — least volatile; collect last</li>
+        </ul></div>
+        <div class="concept-card"><h4>Forensics Principles</h4><ul>
+          <li><span class="key">Chain of custody</span> — documented evidence handling</li>
+          <li><span class="key">Legal hold</span> — suspend deletion for litigation; overrides retention policy</li>
+          <li><span class="key">Write blockers</span> — prevent altering original evidence</li>
+          <li><span class="key">Hashing evidence</span> — MD5/SHA hash proves integrity</li>
+          <li>Never work on originals — always use forensic copies</li>
+          <li>Document everything — timestamps, tools, findings</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Threat Intelligence</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Intelligence Sharing</h4><ul>
+          <li><span class="key">STIX</span> — Structured Threat Information eXpression; JSON format for IoCs, TTPs</li>
+          <li><span class="key">TAXII</span> — Trusted Automated eXchange of Indicator Information; HTTP transport for STIX</li>
+          <li><span class="key">ISAC</span> — Information Sharing &amp; Analysis Centre; sector-specific threat sharing</li>
+          <li><span class="key">IoC</span> — Indicator of Compromise (IP, hash, domain, email)</li>
+          <li><span class="key">MITRE ATT&amp;CK</span> — adversary TTP framework</li>
+        </ul></div>
+        <div class="concept-card"><h4>Threat Hunting</h4><ul>
+          <li>Proactive, hypothesis-driven search for attacker activity</li>
+          <li>Looks beyond what automated alerts detect</li>
+          <li>Uses endpoint telemetry, network logs, threat intel</li>
+          <li>Effective against APTs using living-off-the-land (LotL) techniques</li>
+          <li>LotL: abuses built-in OS tools (PowerShell, WMI, certutil)</li>
+        </ul></div>
+      </div>
+
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div><strong>IDS vs IPS:</strong> IDS is passive — it alerts but does not block. IPS is inline — it can drop/block packets. A SIEM is neither — it aggregates logs and correlates events. SOAR adds automation to the SIEM workflow. None of these replace each other.</div>
+
+    </div>
+  </div>
+
+  <!-- D5 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d5)"></div>
+      <div class="domain-title">Domain 5 — Security Program Management &amp; Oversight</div>
+      <div class="domain-pct">20% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Risk Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Risk Terminology</h4><ul>
+          <li><span class="key">Threat</span> — potential cause of harm</li>
+          <li><span class="key">Vulnerability</span> — weakness that can be exploited</li>
+          <li><span class="key">Risk</span> = Threat × Vulnerability × Impact</li>
+          <li><span class="key">Likelihood</span> — probability of threat occurring</li>
+          <li><span class="key">Impact</span> — consequence if it occurs</li>
+          <li><span class="key">Risk appetite</span> — how much risk an org is willing to accept</li>
+        </ul></div>
+        <div class="concept-card"><h4>Risk Treatment Options</h4><ul>
+          <li><span class="key">Avoid</span> — don't do the risky activity</li>
+          <li><span class="key">Mitigate / Reduce</span> — implement controls to lower probability or impact</li>
+          <li><span class="key">Transfer</span> — cyber insurance; third-party contract</li>
+          <li><span class="key">Accept</span> — acknowledge risk; no action; document decision</li>
+          <li>Residual risk — risk remaining after controls applied</li>
+          <li>Inherent risk — risk before controls</li>
+        </ul></div>
+        <div class="concept-card"><h4>Risk Assessment Methods</h4><ul>
+          <li><span class="key">Qualitative</span> — Low/Medium/High; uses judgment &amp; opinion</li>
+          <li><span class="key">Quantitative</span> — SLE, ARO, ALE; uses dollar values</li>
+          <li>SLE (Single Loss Expectancy) = Asset value × Exposure factor</li>
+          <li>ALE (Annual Loss Expectancy) = SLE × ARO (Annual Rate of Occurrence)</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Compliance &amp; Regulations</div>
+      <div class="table-wrap"><table>
+        <tr><th>Regulation</th><th>Scope</th><th>Key Requirement</th></tr>
+        <tr><td><span class="val">GDPR</span></td><td>EU personal data (global reach)</td><td>72-hr breach notification; right to erasure; DPIA for high-risk</td></tr>
+        <tr><td><span class="val">HIPAA</span></td><td>US healthcare (PHI)</td><td>60-day breach notification; access controls; audit logs</td></tr>
+        <tr><td><span class="val">PCI DSS</span></td><td>Payment card data</td><td>12 requirements; tokenise PANs; annual QSA audit</td></tr>
+        <tr><td><span class="val">SOX</span></td><td>US public company financials</td><td>Internal controls for financial reporting; IT controls</td></tr>
+        <tr><td><span class="val">FERPA</span></td><td>US student education records</td><td>Restrict access to education records without consent</td></tr>
+        <tr><td><span class="val">GLBA</span></td><td>US financial institutions</td><td>Safeguard customer financial information</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Audits, Assessments &amp; Business Continuity</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Assessment Types</h4><ul>
+          <li><span class="key">Vulnerability assessment</span> — automated scan for known CVEs; passive</li>
+          <li><span class="key">Penetration test</span> — simulated attack; active exploitation</li>
+          <li><span class="key">Red team</span> — adversary simulation; full attack lifecycle</li>
+          <li><span class="key">Blue team</span> — defenders during an exercise</li>
+          <li><span class="key">Purple team</span> — red + blue collaborate in real time</li>
+          <li><span class="key">Attestation</span> — formal signed declaration controls exist (SOC 2, ISO 27001)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Pen Test Scopes</h4><ul>
+          <li><span class="key">White box</span> — full info: source code, network diagrams, credentials</li>
+          <li><span class="key">Gray box</span> — partial info: some credentials, basic topology</li>
+          <li><span class="key">Black box</span> — no info; simulates external attacker</li>
+          <li><span class="key">Tabletop exercise</span> — discussion-based; no actual systems attacked</li>
+        </ul></div>
+        <div class="concept-card"><h4>BIA &amp; BCP/DRP</h4><ul>
+          <li><span class="key">BIA</span> — identifies critical functions, MTD, RTO, RPO, financial impact</li>
+          <li><span class="key">BCP</span> — Business Continuity Plan: keep operations running during disruption</li>
+          <li><span class="key">DRP</span> — Disaster Recovery Plan: restore IT systems after incident</li>
+          <li>BIA feeds BCP feeds DRP — in that order</li>
+          <li>Test plans: tabletop → walkthrough → simulation → full parallel test</li>
+        </ul></div>
+        <div class="concept-card"><h4>Data Governance</h4><ul>
+          <li><span class="key">Data retention policy</span> — how long to keep data (normal schedule)</li>
+          <li><span class="key">Legal hold</span> — overrides retention; preserve all relevant data for litigation</li>
+          <li><span class="key">PIA / DPIA</span> — assess privacy risks before high-risk processing begins</li>
+          <li><span class="key">Data sovereignty</span> — data subject to laws of country where stored</li>
+          <li><span class="key">Data minimisation</span> — collect only what is necessary</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Third-Party &amp; Change Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Vendor / Third-Party Risk</h4><ul>
+          <li>Questionnaires, right-to-audit clauses, SOC 2 reports</li>
+          <li><span class="key">Supply chain risk</span> — hardware/software compromised before delivery</li>
+          <li><span class="key">MOU</span> — Memorandum of Understanding; informal agreement</li>
+          <li><span class="key">MSA</span> — Master Service Agreement; legal contract</li>
+          <li><span class="key">SLA</span> — Service Level Agreement; defines uptime/support commitments</li>
+          <li><span class="key">NDA</span> — Non-disclosure Agreement; protects confidential info</li>
+        </ul></div>
+        <div class="concept-card"><h4>Change Management</h4><ul>
+          <li>RFC (Request for Change) → CAB approval → Maintenance window → Rollback plan → Post-change review</li>
+          <li><span class="key">CAB</span> — Change Advisory Board; approves significant changes</li>
+          <li><span class="key">Emergency change</span> — expedited process for urgent fixes</li>
+          <li>Technical implications: service outages, legacy dependencies, version control</li>
+          <li>Documented rollback plan is required for every change</li>
+        </ul></div>
+      </div>
+
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div><strong>BCP vs DRP:</strong> BCP is the broader plan to keep the business running (people, processes, communication). DRP is the IT-specific plan to restore systems. BCP includes DRP. A tabletop exercise tests the plan with discussion — no systems are actually used.</div>
+
+    </div>
+  </div>
+
+</div><!-- /tab-guide -->
+
+<!-- ══════════════════════ FLASHCARDS ══════════════════════ -->
+<div id="tab-flash" class="tab-pane">
+  <div class="fc-controls">
+    <button class="fc-filter-btn f-all active" onclick="setFilter('all',this)">All Domains</button>
+    <button class="fc-filter-btn f-d1" onclick="setFilter('d1',this)">D1 – General Security</button>
+    <button class="fc-filter-btn f-d2" onclick="setFilter('d2',this)">D2 – Threats</button>
+    <button class="fc-filter-btn f-d3" onclick="setFilter('d3',this)">D3 – Architecture</button>
+    <button class="fc-filter-btn f-d4" onclick="setFilter('d4',this)">D4 – Operations</button>
+    <button class="fc-filter-btn f-d5" onclick="setFilter('d5',this)">D5 – Program Mgmt</button>
+  </div>
+  <div class="fc-progress">
+    <span id="fc-counter">1 / 60</span>
+    <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-bar" style="width:0%"></div></div>
+    <span id="fc-learned-label">0 learned</span>
+  </div>
+  <div class="fc-scene" onclick="flipCard()">
+    <div class="fc-card-wrap" id="fc-card">
+      <div class="fc-face fc-front">
+        <div class="fc-category" id="fc-cat"></div>
+        <div class="fc-q" id="fc-q"></div>
+        <div class="fc-hint">Click to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-category" id="fc-cat2"></div>
+        <div class="fc-a" id="fc-a"></div>
+        <div class="fc-detail" id="fc-detail"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav" id="fc-nav">
+    <button class="btn btn-muted"      onclick="markLearned()">✓ Got It</button>
+    <button class="btn btn-secondary"  onclick="prevCard()">← Prev</button>
+    <button class="btn btn-secondary"  onclick="nextCard()">Next →</button>
+    <button class="btn btn-secondary"  onclick="shuffleDeck()">🔀 Shuffle</button>
+  </div>
+  <div class="fc-stats">
+    <div class="fc-stat"><div class="fc-stat-val" id="fc-total-ct">0</div><div class="fc-stat-lbl">Total Cards</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--green)" id="fc-learned-ct">0</div><div class="fc-stat-lbl">Learned</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--accent)" id="fc-remain-ct">0</div><div class="fc-stat-lbl">Remaining</div></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ── Tab switching ──────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function toggleDomain(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ── Flashcard data ─────────────────────────────────────────
+const CARDS = [
+  // D1 – General Security Concepts
+  {d:'d1',cat:'D1 · Controls',q:'What are the six security control TYPES?',a:'Preventive, Detective, Corrective, Deterrent, Compensating, Directive',detail:'Preventive stops, Detective identifies, Corrective restores, Deterrent discourages, Compensating substitutes, Directive instructs.'},
+  {d:'d1',cat:'D1 · Controls',q:'A security camera is what category AND type of control?',a:'Physical (category) + Detective (type)',detail:'It physically exists at the site and detects/records incidents. It is not preventive — it does not stop an attacker.'},
+  {d:'d1',cat:'D1 · Cryptography',q:'Which encryption key is used to ENCRYPT data when using asymmetric encryption?',a:"The recipient's PUBLIC key",detail:"Anyone can encrypt using the recipient's public key. Only the recipient's private key can decrypt. Remember: public=lock, private=key."},
+  {d:'d1',cat:'D1 · Cryptography',q:'What properties does a digital signature provide? What does it NOT provide?',a:'Authentication, Integrity, Non-repudiation — but NOT Confidentiality',detail:'The sender hashes the message then encrypts the hash with their private key. Verify with sender\'s public key. It does not encrypt the message itself.'},
+  {d:'d1',cat:'D1 · Cryptography',q:'What is the difference between tokenisation and encryption?',a:'Tokenisation replaces data with a random token with no math relationship. Encryption is a reversible transformation using a key.',detail:'If a DB with tokens is breached, tokens are useless without the vault. Encrypted data can be decrypted if the key is obtained. PCI DSS uses tokenisation for PANs.'},
+  {d:'d1',cat:'D1 · Cryptography',q:'What is salting and why is it used with password hashing?',a:'Adding a random value to a password before hashing to prevent rainbow table attacks',detail:'Without salt, identical passwords produce identical hashes. Salting ensures each password hash is unique. SHA-256 alone is insufficient for passwords — use bcrypt/Argon2.'},
+  {d:'d1',cat:'D1 · Cryptography',q:'What is steganography?',a:'Hiding data inside a carrier file (image, audio, video) so the existence of the secret is concealed',detail:'Unlike encryption (secret is obvious), steganography hides that a secret exists. LSB image modification is the most common technique.'},
+  {d:'d1',cat:'D1 · Authentication',q:'What are the three primary MFA factors? Give an example of each.',a:'Something you know (password/PIN), something you have (token/phone), something you are (fingerprint/retina)',detail:'True MFA requires TWO DIFFERENT factor types. Two passwords = single-factor. Password + SMS code = two-factor (know + have).'},
+  {d:'d1',cat:'D1 · Authentication',q:'TOTP vs HOTP — what is the difference?',a:'TOTP = time-based (30-sec window). HOTP = counter-based (increments each use).',detail:'TOTP (RFC 6238) is used by most authenticator apps. HOTP (RFC 4226) is counter-based — used in some hardware tokens. TOTP expires; HOTP does not.'},
+  {d:'d1',cat:'D1 · Authentication',q:'What protocol does enterprise web SSO/federation use? What does the IdP issue?',a:'SAML 2.0. The IdP issues a signed XML assertion to the service provider (SP).',detail:'SAML separates authentication (IdP) from the service (SP). The SP never sees the user\'s password. OAuth 2.0 is authorisation, not authentication — OIDC adds auth to OAuth.'},
+  {d:'d1',cat:'D1 · PKI',q:'What is OCSP and why is it better than a CRL?',a:'OCSP (Online Certificate Status Protocol) provides real-time revocation checks. CRL is a downloadable list that may be days old.',detail:'CRL must be downloaded and cached — revocation is delayed. OCSP queries a responder for instant status. OCSP stapling improves performance by including the OCSP response in the TLS handshake.'},
+  {d:'d1',cat:'D1 · PKI',q:'What access control model is used in Windows NTFS? What about military classified systems?',a:'Windows NTFS = DAC (owner controls access). Military = MAC (labels enforced by system).',detail:'DAC: owner can grant to anyone. MAC: clearance + need-to-know enforced by policy. RBAC (role-based) is most common in enterprise — neither owner-controlled nor label-based.'},
+
+  // D2 – Threats, Vulnerabilities & Mitigations
+  {d:'d2',cat:'D2 · Threat Actors',q:'Which threat actor type has the most resources and highest sophistication?',a:'Nation-state / APT (Advanced Persistent Threat)',detail:'Nation-state actors have government funding, zero-day exploits, and long-term patience. They focus on espionage, sabotage, and geopolitical goals. Script kiddies are lowest sophistication.'},
+  {d:'d2',cat:'D2 · Threat Actors',q:'What is Shadow IT and why is it a security risk?',a:'Use of technology not approved by IT. Risk: data stored outside monitored systems, no security controls, no visibility.',detail:'Usually motivated by productivity, not malice. Risk includes data exposure, compliance violation, and unpatched software.'},
+  {d:'d2',cat:'D2 · Social Engineering',q:'What is the difference between whaling and BEC?',a:'Whaling = targeting a C-suite executive AS A VICTIM. BEC = impersonating a C-suite executive to deceive a victim.',detail:'In whaling, the exec is the target. In BEC, the exec is impersonated (e.g., CEO email to CFO requesting wire transfer). BEC is financially motivated; whaling is targeted credential theft.'},
+  {d:'d2',cat:'D2 · Social Engineering',q:'What is a watering hole attack?',a:'Compromising a website frequented by the target group so visitors are silently infected',detail:'Attackers research which sites targets visit (industry forums, conference sites), compromise those, and wait. More effective against security-conscious users who ignore phishing emails.'},
+  {d:'d2',cat:'D2 · Social Engineering',q:'What is typosquatting?',a:'Registering a visually similar domain (micros0ft.com) to deceive users who mistype or are deceived',detail:'Uses character substitution (0 for o), homoglyphs, extra/missing letters, or different TLDs. Used with phishing to bypass technical email filters.'},
+  {d:'d2',cat:'D2 · Malware',q:'What is the key difference between a virus and a worm?',a:'A virus attaches to a file and requires human action to spread. A worm self-replicates across networks without human interaction.',detail:'A virus needs to be run (click an attachment, execute a file). A worm exploits vulnerabilities to spread autonomously — classic example: WannaCry used SMB exploit.'},
+  {d:'d2',cat:'D2 · Malware',q:'What makes a rootkit particularly dangerous and difficult to detect?',a:'A rootkit hides its own presence by modifying the OS kernel or bootloader, making detection from within the infected OS unreliable.',detail:'Rootkits may intercept system calls to hide processes, files, and registry entries. Best detected from outside the OS using a bootable forensic tool or integrity monitoring from before infection.'},
+  {d:'d2',cat:'D2 · Malware',q:'What is fileless malware and why does it evade traditional antivirus?',a:'Fileless malware runs in memory only, abusing legitimate OS tools (PowerShell, WMI) — it leaves no files on disk for AV to scan.',detail:'AV traditionally scans files. Fileless malware never writes to disk. Detected by behavioural EDR tools monitoring process behaviour, memory, and command-line arguments.'},
+  {d:'d2',cat:'D2 · Attacks',q:'Distinguish: brute force vs dictionary vs password spray vs credential stuffing',a:'Brute force = all combos, 1 account. Dictionary = wordlist, 1 account. Spray = 1 common password, many accounts. Stuffing = known pairs from another breach.',detail:'Spray avoids lockout by staying under threshold per account. Stuffing exploits password reuse — works without cracking because credentials are already known.'},
+  {d:'d2',cat:'D2 · Attacks',q:'What is Kerberoasting?',a:'Requesting Kerberos service tickets for SPN-registered accounts and cracking them offline to recover service account passwords',detail:'Any domain user can request TGS tickets. They\'re encrypted with the service account\'s NTLM hash. Cracked offline = no network noise. Use long random passwords or gMSAs to defend.'},
+  {d:'d2',cat:'D2 · Attacks',q:'What is session hijacking?',a:'Stealing a valid authenticated session token and replaying it to impersonate an authenticated user, bypassing login',detail:'If cookies lack Secure/HttpOnly flags or are sent over HTTP, they can be intercepted. Defences: HTTPS-only, Secure+HttpOnly flags, short session timeouts, session token rotation on privilege change.'},
+
+  // D3 – Security Architecture
+  {d:'d3',cat:'D3 · Cloud',q:'In the shared responsibility model, who is responsible for patching the OS in IaaS vs PaaS?',a:'IaaS: YOU patch the OS. PaaS: PROVIDER patches the OS.',detail:'IaaS = infrastructure only. You manage OS, runtime, app, data. PaaS = provider manages OS and runtime. SaaS = provider manages everything; you manage data and user access only.'},
+  {d:'d3',cat:'D3 · Cloud',q:'What does CASB do and where does it sit?',a:'Cloud Access Security Broker: provides visibility and control over SaaS applications (shadow IT discovery, DLP, access control, threat protection)',detail:'CASB sits between users and cloud services. It can be proxy-based (inline) or API-based (direct integration with SaaS APIs). Enforces security policies for unsanctioned cloud use.'},
+  {d:'d3',cat:'D3 · Architecture',q:'What is the core principle of Zero Trust Architecture?',a:'"Never trust, always verify" — no implicit trust based on network location; every access request must be authenticated and continuously validated',detail:'Traditional: inside=trusted, outside=untrusted. ZTA: both are untrusted. Every request requires strong identity, device posture check, least privilege, and continuous monitoring.'},
+  {d:'d3',cat:'D3 · Architecture',q:'What is SASE and what does it converge?',a:'Secure Access Service Edge: converges SD-WAN + FWaaS + CASB + SWG + ZTNA into one cloud-native service delivered from global PoPs',detail:'Eliminates the need to backhaul remote user traffic to a central DC before inspecting it. Security applied at the edge, near the user. Term coined by Gartner.'},
+  {d:'d3',cat:'D3 · Architecture',q:'What is microsegmentation and how does it differ from traditional network segmentation?',a:'Microsegmentation enforces firewall policies at the individual workload level. Traditional segmentation only controls traffic at subnet/VLAN boundaries.',detail:'Within a segment, hosts can freely communicate in traditional segmentation. Microsegmentation adds per-workload controls — a compromised VM cannot reach unrelated VMs even in the same VLAN.'},
+  {d:'d3',cat:'D3 · Architecture',q:'What is an IaC security vulnerability? Give an example.',a:'Hardcoded secrets (API keys, passwords) embedded in Terraform/CloudFormation files committed to version-controlled repositories',detail:'Even if the repo is later made private, secrets may already be cached. Solution: use secrets managers, environment variables, or vault references. Never commit credentials.'},
+  {d:'d3',cat:'D3 · Resilience',q:'What is the 3-2-1 backup rule?',a:'3 copies of data, on 2 different media types, with 1 copy stored offsite or offline (air-gapped)',detail:'The offline/offsite copy is the key ransomware defence — malware cannot encrypt what it cannot reach. Immutable backups (object lock) also satisfy the "unreachable" requirement.'},
+  {d:'d3',cat:'D3 · Resilience',q:'Define RTO, RPO, and MTD. Which is always largest?',a:'RTO = max acceptable downtime to restore. RPO = max acceptable data loss. MTD = absolute hard limit. MTD ≥ RTO always.',detail:'If restoration takes longer than MTD, the business may not survive. MTD sets the ceiling. RTO must be less than MTD. RPO drives backup frequency.'},
+  {d:'d3',cat:'D3 · Resilience',q:'Hot site vs warm site vs cold site — what is the key differentiator?',a:'Hot = fully operational, immediate failover. Warm = partially ready, hours. Cold = empty shell, days/weeks.',detail:'Hot site has mirrored data in real-time. Warm site has hardware but needs data restore. Cold site has power/HVAC but no equipment — you bring everything. Cost inversely proportional to RTO.'},
+
+  // D4 – Security Operations
+  {d:'d4',cat:'D4 · Tools',q:'What is the difference between SIEM and SOAR?',a:'SIEM aggregates/correlates logs and generates alerts requiring analyst action. SOAR executes automated playbooks triggered by alerts — no human needed.',detail:'SIEM = visibility. SOAR = automated response. SOAR playbooks can isolate a host, create a ticket, and notify on-call within seconds of an EDR alert.'},
+  {d:'d4',cat:'D4 · Tools',q:'What is EDR and how does it differ from traditional antivirus?',a:'EDR provides endpoint behavioural monitoring, continuous recording, threat hunting, and automated response. AV uses signature-based file scanning.',detail:'EDR detects fileless malware, living-off-the-land attacks, and post-exploitation activity that AV misses. EDR records all process activity for forensic investigation.'},
+  {d:'d4',cat:'D4 · Tools',q:'What is NAC and what does it evaluate?',a:'Network Access Control evaluates device posture (patch level, AV status, domain membership, certificate) before granting network access; quarantines non-compliant devices',detail:'Implemented with 802.1X port authentication and RADIUS. Prevents unpatched or compromised devices from joining production networks.'},
+  {d:'d4',cat:'D4 · Tools',q:'What is DNS filtering and what attack does it best defend against?',a:'DNS filtering blocks resolution of malicious domains before connections are established; best defends against C2 communications from infected hosts',detail:'Because all devices use DNS, network-wide protection requires no endpoint agents. Works on IoT devices. Services like Cisco Umbrella, Cloudflare Gateway use threat intel to update blocklists.'},
+  {d:'d4',cat:'D4 · Tools',q:'What is the difference between IDS and IPS?',a:'IDS = passive, alerts only, out-of-band. IPS = inline, actively blocks/drops malicious traffic.',detail:'IDS has zero impact on traffic flow but can\'t stop attacks. IPS can block but becomes a bottleneck/failure point if it goes down. Both use signatures + behavioural analysis.'},
+  {d:'d4',cat:'D4 · Vulnerability',q:'What CVSS score range indicates a Critical vulnerability?',a:'9.0 – 10.0',detail:'Ranges: Low (0.1-3.9), Medium (4.0-6.9), High (7.0-8.9), Critical (9.0-10.0). Patch Critical immediately. Also check CISA KEV (Known Exploited Vulnerabilities) for prioritisation.'},
+  {d:'d4',cat:'D4 · Vulnerability',q:'Credentialed vs non-credentialed vulnerability scan — what is the key difference?',a:'Credentialed: scanner logs in and can see installed software, patches, configs. Non-credentialed: external view only, like an attacker without credentials.',detail:'Credentialed scans find more vulnerabilities (internal misconfigurations). Non-credentialed simulates what an unauthenticated attacker sees. Both are needed for full coverage.'},
+  {d:'d4',cat:'D4 · IR & Forensics',q:'What is the correct order of volatility for evidence collection?',a:'RAM → network connections → running processes → temp files → hard drive image (most to least volatile)',detail:'Shutting down a system destroys all volatile evidence. Always capture memory first. Hard drive imaging is last because it persists longest.'},
+  {d:'d4',cat:'D4 · IR & Forensics',q:'What are the six phases of the NIST Incident Response lifecycle?',a:'Preparation → Detection & Analysis → Containment → Eradication → Recovery → Lessons Learned',detail:'Preparation includes the IR plan, tools, and contacts. Containment limits damage before eradication. Lessons Learned improves defences for next time.'},
+  {d:'d4',cat:'D4 · Threat Intel',q:'What is STIX and what is TAXII?',a:'STIX = structured JSON format for threat intelligence (IoCs, TTPs, actors). TAXII = HTTP transport protocol for sharing STIX data between organisations.',detail:'ISACs, government agencies (CISA), and commercial threat intel platforms use STIX/TAXII. MITRE ATT&CK framework describes TTPs that can be represented in STIX.'},
+  {d:'d4',cat:'D4 · Threat Intel',q:'What is threat hunting and why is it different from waiting for SIEM alerts?',a:'Threat hunting is proactive, hypothesis-driven investigation of telemetry to find attacker activity that automated alerts missed',detail:'APTs using living-off-the-land (PowerShell, WMI, certutil) blend in with normal activity and evade signature rules. Hunters form hypotheses and search endpoint/network telemetry manually.'},
+  {d:'d4',cat:'D4 · MDM',q:'MDM vs MAM — what is the key difference?',a:'MDM = full device management (enforce policies, remote wipe entire device). MAM = manage specific apps only (BYOD-friendly; corporate data wiped from apps, not device).',detail:'Corporate-owned devices → MDM. Personal BYOD devices → MAM or containerisation. MDM can remote-wipe the entire device; MAM only wipes corporate app data.'},
+
+  // D5 – Program Management & Oversight
+  {d:'d5',cat:'D5 · Risk',q:'What are the four risk treatment options?',a:'Avoid (don\'t do it), Mitigate/Reduce (add controls), Transfer (insurance/contract), Accept (document decision)',detail:'Residual risk = risk after controls. Inherent risk = risk before controls. Risk acceptance must be documented and approved by the business owner.'},
+  {d:'d5',cat:'D5 · Risk',q:'What is ALE and how is it calculated?',a:'Annual Loss Expectancy = SLE × ARO (Single Loss Expectancy × Annual Rate of Occurrence)',detail:'SLE = Asset Value × Exposure Factor. ALE is used to justify security investment: if ALE > cost of control, invest. Quantitative risk analysis uses dollar values.'},
+  {d:'d5',cat:'D5 · Compliance',q:'GDPR breach notification requirement?',a:'Notify supervisory authority within 72 hours of discovering the breach; notify affected individuals when high risk to their rights',detail:'HIPAA = 60 days. PCI DSS has no specific mandatory window but requires notification. GDPR applies to any organisation processing EU residents\' data, regardless of where the org is located.'},
+  {d:'d5',cat:'D5 · Compliance',q:'What regulation governs US healthcare PHI and what is its breach notification window?',a:'HIPAA. Breach notification required within 60 days for breaches affecting 500+ individuals (individual notices); annual notice for smaller breaches.',detail:'HIPAA requires access controls, audit logs, encryption (addressable), and a risk analysis. Business associates (vendors handling PHI) must sign a BAA.'},
+  {d:'d5',cat:'D5 · Assessments',q:'What is attestation? Give an example.',a:'Attestation is a formal third-party declaration that security controls exist and operate effectively. Example: SOC 2 Type II report from a CPA firm.',detail:'Unlike self-reported questionnaires, attestation is independently verified. SOC 2 Type II covers a 6-12 month period. ISO 27001 certification is another form of attestation.'},
+  {d:'d5',cat:'D5 · Assessments',q:'White box vs gray box vs black box pen test?',a:'White box = full knowledge (source code, network diagrams). Gray box = partial (some creds). Black box = no knowledge (external attacker simulation).',detail:'White box is most efficient — testers don\'t waste time on reconnaissance. Black box is most realistic but may miss internal vulnerabilities. Gray box is the most common enterprise approach.'},
+  {d:'d5',cat:'D5 · BCP',q:'What is a Business Impact Analysis (BIA) and what does it produce?',a:'BIA identifies critical business functions, their dependencies, and the impact of disruption. Outputs: MTD, RTO, RPO, financial impact per hour.',detail:'BIA must be done BEFORE writing BCP or DRP. It sets the recovery targets. BIA feeds BCP feeds DRP. If you don\'t know MTD, you don\'t know how fast you need to recover.'},
+  {d:'d5',cat:'D5 · Governance',q:'What is a legal hold and what does it override?',a:'A legal hold (litigation hold) is a directive to preserve all relevant ESI. It overrides normal data retention and deletion schedules.',detail:'Issued by legal counsel when litigation is anticipated or filed. Failure to implement can result in spoliation — a court may instruct juries to draw adverse inferences.'},
+  {d:'d5',cat:'D5 · Governance',q:'What is a DPIA (Data Protection Impact Assessment) and when is it required?',a:'A DPIA assesses privacy risks before high-risk data processing begins. Required by GDPR for biometrics, health data, large-scale profiling, or systematic monitoring.',detail:'Documents: data collected, legal basis, necessity, risks to individuals, and mitigations. Also called PIA (Privacy Impact Assessment) in other frameworks.'},
+  {d:'d5',cat:'D5 · Governance',q:'What is data sovereignty?',a:'Data is subject to the laws of the country where it is stored. Under GDPR, EU personal data must remain in the EU (or countries with adequate protection).',detail:'Cloud architects must select regions carefully. Data sovereignty affects DR site selection, replication settings, and CDN caching. Distinct from data security (protecting data) and data residency (same concept).'},
+];
+
+// ── Flashcard engine ───────────────────────────────────────
+let deck = [], deckIdx = 0, learned = new Set(), activeFilter = 'all';
+
+function initDeck() {
+  deck = CARDS.filter(c => activeFilter === 'all' || c.d === activeFilter);
+  deckIdx = 0; learned.clear();
+  updateStats();
+  if (deck.length) showCard();
+}
+function shuffleDeck() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  deckIdx = 0; showCard();
+}
+function showCard() {
+  const remaining = deck.filter((_,i) => !learned.has(i));
+  if (!remaining.length) { showDone(); return; }
+  while (learned.has(deckIdx)) deckIdx = (deckIdx + 1) % deck.length;
+  const c = deck[deckIdx];
+  const wrap = document.getElementById('fc-card');
+  wrap.classList.remove('flipped');
+  document.getElementById('fc-cat').textContent   = c.cat;
+  document.getElementById('fc-cat2').textContent  = c.cat;
+  document.getElementById('fc-q').textContent     = c.q;
+  document.getElementById('fc-a').textContent     = c.a;
+  document.getElementById('fc-detail').textContent = c.detail || '';
+  const remainingIdxs = deck.map((_,i) => i).filter(i => !learned.has(i));
+  const pos = remainingIdxs.indexOf(deckIdx) + 1;
+  document.getElementById('fc-counter').textContent = `${pos} / ${remainingIdxs.length}`;
+  document.getElementById('fc-bar').style.width = ((learned.size / deck.length) * 100) + '%';
+  document.getElementById('fc-nav').style.display = 'flex';
+  updateStats();
+}
+function flipCard() {
+  document.getElementById('fc-card').classList.toggle('flipped');
+}
+function markLearned() {
+  learned.add(deckIdx);
+  nextCard();
+}
+function nextCard() {
+  let attempts = 0;
+  do { deckIdx = (deckIdx + 1) % deck.length; attempts++; }
+  while (learned.has(deckIdx) && attempts < deck.length);
+  showCard();
+}
+function prevCard() {
+  let attempts = 0;
+  do { deckIdx = (deckIdx - 1 + deck.length) % deck.length; attempts++; }
+  while (learned.has(deckIdx) && attempts < deck.length);
+  showCard();
+}
+function setFilter(f, btn) {
+  document.querySelectorAll('.fc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = f;
+  initDeck(); shuffleDeck();
+}
+function updateStats() {
+  const rem = deck.filter((_,i) => !learned.has(i)).length;
+  document.getElementById('fc-total-ct').textContent   = deck.length;
+  document.getElementById('fc-learned-ct').textContent = learned.size;
+  document.getElementById('fc-remain-ct').textContent  = rem;
+  document.getElementById('fc-learned-label').textContent = `${learned.size} learned`;
+}
+function showDone() {
+  document.getElementById('fc-nav').style.display = 'none';
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front" style="position:relative;transform:none;backface-visibility:visible">
+      <div class="fc-a">🎉 All cards learned!</div>
+      <div class="fc-detail" style="margin-top:8px;">You've gone through all cards in this filter.</div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="resetDeck()">Reset &amp; Repeat</button>
+    </div>`;
+}
+function resetDeck() {
+  learned.clear(); deckIdx = 0;
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front">
+      <div class="fc-category" id="fc-cat"></div>
+      <div class="fc-q" id="fc-q"></div>
+      <div class="fc-hint">Click to reveal answer</div>
+    </div>
+    <div class="fc-face fc-back">
+      <div class="fc-category" id="fc-cat2"></div>
+      <div class="fc-a" id="fc-a"></div>
+      <div class="fc-detail" id="fc-detail"></div>
+    </div>`;
+  document.getElementById('fc-card').onclick = flipCard;
+  document.getElementById('fc-nav').style.display = 'flex';
+  showCard();
+}
+
+document.addEventListener('DOMContentLoaded', () => { initDeck(); shuffleDeck(); });
+</script>
+</body>
+</html>
