@@ -1274,6 +1274,7 @@ const DOMAIN_COLORS = { 1:'#a855f7', 2:'#ef4444', 3:'#3b82f6', 4:'#22c55e', 5:'#
 const DOMAIN_CLASSES = { 1:'d1b', 2:'d2b', 3:'d3b', 4:'d4b', 5:'d5b' };
 const PASS_SCORE = 75;
 const EXAM_MINUTES = 90;
+const EXAM_QUESTIONS = 90; // drawn randomly from the full pool each attempt
 
 // ─────────────────────────────────────────────
 //  STATE
@@ -1304,7 +1305,7 @@ function startExam() {
     const j = Math.floor(Math.random() * (i + 1));
     [qs[i], qs[j]] = [qs[j], qs[i]];
   }
-  state.questions = qs;
+  state.questions = qs.slice(0, EXAM_QUESTIONS);
   state.answers = {};
   state.submitted = {};
   state.current = 0;
@@ -1404,12 +1405,12 @@ function renderStart() {
     <div class="screen">
       <div class="sec-logo">🔒</div>
       <h1>CompTIA Security+</h1>
-      <p>SY0-701 Practice Exam — ${count} Questions</p>
+      <p>SY0-701 Practice Exam &nbsp;·&nbsp; ${EXAM_QUESTIONS} questions per attempt &nbsp;·&nbsp; ${QUESTIONS.length}-question pool &nbsp;·&nbsp; 5 Domains</p>
       <div class="info-grid">
-        <div class="info-box"><div class="val">${count}</div><div class="lbl">Questions</div></div>
+        <div class="info-box"><div class="val">${EXAM_QUESTIONS}</div><div class="lbl">Per Attempt</div></div>
+        <div class="info-box"><div class="val">${QUESTIONS.length}</div><div class="lbl">Question Pool</div></div>
         <div class="info-box"><div class="val">${EXAM_MINUTES}m</div><div class="lbl">Time Limit</div></div>
-        <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Passing Score</div></div>
-        <div class="info-box"><div class="val">5</div><div class="lbl">Domains</div></div>
+        <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Pass Score</div></div>
       </div>
       <div class="mode-grid">
         <div class="mode-card ${state.mode==='timed'?'active':''}" data-mode="timed">
