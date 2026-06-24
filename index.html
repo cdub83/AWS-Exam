@@ -1181,6 +1181,157 @@ const QUESTIONS = [
   exp:"AWS Private CA (formerly ACM PCA) is a managed, highly available private certificate authority service. It issues private TLS/SSL certificates for internal hostnames, private domains, and mTLS without requiring public DNS validation. Private CA supports hierarchical CA chains, automated certificate revocation (CRL/OCSP), and integrates with ACM for automated certificate deployment to AWS services. ACM public certificates (A) require publicly verifiable domain ownership and cannot issue certificates for .internal domains."
 }
 
+
+// ── Q131–Q150: Pool expansion ──────────────────────────────────────────────
+
+// Domain 1 – Network Design
+{
+  id:131, domain:1,
+  q:"A latency-sensitive UDP-based gaming application is hosted on EC2 in us-east-1 and eu-west-1. Players worldwide experience inconsistent latency and packet loss caused by traversal of the public internet. The team wants static anycast IP addresses that route users to the nearest endpoint over the AWS global backbone. Which service provides this?",
+  opts:["Amazon CloudFront with multi-origin failover","AWS Global Accelerator","Amazon Route 53 with latency-based routing","An Application Load Balancer in each region with Route 53 weighted routing"],
+  correct:[1],
+  exp:"AWS Global Accelerator assigns static anycast IP addresses and routes user traffic from the nearest AWS edge location over the private AWS global network to the optimal endpoint. This eliminates unpredictable public-internet routing, reduces latency and jitter, and supports TCP and UDP. CloudFront is HTTP/HTTPS only and caches content — it cannot accelerate arbitrary UDP traffic. Route 53 latency routing improves DNS resolution but the data path still traverses the public internet after DNS resolution."
+},
+{
+  id:132, domain:1,
+  q:"An enterprise has 200 AWS accounts and needs all VPCs to share a set of centralised security inspection appliances (IDS/IPS, firewall). They want to avoid a full mesh of VPC peering connections and must support stateful appliances that require symmetric routing (same path for both directions of a flow). Which architecture achieves this with the least operational overhead?",
+  opts:["VPC peering between every spoke VPC and the security VPC","AWS Transit Gateway with a centralised inspection VPC using TGW appliance mode, with all spoke VPCs attached via TGW","An internet-facing NLB fronting the inspection appliances","AWS PrivateLink endpoints in every spoke VPC pointing to the inspection appliances"],
+  correct:[1],
+  exp:"Transit Gateway hub-and-spoke with a centralised inspection VPC is the standard pattern for centralised east-west and north-south traffic inspection. Appliance mode on the TGW VPC attachment ensures symmetric routing — both directions of a flow always arrive at the same appliance instance, which is required for stateful inspection. VPC peering does not support transitive routing, making a full mesh of 200 accounts operationally unscalable. PrivateLink exposes individual services, not Layer 3 inspection."
+},
+{
+  id:133, domain:1,
+  q:"A SaaS company wants to expose a private API (running behind an NLB) to paying customers in other AWS accounts, without VPC peering, without exposing VPC CIDRs, and without risk of IP address overlap between customer and provider VPCs. Which AWS feature was designed exactly for this use case?",
+  opts:["VPC peering with route table entries in each customer VPC","AWS Transit Gateway with resource sharing via AWS RAM","AWS PrivateLink — the provider creates a VPC endpoint service backed by an NLB; customers create interface VPC endpoints in their own VPCs","VPC subnet sharing via AWS Resource Access Manager (RAM)"],
+  correct:[2],
+  exp:"AWS PrivateLink lets a service provider expose a service via a VPC endpoint service (backed by an NLB or GWLB). Consumers in other accounts or VPCs create interface VPC endpoints; traffic flows entirely within the AWS network, never traverses the internet, and requires no CIDR routing between VPCs. This eliminates IP overlap concerns because connectivity is one-directional (consumer to provider) at the service level. VPC peering requires routing between CIDRs and bidirectional connectivity."
+},
+{
+  id:134, domain:1,
+  q:"A company has 3 on-premises data centres and 15 AWS VPCs that all require full-mesh connectivity. They want to minimise the number of VPN tunnels and avoid complex routing configurations on on-premises routers. Which AWS service reduces each on-premises location to a single connection point?",
+  opts:["Create VPC peering between every VPC pair — 105 peering connections required","AWS Transit Gateway — each on-premises location establishes one VPN attachment to the TGW; all VPCs connect via TGW attachments","AWS Direct Connect — one hosted connection per VPC","AWS Site-to-Site VPN with a separate Customer Gateway per VPC"],
+  correct:[1],
+  exp:"AWS Transit Gateway is a regional hub that simplifies network topology. Each on-premises location creates a single VPN (or DX) attachment to the TGW. All 15 VPCs attach to the same TGW. The TGW propagates routes, eliminating the need for each on-premises router to maintain separate BGP sessions per VPC. Without TGW, a full mesh of 15 VPCs requires n(n-1)/2 = 105 peering connections, and each on-premises location would need a tunnel to every VPC."
+},
+{
+  id:135, domain:1,
+  q:"A company needs EC2 instances in private subnets to initiate outbound IPv6 connections to the internet (e.g. to download OS updates from IPv6-only mirrors) while preventing any unsolicited inbound IPv6 connections from the internet. Which VPC resource provides this?",
+  opts:["An Internet Gateway — it handles both IPv4 and IPv6","An NAT Gateway configured for IPv6 traffic","An egress-only Internet Gateway","A NAT instance in a public subnet with IPv6 forwarding enabled"],
+  correct:[2],
+  exp:"An egress-only Internet Gateway (EIGW) is the IPv6 equivalent of a NAT Gateway. It permits IPv6-initiated outbound connections from private subnets to the internet but drops unsolicited inbound IPv6 traffic. IPv6 addresses in AWS are globally unique and publicly routable — there is no NAT for IPv6. Instead, add a ::/0 route in the private subnet route table pointing to the EIGW. NAT Gateways do not support IPv6."
+},
+{
+  id:136, domain:1,
+  q:"An organisation in AWS Organizations has 50 AWS accounts, each with VPCs that need access to shared services (Active Directory, DNS resolvers, patch servers) in a central 'shared services' VPC. Individual team VPCs must not be able to communicate with each other — only with the shared services VPC. Which architecture enforces this isolation?",
+  opts:["VPC peering between every team VPC — selective route tables limit spoke-to-spoke traffic","AWS Transit Gateway with multiple route tables: a 'shared-services' route table that advertises the shared-services VPC attachment only; spoke attachments are associated with this table and cannot reach each other","AWS Direct Connect with separate VIFs per account","VPC subnet sharing via RAM — all accounts place resources in the shared-services VPC's subnets"],
+  correct:[1],
+  exp:"Transit Gateway supports multiple route tables. In the isolation pattern: associate all spoke VPC attachments to a spoke route table that propagates only the shared-services VPC attachment route. Spoke VPCs see the shared-services prefix but not each other's prefixes. This is the standard TGW isolated VPC with shared-services design pattern. VPC peering doesn't support transitive routing, so a spoke VPC cannot reach the shared-services VPC through another spoke peering."
+},
+{
+  id:137, domain:1,
+  q:"A company needs an active-passive multi-region architecture for a web application. All traffic should normally go to us-east-1. If the us-east-1 ALB health check fails, Route 53 should automatically redirect traffic to the eu-west-1 ALB within seconds. Which Route 53 routing policy achieves this?",
+  opts:["Weighted routing — set us-east-1 to weight 100 and eu-west-1 to weight 0","Failover routing — configure the us-east-1 record as PRIMARY with a health check and eu-west-1 as SECONDARY","Geolocation routing — route US users to us-east-1 and EU users to eu-west-1","Latency routing — Route 53 automatically avoids unhealthy endpoints"],
+  correct:[1],
+  exp:"Route 53 failover routing is explicitly designed for active-passive architectures. Associate a health check with the PRIMARY record (us-east-1 ALB). When the health check reports unhealthy, Route 53 serves the SECONDARY record (eu-west-1 ALB). Failover detection occurs within seconds based on the health check interval and failure threshold. Weighted routing does not perform health-check-based failover — weight 0 suppresses a record but doesn't automatically switch on health. Latency routing selects the lowest-latency healthy endpoint but is not a failover policy."
+},
+{
+  id:138, domain:1,
+  q:"A company uses AWS Organizations and wants multiple member accounts to deploy EC2 and RDS instances directly into subnets owned by a central networking account — sharing the underlying network fabric without duplicating VPCs. VPC peering or Transit Gateway is not required. Which AWS feature enables this?",
+  opts:["VPC peering — share the VPC CIDR route to each member account","AWS Resource Access Manager (RAM) — the VPC owner shares specific subnets with other accounts; participants launch resources directly into those shared subnets","AWS Transit Gateway with shared attachments","Route 53 Resolver rules shared via RAM — share DNS, not subnets"],
+  correct:[1],
+  exp:"AWS Resource Access Manager (RAM) can share VPC subnets with other accounts in the same Organisation or specific OUs. Participant accounts then launch EC2, RDS, Lambda (in VPC), and other resources directly into the shared subnets. Security groups from participant accounts can be applied. The VPC and subnets remain in the owner account — only resource launch rights are shared. This reduces VPC sprawl, centralises network management, and requires no peering or TGW for intra-VPC communication."
+},
+
+// Domain 2 – Network Implementation
+{
+  id:139, domain:2,
+  q:"A company has AWS Direct Connect connections at two different DX locations — one in New York connecting to us-east-1 and one in Los Angeles connecting to us-west-2. They want traffic between their New York and Los Angeles on-premises offices to flow privately over the AWS global network rather than over the public internet. Which Direct Connect feature enables private inter-location routing?",
+  opts:["Enable BFD (Bidirectional Forwarding Detection) on both virtual interfaces","AWS Direct Connect SiteLink — enables private routing between DX locations over the AWS global backbone","Create a Transit Gateway in each region and peer the two TGWs","Establish an IPsec VPN between the two offices over the internet"],
+  correct:[1],
+  exp:"Direct Connect SiteLink enables private network connectivity between customer on-premises sites that have Direct Connect connections at different DX locations. Traffic flows over the AWS global network rather than the public internet, providing predictable latency without requiring a separate MPLS or internet circuit between sites. SiteLink is configured per virtual interface and incurs per-GB data transfer charges. BFD improves DX failover detection speed but does not route traffic between DX locations."
+},
+{
+  id:140, domain:2,
+  q:"A company wants to integrate their SD-WAN appliances (running as EC2 instances in a VPC) with AWS Transit Gateway. They need higher bandwidth than standard IPsec VPN tunnels provide (>1.25 Gbps) and want dynamic BGP-based routing between the SD-WAN overlay and the TGW. Which TGW attachment type was designed for this?",
+  opts:["TGW VPN attachments with ECMP across multiple tunnels to approach higher aggregate bandwidth","Transit Gateway Connect — uses GRE tunnels with BGP, supporting up to 20 Gbps per Connect attachment for SD-WAN and virtual appliance integration","TGW Direct Connect hosted private VIF attachment","TGW peering between the SD-WAN VPC and the workload VPCs"],
+  correct:[1],
+  exp:"Transit Gateway Connect is a purpose-built attachment type for connecting virtual network appliances (SD-WAN, routers, firewalls) to TGW at high throughput. It uses GRE (Generic Routing Encapsulation) for the data plane and BGP for dynamic routing. TGW Connect supports up to 20 Gbps per attachment (vs ~1.25 Gbps per IPsec VPN tunnel). The Connect attachment runs over an existing TGW VPC or DX attachment as a transport underlay, eliminating the need for IPsec overhead."
+},
+
+// Domain 3 – Network Management & Operations
+{
+  id:141, domain:3,
+  q:"EC2 instances in VPC-A cannot reach RDS instances in VPC-B, even though both VPCs are attached to the same Transit Gateway. A network engineer needs to identify the exact misconfigured resource — missing route table entry, incorrect security group rule, or NACL deny — without generating any live network traffic. Which AWS tool provides this logical path analysis?",
+  opts:["Enable VPC Flow Logs and search for REJECT entries in CloudWatch Logs","AWS VPC Reachability Analyzer — models the path through VPC resources (security groups, NACLs, route tables, TGW route tables) and identifies the specific blocking configuration","Run traceroute from the EC2 instance to the RDS endpoint","AWS CloudTrail — review recent API calls that may have changed routing"],
+  correct:[1],
+  exp:"VPC Reachability Analyzer performs deterministic, API-based network path analysis through the virtual topology without sending any traffic. It evaluates security groups, NACLs, route tables, internet gateways, peering connections, and TGW route tables. When a path is blocked, it returns the exact resource and rule causing the block (e.g., 'TGW route table att-xxxx has no route to 10.2.0.0/16'). Flow Logs require live traffic and log analysis. Traceroute sends real packets and may be impeded by ICMP filtering or security group rules."
+},
+{
+  id:142, domain:3,
+  q:"A network operations team manages AWS infrastructure across 12 regions and 6 on-premises sites connected via Direct Connect and VPN. They need a single dashboard showing global network topology, BGP route changes, link health, and connection status across all regions and on-premises devices. Which AWS service provides this unified global view?",
+  opts:["Amazon CloudWatch with cross-region dashboards and custom metrics per region","AWS Network Manager — centralised global network dashboard including TGWs, DX connections, VPN connections, and registered on-premises sites and devices","AWS Config aggregator collecting resource configurations from all accounts","VPC Flow Logs aggregated to a centralised S3 bucket with Athena queries"],
+  correct:[1],
+  exp:"AWS Network Manager provides a centralised console for managing and monitoring a global network. You register your Transit Gateways, Direct Connect connections, VPN connections, and on-premises network devices (customer gateways, sites, links). Network Manager shows global topology visualisation, BGP routing events, connection health, and CloudWatch metrics — all in one view. It integrates with SD-WAN partner solutions. CloudWatch provides per-region metrics without topology context; Config tracks configuration changes without network topology."
+},
+{
+  id:143, domain:3,
+  q:"A security team wants to block DNS queries from EC2 instances in VPCs to known malware command-and-control domains, using threat intelligence lists maintained by AWS — without deploying a third-party DNS proxy or routing all DNS traffic through a firewall. Which managed AWS service provides this natively within VPC DNS resolution?",
+  opts:["Amazon Route 53 private hosted zones with CNAME records pointing malicious domains to a sinkhole IP","Route 53 Resolver DNS Firewall — attach managed domain lists (AWS-maintained threat intelligence) or custom domain lists to rule groups, then associate with VPCs to block or alert on matching queries","AWS WAF with a custom rule matching DNS query strings in HTTP headers","AWS Network Firewall with Suricata rules matching DNS payloads"],
+  correct:[1],
+  exp:"Route 53 Resolver DNS Firewall integrates directly with the VPC DNS resolver (169.254.169.253) — no extra infrastructure required. You create rule groups with domain lists and associate them with VPCs. AWS provides Managed Domain Lists (botnet C&C, malware domains, phishing) updated automatically. Matching queries can be blocked (NODATA/NXDOMAIN response) or allowed. Route 53 private hosted zones can create sinkhole records but require manually maintaining a list of every malicious domain — impractical at scale. Network Firewall requires routing all DNS traffic through a firewall subnet."
+},
+{
+  id:144, domain:3,
+  q:"A cloud governance team needs to continuously monitor the configuration of every VPC, security group, route table, and internet gateway across 300 AWS accounts for compliance with internal standards (e.g. no security group with 0.0.0.0/0 on port 22). Noncompliant resources should trigger automated remediation. Which AWS service provides this at scale?",
+  opts:["AWS Trusted Advisor — provides best-practice checks for security group open ports","AWS Config with an Organisation aggregator and managed or custom Config rules — continuously records resource configurations and evaluates compliance; noncompliant findings can trigger SSM Automation for remediation","Amazon Inspector — scans EC2 instances for vulnerabilities","AWS Security Hub with CIS AWS Foundations Benchmark"],
+  correct:[1],
+  exp:"AWS Config records the configuration history of every AWS resource continuously. An Organisations aggregator collects data across all accounts and regions. Managed Config rules (e.g., restricted-ssh, vpc-default-security-group-closed) evaluate configurations against compliance requirements. Custom Lambda-backed rules handle organisation-specific policies. Noncompliant resources can trigger automatic remediation via SSM Automation documents. Trusted Advisor checks are periodic, not continuous, and have limited rule customisation. Inspector focuses on OS and software vulnerabilities within EC2 instances, not network resource configuration compliance."
+},
+{
+  id:145, domain:3,
+  q:"A company's AWS bill shows unexpectedly high EC2 data transfer charges. A network engineer suspects large volumes of cross-AZ traffic between instances. Which combination of tools identifies the specific instance pairs generating cross-AZ traffic without deploying agents on the instances?",
+  opts:["AWS Cost Explorer filtered by data transfer line items only","VPC Flow Logs (queried via Athena or CloudWatch Logs Insights) to identify high-volume flows between ENIs in different AZs, correlated with the AWS Cost and Usage Report for cost attribution","AWS Trusted Advisor data transfer cost checks","Network Firewall logs filtered by subnet CIDR ranges"],
+  correct:[1],
+  exp:"VPC Flow Logs capture source/destination IP, bytes, and the network interface (which maps to an AZ via the subnet). Querying with Athena (S3-delivered flow logs, large scale) or CloudWatch Logs Insights lets you aggregate bytes by source/destination IP pair and filter for cross-AZ flows. Cross-AZ data transfer in AWS incurs per-GB charges in both directions. Correlating flow log data with the Cost and Usage Report (CUR) provides accurate cost attribution. Cost Explorer shows the data transfer charge line item but cannot identify which instances are responsible."
+},
+
+// Domain 4 – Security, Compliance & Governance
+{
+  id:146, domain:4,
+  q:"A company wants to block all HTTP/HTTPS requests to their internet-facing Application Load Balancer that originate from a set of high-risk countries. No application code changes are acceptable, and the solution must take effect within minutes. Which AWS service provides this capability with the least development effort?",
+  opts:["A Lambda authoriser on the ALB that calls a GeoIP API to check each request's country","AWS WAF with a geographic match rule attached to the ALB Web ACL — blocks or allows requests based on country of origin","Network ACLs on the ALB subnet with IP ranges for each country","Amazon Route 53 geolocation routing — return NXDOMAIN responses to specific countries"],
+  correct:[1],
+  exp:"AWS WAF geographic match conditions block or allow requests based on the country of origin of the source IP address. Attaching a WAF Web ACL to an ALB takes effect within minutes and requires no application changes. AWS WAF maintains and updates the GeoIP database. Network ACLs would require manually maintaining thousands of CIDR ranges per country and do not update automatically. Route 53 geolocation routing controls DNS resolution but clients can bypass it by using a different DNS resolver; it does not block the HTTP request itself."
+},
+{
+  id:147, domain:4,
+  q:"A three-tier application has web, app, and database tiers in separate security groups. The database security group must only accept MySQL traffic (port 3306) from application-tier instances — not from the web tier or any other source. Auto Scaling adds and removes app-tier instances frequently. Which inbound rule configuration for the database security group is MOST operationally efficient?",
+  opts:["Allow TCP 3306 from the application-tier subnet CIDR block","Reference the application-tier security group ID as the source of the inbound TCP 3306 rule — only instances associated with that SG can reach the database regardless of IP or subnet","Allow TCP 3306 from the web-tier security group ID — web servers need database access too","Use a NACL on the database subnet to restrict inbound traffic to the app-tier CIDR"],
+  correct:[1],
+  exp:"Security groups can reference other security groups as the source of a rule. By specifying the app-tier SG ID as the source, only ENIs currently associated with that security group are permitted — automatically covering new instances added by Auto Scaling, without any rule updates. CIDR-based rules require manual updates if the subnet is renumbered and could inadvertently allow non-app instances in the same subnet. NACLs are stateless and subnet-level; they are a coarser tool that also requires CIDR maintenance."
+},
+{
+  id:148, domain:4,
+  q:"A company needs centralised, stateful Layer 7 network inspection of all traffic flowing between VPCs and from VPCs to the internet. The security team requires custom Suricata-compatible IDS/IPS rules for detecting proprietary threat signatures. Which AWS managed service provides this capability?",
+  opts:["AWS WAF — HTTP/HTTPS inspection at the application layer for ALB and CloudFront","AWS Network Firewall — a managed stateful firewall deployed in a dedicated firewall subnet, supporting domain filtering and Suricata-compatible IPS rules","Security Groups — stateful instance-level firewall","AWS Shield Advanced — DDoS protection with Layer 7 mitigations"],
+  correct:[1],
+  exp:"AWS Network Firewall is a managed stateful network firewall and IDS/IPS service. It is deployed in a dedicated subnet (firewall subnet) and traffic is routed through it via Gateway Load Balancer endpoints or route table manipulation. Network Firewall supports: 5-tuple stateful rules, Suricata-compatible IPS rules with custom signatures, domain name filtering, and protocol detection. It inspects any protocol (TCP, UDP, ICMP) — not just HTTP. AWS WAF is HTTP/HTTPS only. Security Groups allow/deny but have no IDS/IPS inspection capability."
+},
+{
+  id:149, domain:4,
+  q:"A company stores sensitive data in an S3 bucket and accesses it from EC2 instances via a VPC gateway endpoint. They want to prevent compromised EC2 instances from exfiltrating data to any S3 bucket outside the company's own AWS account, even if the instance has valid IAM credentials. Which control enforces this at the network path?",
+  opts:["An S3 bucket policy on the sensitive bucket denying cross-account access","A VPC endpoint policy on the S3 gateway endpoint restricting API calls to only the company's own S3 buckets (using the aws:ResourceAccount condition)","A Security Group outbound rule blocking HTTPS to the S3 public IP ranges","AWS Macie scanning buckets for sensitive data exfiltration patterns"],
+  correct:[1],
+  exp:"A VPC endpoint policy is a resource-based policy attached to the endpoint itself. Any S3 API call made through the gateway endpoint is evaluated against this policy. By restricting access to buckets where aws:ResourceAccount equals the company's account ID, the endpoint blocks requests to buckets in any other account — even if the instance has IAM credentials. A bucket policy on the sensitive bucket protects that bucket but cannot prevent a compromised instance from uploading data to an attacker-controlled external bucket. Security Group rules operate at the IP level and cannot distinguish legitimate S3 buckets from attacker-owned ones."
+},
+{
+  id:150, domain:4,
+  q:"A security team needs to automatically apply the same AWS WAF Web ACL rules and Security Group policies across all 150 accounts in their AWS Organisation. New accounts joining the Organisation must be automatically brought into compliance within 30 minutes, without manual intervention. Which AWS service provides this centralised, automated policy enforcement?",
+  opts:["CloudFormation StackSets — manually deploy WAF Web ACLs to each account after creation","AWS Firewall Manager — define security policies centrally; Firewall Manager automatically enforces WAF Web ACLs, Security Groups, Network Firewall policies, and Shield Advanced across all accounts/OUs, including newly created accounts","AWS Config conformance packs — detect noncompliant resources","AWS Security Hub — aggregate findings from WAF and Security Groups across accounts"],
+  correct:[1],
+  exp:"AWS Firewall Manager is a security management service that operates at the AWS Organizations level. You create Firewall Manager security policies for WAF Web ACLs, Security Groups, AWS Network Firewall, Route 53 Resolver DNS Firewall, and Shield Advanced. Policies are automatically applied to all in-scope accounts and OUs, and newly created accounts or VPCs are auto-enrolled within a configurable remediation delay. CloudFormation StackSets can deploy resources but require triggering and don't automatically remediate drift. Config conformance packs detect non-compliance but do not deploy or enforce WAF rules."
+}
+
 ]; // end QUESTIONS
 
 // ─────────────────────────────────────────────
