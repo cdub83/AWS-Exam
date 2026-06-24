@@ -109,6 +109,8 @@
   <div class="nav-brand">SY0-701 Training</div>
   <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
   <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <button class="nav-tab"        onclick="switchTab('cheat')">📋 Cheat Sheet</button>
+  <button class="nav-tab"        onclick="switchTab('tips')">💡 Exam Tips</button>
   <div class="nav-spacer"></div>
   <a class="nav-link" href="security-plus-quiz.html">← Practice Exam</a>
 </nav>
@@ -701,6 +703,242 @@
     <div class="fc-stat"><div class="fc-stat-val" style="color:var(--accent)" id="fc-remain-ct">0</div><div class="fc-stat-lbl">Remaining</div></div>
   </div>
 </div>
+
+<!-- ══ CHEAT SHEET ════════════════════════════════════════════════ -->
+<div id="tab-cheat" class="tab-pane">
+
+<h2 class="sg-heading" style="font-size:16px;margin-top:0">🔌 Common Port Numbers</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Port(s)</th><th>Protocol / Service</th><th>Notes</th></tr>
+  <tr><td class="val">20 / 21</td><td>FTP</td><td>20 = data, 21 = control; unencrypted — use SFTP (22) or FTPS (990)</td></tr>
+  <tr><td class="val">22</td><td>SSH / SFTP / SCP</td><td>Encrypted remote shell and file transfer</td></tr>
+  <tr><td class="val">23</td><td>Telnet</td><td>Unencrypted — replaced by SSH</td></tr>
+  <tr><td class="val">25</td><td>SMTP</td><td>Server-to-server mail; 587 = client submission (STARTTLS); 465 = SMTPS</td></tr>
+  <tr><td class="val">53</td><td>DNS</td><td>UDP (queries) and TCP (zone transfers, large responses)</td></tr>
+  <tr><td class="val">67 / 68</td><td>DHCP</td><td>67 = server, 68 = client; UDP broadcast</td></tr>
+  <tr><td class="val">80</td><td>HTTP</td><td>Unencrypted web; 8080 = common alternate</td></tr>
+  <tr><td class="val">88</td><td>Kerberos</td><td>Authentication tickets; requires DC connectivity</td></tr>
+  <tr><td class="val">110</td><td>POP3</td><td>Retrieve email; 995 = POP3S (encrypted)</td></tr>
+  <tr><td class="val">123</td><td>NTP</td><td>Time sync; UDP; critical for Kerberos and certificate validity</td></tr>
+  <tr><td class="val">143</td><td>IMAP</td><td>Email access; 993 = IMAPS (encrypted)</td></tr>
+  <tr><td class="val">161 / 162</td><td>SNMP</td><td>161 = poll/get (UDP), 162 = trap (agent to manager)</td></tr>
+  <tr><td class="val">389</td><td>LDAP</td><td>Directory access; 636 = LDAPS (encrypted)</td></tr>
+  <tr><td class="val">443</td><td>HTTPS</td><td>TLS-encrypted web; 8443 = common alternate</td></tr>
+  <tr><td class="val">445</td><td>SMB / CIFS</td><td>Windows file sharing; target of WannaCry / EternalBlue</td></tr>
+  <tr><td class="val">514</td><td>Syslog</td><td>UDP; 6514 = syslog over TLS</td></tr>
+  <tr><td class="val">636</td><td>LDAPS</td><td>LDAP over TLS</td></tr>
+  <tr><td class="val">1433</td><td>MS SQL Server</td><td>–</td></tr>
+  <tr><td class="val">1812 / 1813</td><td>RADIUS</td><td>1812 = auth, 1813 = accounting; UDP</td></tr>
+  <tr><td class="val">3306</td><td>MySQL / MariaDB</td><td>–</td></tr>
+  <tr><td class="val">3389</td><td>RDP</td><td>Remote Desktop; common attack target — restrict by IP</td></tr>
+  <tr><td class="val">5060 / 5061</td><td>SIP</td><td>VoIP signalling; 5061 = SIP over TLS</td></tr>
+  <tr><td class="val">49</td><td>TACACS+</td><td>TCP; Cisco AAA; encrypts full packet body</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔐 Cryptography Quick Reference</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Algorithm</th><th>Type</th><th>Key / Output Size</th><th>Use / Status</th></tr>
+  <tr><td class="val">AES</td><td>Symmetric block cipher</td><td>128 / 192 / 256-bit key</td><td>Gold standard for data encryption; AES-256 for most secure</td></tr>
+  <tr><td class="val">3DES (Triple DES)</td><td>Symmetric block cipher</td><td>168-bit effective key</td><td>Legacy — deprecated; avoid in new designs</td></tr>
+  <tr><td class="val">ChaCha20</td><td>Symmetric stream cipher</td><td>256-bit key</td><td>TLS 1.3, mobile; faster than AES on CPUs without AES-NI</td></tr>
+  <tr><td class="val">RSA</td><td>Asymmetric</td><td>2048 / 4096-bit</td><td>Key exchange, digital signatures; slow — not for bulk data</td></tr>
+  <tr><td class="val">ECC (ECDSA / ECDH)</td><td>Asymmetric</td><td>256-bit ≈ RSA 3072-bit strength</td><td>TLS, mobile, IoT; smaller keys, faster than RSA</td></tr>
+  <tr><td class="val">Diffie-Hellman (DH / ECDH)</td><td>Key exchange</td><td>N/A</td><td>Establishes shared secret over public channel; ephemeral DH = Perfect Forward Secrecy</td></tr>
+  <tr><td class="val">MD5</td><td>Hash</td><td>128-bit output</td><td class="no">BROKEN — collision attacks proven; do not use for security</td></tr>
+  <tr><td class="val">SHA-1</td><td>Hash</td><td>160-bit output</td><td class="no">DEPRECATED — collision demonstrated (SHAttered attack)</td></tr>
+  <tr><td class="val">SHA-256 / SHA-3</td><td>Hash</td><td>256-bit output</td><td class="yes">Current standard; SHA-3 uses Keccak sponge design</td></tr>
+  <tr><td class="val">bcrypt / Argon2</td><td>Password hash (KDF)</td><td>Variable</td><td>Intentionally slow to defeat brute-force; use instead of SHA for passwords</td></tr>
+  <tr><td class="val">HMAC</td><td>Message Authentication Code</td><td>Depends on hash used</td><td>Integrity + authenticity; requires shared secret key</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">⚔️ Attack Types Quick Reference</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Attack</th><th>Category</th><th>Key Identifier</th></tr>
+  <tr><td class="val">Phishing</td><td>Social Engineering</td><td>Mass email with malicious link/attachment</td></tr>
+  <tr><td class="val">Spear Phishing</td><td>Social Engineering</td><td>Targeted, personalized — uses victim's name/org info</td></tr>
+  <tr><td class="val">Whaling</td><td>Social Engineering</td><td>C-suite exec is the <em>target</em> (victim)</td></tr>
+  <tr><td class="val">BEC (Business Email Compromise)</td><td>Social Engineering</td><td>Attacker <em>impersonates</em> C-suite to trick employees into wire transfers</td></tr>
+  <tr><td class="val">Vishing</td><td>Social Engineering</td><td>Voice/phone call lure</td></tr>
+  <tr><td class="val">Smishing</td><td>Social Engineering</td><td>SMS / text message lure</td></tr>
+  <tr><td class="val">Tailgating / Piggybacking</td><td>Physical</td><td>Follow badge-holder through secure door without own auth</td></tr>
+  <tr><td class="val">SQL Injection</td><td>Injection</td><td>' OR '1'='1 in input field; reads/modifies DB</td></tr>
+  <tr><td class="val">XSS (Cross-Site Scripting)</td><td>Injection</td><td>&lt;script&gt; in input stored/reflected to other users' browsers</td></tr>
+  <tr><td class="val">CSRF (Cross-Site Request Forgery)</td><td>Web</td><td>Victim's browser sends forged request using active session cookie</td></tr>
+  <tr><td class="val">SSRF (Server-Side Request Forgery)</td><td>Web</td><td>App fetches attacker-controlled URL, reaching internal services</td></tr>
+  <tr><td class="val">Pass-the-Hash</td><td>Credential</td><td>Replay captured NTLM hash without knowing plaintext password</td></tr>
+  <tr><td class="val">Kerberoasting</td><td>Credential</td><td>Request service tickets for SPNs, crack offline</td></tr>
+  <tr><td class="val">Golden Ticket</td><td>Credential</td><td>Forge Kerberos TGT using stolen KRBTGT hash — full AD compromise</td></tr>
+  <tr><td class="val">MITM (Man-in-the-Middle)</td><td>Network</td><td>ARP spoofing, SSL stripping, rogue AP</td></tr>
+  <tr><td class="val">Replay</td><td>Cryptographic</td><td>Capture valid auth token/packet and re-send it later</td></tr>
+  <tr><td class="val">Birthday</td><td>Cryptographic</td><td>Exploit hash collision probability; defeats MD5/SHA-1 integrity</td></tr>
+  <tr><td class="val">Downgrade</td><td>Protocol</td><td>Force negotiation to weaker TLS version or cipher suite</td></tr>
+  <tr><td class="val">DDoS – Volumetric</td><td>Network</td><td>Bandwidth flood (UDP amplification, ICMP flood)</td></tr>
+  <tr><td class="val">DDoS – Protocol</td><td>Network</td><td>SYN flood, Smurf — exhausts state tables</td></tr>
+  <tr><td class="val">DDoS – Application (L7)</td><td>Application</td><td>HTTP GET/POST flood; harder to filter — looks like legitimate traffic</td></tr>
+  <tr><td class="val">Buffer Overflow</td><td>Memory</td><td>Overwrite stack/heap to execute arbitrary code</td></tr>
+  <tr><td class="val">Fileless Malware</td><td>Malware</td><td>Lives in memory / registry; no files written to disk; evades AV</td></tr>
+  <tr><td class="val">Logic Bomb</td><td>Malware</td><td>Executes malicious payload when a condition is met (date, user, event)</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔑 Authentication &amp; AAA Protocols</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Protocol</th><th>Transport</th><th>Key Facts</th></tr>
+  <tr><td class="val">RADIUS</td><td>UDP 1812/1813</td><td>Encrypts password only; widely used for Wi-Fi and VPN; older standard</td></tr>
+  <tr><td class="val">TACACS+</td><td>TCP 49</td><td>Cisco proprietary; encrypts <strong>entire</strong> packet body; separates AAA functions</td></tr>
+  <tr><td class="val">Kerberos</td><td>TCP/UDP 88</td><td>Ticket-based; requires AD/DC; mutual authentication; vulnerable to ticket attacks</td></tr>
+  <tr><td class="val">LDAP / LDAPS</td><td>TCP 389 / 636</td><td>Directory access; used by AD; LDAPS adds TLS</td></tr>
+  <tr><td class="val">SAML 2.0</td><td>HTTP/S</td><td>XML assertions; enterprise SSO federation; IdP issues signed assertion to SP</td></tr>
+  <tr><td class="val">OAuth 2.0</td><td>HTTP/S</td><td>Authorization framework (not authentication); grants delegated access tokens</td></tr>
+  <tr><td class="val">OpenID Connect (OIDC)</td><td>HTTP/S</td><td>OAuth 2.0 + ID token = adds authentication; used by Google/Microsoft SSO</td></tr>
+  <tr><td class="val">EAP-TLS</td><td>Layer 2 (802.1X)</td><td>Strongest EAP method; requires certificates on both client and server (mutual)</td></tr>
+  <tr><td class="val">PEAP</td><td>Layer 2 (802.1X)</td><td>TLS tunnel + inner method (MSCHAPv2); only server cert required</td></tr>
+  <tr><td class="val">802.1X</td><td>Layer 2</td><td>Port-based NAC; supplicant ↔ authenticator ↔ RADIUS server</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">📋 Frameworks &amp; Compliance at a Glance</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Framework / Regulation</th><th>Focus</th><th>Key Fact</th></tr>
+  <tr><td class="val">NIST CSF</td><td>Cyber risk management</td><td>5 functions: Identify, Protect, Detect, Respond, Recover</td></tr>
+  <tr><td class="val">NIST SP 800-53</td><td>Federal security controls</td><td>Required for US federal systems; basis of FedRAMP</td></tr>
+  <tr><td class="val">ISO 27001</td><td>ISMS — Information Security Management System</td><td>Certifiable international standard; risk-based approach</td></tr>
+  <tr><td class="val">SOC 2 Type I / II</td><td>Service organisation controls</td><td>Type I = design at a point in time; Type II = operating effectiveness over period</td></tr>
+  <tr><td class="val">PCI DSS</td><td>Payment card data</td><td>Applies to any org storing, processing, or transmitting cardholder data</td></tr>
+  <tr><td class="val">HIPAA</td><td>US healthcare data (PHI)</td><td>Covered entities + business associates; breach notification required</td></tr>
+  <tr><td class="val">GDPR</td><td>EU personal data</td><td>Right to erasure, data portability; 72-hour breach notification; fines up to 4% global revenue</td></tr>
+  <tr><td class="val">CIS Controls (v8)</td><td>Prioritised security actions</td><td>18 controls ordered by implementation group; IG1 = basic cyber hygiene</td></tr>
+  <tr><td class="val">MITRE ATT&amp;CK</td><td>Adversary TTPs</td><td>Tactics (why), Techniques (how); used for threat hunting and red/blue team exercises</td></tr>
+  <tr><td class="val">OWASP Top 10</td><td>Web application vulnerabilities</td><td>Broken Access Control #1; Injection #3; must-know for app security</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔬 Security Tool Comparisons</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Tool</th><th>Function</th><th>Key Distinction</th></tr>
+  <tr><td class="val">IDS</td><td>Detects intrusions — alerts only</td><td>Passive; cannot block traffic; generates alerts for analysis</td></tr>
+  <tr><td class="val">IPS</td><td>Detects AND blocks intrusions inline</td><td>Active; sits in the traffic path; can drop packets</td></tr>
+  <tr><td class="val">SIEM</td><td>Aggregates and correlates logs/events</td><td>Centralised visibility; does NOT automatically respond</td></tr>
+  <tr><td class="val">SOAR</td><td>Automates security response workflows</td><td>Extends SIEM with playbooks; auto-contains threats</td></tr>
+  <tr><td class="val">EDR</td><td>Endpoint detection and response</td><td>Agent-based; behavioural analysis; can isolate endpoints</td></tr>
+  <tr><td class="val">XDR</td><td>Extended detection across endpoint, network, cloud</td><td>Correlates across multiple layers; broader than EDR alone</td></tr>
+  <tr><td class="val">MDM</td><td>Mobile device management</td><td>Remote wipe, policy enforcement, app management on mobile devices</td></tr>
+  <tr><td class="val">DLP</td><td>Data Loss Prevention</td><td>Prevents sensitive data leaving the org via email, USB, web upload</td></tr>
+  <tr><td class="val">WAF</td><td>Web Application Firewall</td><td>L7 filtering; blocks SQLi, XSS, CSRF; sits in front of web app</td></tr>
+  <tr><td class="val">PAM</td><td>Privileged Access Management</td><td>Vaults and controls access to admin/root credentials; session recording</td></tr>
+</table>
+</div>
+
+</div><!-- /tab-cheat -->
+
+<!-- ══ EXAM TIPS ══════════════════════════════════════════════════ -->
+<div id="tab-tips" class="tab-pane">
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Security control types: six types, two categories</div>
+  The six <strong>types</strong>: Preventive, Detective, Corrective, Deterrent, Compensating, Directive.<br>
+  The three functional <strong>categories</strong>: Technical, Administrative (Managerial), Physical.<br><br>
+  A single control can have multiple labels — e.g., a security camera is <em>Physical</em> (category) + <em>Detective</em> (type). Exam questions frequently ask for both. Know which type stops vs. which finds.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Asymmetric encryption direction</div>
+  <strong>Encrypt data</strong> → use the <em>recipient's public key</em> (anyone can encrypt; only recipient decrypts with private key).<br>
+  <strong>Sign data / prove identity</strong> → use <em>your own private key</em> (anyone verifies with your public key).<br><br>
+  The exam will flip these. Remember: <strong>public key = lock (anyone can lock), private key = key (only you can unlock)</strong>.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — RADIUS vs TACACS+</div>
+  <strong>RADIUS:</strong> UDP, encrypts password only, combines authentication + authorisation, widely supported.<br>
+  <strong>TACACS+:</strong> TCP, encrypts the <em>entire packet</em>, separates authentication / authorisation / accounting into distinct functions, Cisco-centric.<br><br>
+  If the question says "encrypts all traffic" or "Cisco network devices" — answer is TACACS+.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — EAP method strength ladder</div>
+  <strong>EAP-TLS</strong> (strongest) → mutual certificate auth, both client and server need certs<br>
+  <strong>PEAP</strong> → TLS tunnel with only server cert; inner method is MSCHAPv2 (password-based)<br>
+  <strong>EAP-TTLS</strong> → similar to PEAP; more flexible inner methods<br>
+  <strong>EAP-MD5</strong> (weakest) → no mutual auth; vulnerable to MITM<br><br>
+  "Strongest Wi-Fi authentication" = EAP-TLS (certificate on every device).
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Symmetric vs Asymmetric speed</div>
+  Asymmetric (RSA, ECC) is <strong>much slower</strong> than symmetric (AES). TLS solves this with a <em>hybrid</em> approach: asymmetric to securely exchange a symmetric key, then symmetric for all bulk data. The exam may test whether you know that asymmetric alone is impractical for large data volumes.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Incident Response: PICERL in order</div>
+  <strong>P</strong>reparation → <strong>I</strong>dentification → <strong>C</strong>ontainment → <strong>E</strong>radication → <strong>R</strong>ecovery → <strong>L</strong>essons Learned<br><br>
+  Common exam trap: placing "Containment" before "Identification." You must identify the scope of the incident before containing it. Also: evidence is collected during Identification and Containment — preserve chain of custody (order of volatility: RAM first, then disk, then logs).
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — False Positive vs False Negative</div>
+  <strong>False Positive:</strong> IDS alerts when there is NO real threat. Annoying but safe — just noise.<br>
+  <strong>False Negative:</strong> IDS misses a REAL threat. This is <strong>worse</strong> — the attack goes undetected.<br><br>
+  Tuning an IDS to reduce false positives may increase false negatives. Exam questions about which is "more dangerous" → false negative.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Cloud shared responsibility by model</div>
+  <strong>IaaS</strong> (e.g., EC2): customer owns OS, middleware, app, data, network config.<br>
+  <strong>PaaS</strong> (e.g., Elastic Beanstalk): customer owns app code and data; provider manages runtime/OS.<br>
+  <strong>SaaS</strong> (e.g., Microsoft 365): customer manages data, users, and access policies only.<br><br>
+  The lower the abstraction level, the more the customer is responsible for.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Data destruction methods by media type</div>
+  <strong>Degaussing:</strong> magnetic media only (HDDs, tapes) — useless on SSDs or optical media.<br>
+  <strong>Overwriting (7-pass):</strong> HDDs only — SSDs have wear levelling that prevents reliable overwriting.<br>
+  <strong>Shredding / Pulverising:</strong> works on all media; highest assurance.<br>
+  <strong>Cryptographic erasure (crypto-shredding):</strong> delete the encryption key — data is unrecoverable; ideal for cloud/SSD.<br><br>
+  For SSDs and cloud storage → crypto-shredding or physical destruction.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — SY0-701 scenario keyword shortcuts</div>
+  <ul style="margin-top:6px;padding-left:18px;font-size:13px;line-height:1.9">
+    <li><em>"Prevent malware from calling home"</em> → DNS sinkhole or proxy with URL filtering</li>
+    <li><em>"Detect lateral movement / abnormal user behaviour"</em> → UEBA (User and Entity Behaviour Analytics)</li>
+    <li><em>"Reduce attack surface on servers"</em> → application allowlisting + disable unnecessary services/ports</li>
+    <li><em>"Strongest encryption for data at rest"</em> → AES-256</li>
+    <li><em>"Fastest asymmetric for mobile / IoT"</em> → ECC (smaller keys, lower compute)</li>
+    <li><em>"Non-repudiation"</em> → digital signature (private key signs; proves sender cannot deny)</li>
+    <li><em>"Integrity only — no confidentiality"</em> → hash (SHA-256) or HMAC</li>
+    <li><em>"Full AD compromise via one credential"</em> → Golden Ticket attack (KRBTGT hash)</li>
+    <li><em>"Secure password storage"</em> → bcrypt or Argon2 (NOT SHA-256 alone)</li>
+    <li><em>"Automatically respond to threats"</em> → SOAR (not SIEM — SIEM only alerts)</li>
+  </ul>
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Whaling vs BEC (most-confused pair on exam)</div>
+  <strong>Whaling:</strong> the C-suite executive IS the <em>victim</em> — someone is trying to steal the exec's credentials or trick the exec into an action.<br>
+  <strong>BEC (Business Email Compromise):</strong> the attacker <em>impersonates</em> a C-suite exec to trick a subordinate (e.g., CFO gets "CEO" email requesting urgent wire transfer).<br><br>
+  The direction of deception is the key: whaling targets the exec; BEC uses the exec's identity as a weapon against others.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Vulnerability scanning vs Penetration testing</div>
+  <strong>Vulnerability scan:</strong> automated tool identifies known weaknesses (CVEs, misconfigurations); non-exploitative; can be run frequently.<br>
+  <strong>Penetration test:</strong> human tester actively exploits vulnerabilities to determine real-world impact; authorised, scoped engagement; less frequent.<br><br>
+  <strong>Bug bounty:</strong> ongoing, crowdsourced — external researchers report vulns for a reward.<br>
+  <strong>Red team:</strong> full adversary simulation — physical, social, and technical attack chains.
+</div>
+
+</div><!-- /tab-tips -->
 
 </div><!-- /app -->
 

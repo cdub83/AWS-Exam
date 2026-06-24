@@ -137,6 +137,8 @@
   <div class="nav-brand">ANS-C01 Training</div>
   <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
   <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <button class="nav-tab"        onclick="switchTab('cheat')">📋 Cheat Sheet</button>
+  <button class="nav-tab"        onclick="switchTab('tips')">💡 Exam Tips</button>
   <div class="nav-spacer"></div>
   <a class="nav-link" href="security-plus-study.html" style="margin-right:8px;">🔒 Security+ Study Guide</a>
   <a class="nav-link" href="index.html">← Practice Exam</a>
@@ -661,6 +663,221 @@
   </div>
 
 </div><!-- /tab-flash -->
+
+<!-- ══ CHEAT SHEET ════════════════════════════════════════════════ -->
+<div id="tab-cheat" class="tab-pane">
+
+<h2 class="sg-heading" style="font-size:16px;margin-top:0">⚡ Key Numbers &amp; Limits</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Item</th><th>Value</th><th>Notes</th></tr>
+  <tr><td>MTU – in-VPC (jumbo frames)</td><td class="val">9001 bytes</td><td>Instance-to-instance</td></tr>
+  <tr><td>MTU – through Transit Gateway</td><td class="val">8500 bytes</td><td>–</td></tr>
+  <tr><td>MTU – through IGW or VPN</td><td class="val">1500 bytes</td><td>Public internet path</td></tr>
+  <tr><td>MTU – Direct Connect</td><td class="val">9001 bytes</td><td>Jumbo supported end-to-end on most DX paths</td></tr>
+  <tr><td>VPC CIDR range</td><td class="val">/16 – /28</td><td>RFC 1918 or 100.64.0.0/10 supported</td></tr>
+  <tr><td>Reserved IPs per subnet</td><td class="val">5</td><td>Network (.0), Router (.1), DNS (.2), Future (.3), Broadcast (.last)</td></tr>
+  <tr><td>NAT Gateway max bandwidth</td><td class="val">45 Gbps</td><td>Scales automatically; no config needed</td></tr>
+  <tr><td>NAT Gateway ports per destination</td><td class="val">55,000</td><td>Per unique destination IP:port pair</td></tr>
+  <tr><td>NAT Gateway TCP idle timeout</td><td class="val">350 s</td><td>UDP: 20 s; ICMP: 30 s</td></tr>
+  <tr><td>VPN tunnel max bandwidth</td><td class="val">~1.25 Gbps</td><td>Per IPsec tunnel; use ECMP + BGP for more</td></tr>
+  <tr><td>TGW Connect max bandwidth</td><td class="val">20 Gbps</td><td>GRE + BGP; requires VPC or DX transport underlay</td></tr>
+  <tr><td>Direct Connect dedicated speeds</td><td class="val">1 / 10 / 100 Gbps</td><td>Physical port</td></tr>
+  <tr><td>Direct Connect hosted speeds</td><td class="val">50 Mbps – 10 Gbps</td><td>Shared port via APN partner</td></tr>
+  <tr><td>BFD failure detection (DX)</td><td class="val">~900 ms</td><td>300 ms interval × 3 multiplier; min interval AWS supports</td></tr>
+  <tr><td>BGP hold timer minimum (no BFD)</td><td class="val">3 s</td><td>–</td></tr>
+  <tr><td>DXGW max TGW associations</td><td class="val">6</td><td>Prefixes from each TGW must be non-overlapping</td></tr>
+  <tr><td>Security Group rules (in / out)</td><td class="val">60 / 60</td><td>Default; can increase via quota request</td></tr>
+  <tr><td>NACL rules per direction</td><td class="val">20</td><td>Default; evaluated in ascending rule-number order</td></tr>
+  <tr><td>VPC peering connections per VPC</td><td class="val">125</td><td>Default quota</td></tr>
+  <tr><td>TGW attachments per TGW</td><td class="val">5,000</td><td>Default quota</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">📡 BGP Communities — Direct Connect (influence LOCAL_PREF on AWS side)</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Community Tag</th><th>LOCAL_PREF Set on AWS</th><th>Effect</th></tr>
+  <tr><td>7224:7100</td><td class="val">100</td><td>Low preference — AWS de-prioritises this DX path</td></tr>
+  <tr><td>7224:7200</td><td class="val">200</td><td>Default — no change from baseline</td></tr>
+  <tr><td>7224:7300</td><td class="val">300</td><td class="yes">High preference — AWS prefers this DX path for outbound</td></tr>
+  <tr><td>7224:9100</td><td>N/A (scope)</td><td>Route not re-advertised outside the local AWS Region</td></tr>
+  <tr><td>7224:9200</td><td>N/A (scope)</td><td>Route not re-advertised to other domestic Regions</td></tr>
+  <tr><td>7224:9300</td><td>N/A (scope)</td><td>Route not re-advertised to any other Region globally</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔀 BGP Attribute Direction Reference</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Attribute</th><th>Who Sets It</th><th>Traffic Direction Affected</th><th>How to Use</th></tr>
+  <tr><td>LOCAL_PREF (via BGP community)</td><td>Customer tags routes advertised to AWS</td><td>AWS → on-prem (outbound from AWS)</td><td>Tag preferred path with 7224:7300, less-preferred with 7224:7100</td></tr>
+  <tr><td>MED (MULTI_EXIT_DISC)</td><td>Customer advertises MED on routes to AWS</td><td>AWS → on-prem (outbound from AWS)</td><td>Lower MED = more preferred; use to break ties when LOCAL_PREF is equal</td></tr>
+  <tr><td>AS_PATH prepend</td><td>Customer adds own ASN multiple times</td><td>Both directions</td><td>Longer AS_PATH = less preferred; prepend on the backup path</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🗺️ Service Selection Quick Guide</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Requirement</th><th>Use This</th><th>NOT This — and Why</th></tr>
+  <tr><td>Expose one service to consumers with overlapping CIDRs</td><td class="val">AWS PrivateLink</td><td>VPC Peering (fails with overlapping CIDRs)</td></tr>
+  <tr><td>Full bidirectional L3 connectivity between 2 VPCs</td><td class="val">VPC Peering</td><td>PrivateLink (one-directional, service-scoped only)</td></tr>
+  <tr><td>Hub-and-spoke: many VPCs + on-prem connectivity</td><td class="val">Transit Gateway</td><td>VPC Peering (non-transitive — can't pass traffic through)</td></tr>
+  <tr><td>Stateful centralized inspection, symmetric routing</td><td class="val">TGW + Appliance Mode + GWLB</td><td>TGW without Appliance Mode (asymmetric routing breaks stateful FW)</td></tr>
+  <tr><td>Block DNS queries to malware C2 domains</td><td class="val">Route 53 Resolver DNS Firewall</td><td>Network Firewall (requires routing all DNS through FW subnet)</td></tr>
+  <tr><td>FQDN-based outbound HTTP/S filtering in VPC</td><td class="val">Network Firewall domain-list rules</td><td>DNS Firewall (blocks DNS; NF blocks the actual traffic)</td></tr>
+  <tr><td>HTTP header / body inspection (SQLi, XSS)</td><td class="val">AWS WAF on ALB / CloudFront</td><td>Network Firewall (can't attach to ALB)</td></tr>
+  <tr><td>Custom Suricata IPS rules</td><td class="val">Network Firewall stateful rule group</td><td>AWS WAF (managed rules only, no Suricata syntax)</td></tr>
+  <tr><td>Enforce same WAF / SG policies across all accounts</td><td class="val">AWS Firewall Manager</td><td>CloudFormation StackSets (deploys but doesn't remediate drift)</td></tr>
+  <tr><td>Prevent EC2 from launching with public IP (org-wide)</td><td class="val">SCP (preventive)</td><td>AWS Config rule (detective — finds it after the fact)</td></tr>
+  <tr><td>Layer 2 encryption on Direct Connect</td><td class="val">MACsec (IEEE 802.1AE)</td><td>BGP MD5 (authenticates BGP session only, doesn't encrypt data)</td></tr>
+  <tr><td>Layer 3 encryption on Direct Connect</td><td class="val">IPsec VPN over private VIF</td><td>MACsec (requires dedicated 10G/100G DX port)</td></tr>
+  <tr><td>Sub-second failover on Direct Connect</td><td class="val">BFD on the VIF</td><td>BGP timers alone (minimum hold = 3 s)</td></tr>
+  <tr><td>Single console: all DX, VPN, TGW, on-prem devices</td><td class="val">AWS Network Manager</td><td>CloudWatch (per-region, no topology view)</td></tr>
+  <tr><td>Private DNS across many VPCs and on-prem</td><td class="val">Route 53 Resolver + forwarding rules via RAM</td><td>Manual private hosted zone association (doesn't scale)</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">⚖️ NLB vs ALB</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Feature</th><th>NLB (Layer 4)</th><th>ALB (Layer 7)</th></tr>
+  <tr><td>Protocols</td><td>TCP, UDP, TLS</td><td>HTTP, HTTPS, gRPC</td></tr>
+  <tr><td>Source IP preservation</td><td class="yes">Yes (by default)</td><td class="no">No — use X-Forwarded-For header</td></tr>
+  <tr><td>Attach Security Groups</td><td class="no">No</td><td class="yes">Yes</td></tr>
+  <tr><td>Path / header / query string routing</td><td class="no">No</td><td class="yes">Yes (listener rules)</td></tr>
+  <tr><td>Static IP address per AZ</td><td class="yes">Yes (Elastic IP assignable)</td><td class="no">No — DNS alias only</td></tr>
+  <tr><td>Cross-zone load balancing default</td><td class="no">Off (configurable)</td><td class="yes">On</td></tr>
+  <tr><td>TLS termination at LB</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+  <tr><td>Weighted target groups (canary/blue-green)</td><td class="no">No</td><td class="yes">Yes</td></tr>
+  <tr><td>WebSocket support</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🛣️ Route Resolution Priority (VPC route table)</h2>
+<div class="concept-grid" style="grid-template-columns:1fr">
+  <div class="concept-card">
+    <h4>Most-to-least precedence — same rule applies across VPC, TGW, and on-prem</h4>
+    <ul>
+      <li><span class="key">1st</span> Most specific prefix (longest prefix match) — always wins regardless of route source</li>
+      <li><span class="key">2nd</span> Among equal-length prefixes: static route beats propagated BGP route</li>
+      <li><span class="key">3rd</span> Among propagated: Direct Connect private VIF &gt; VPN tunnel</li>
+      <li><span class="key">4th</span> Among VPN tunnels with equal prefix: use MED or AS_PATH prepend to break ties on-prem side</li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="sg-heading">🔌 Direct Connect VIF Types at a Glance</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>VIF Type</th><th>Connects To</th><th>Reaches</th><th>Key Constraint</th></tr>
+  <tr><td><strong>Private VIF</strong></td><td>Virtual Private Gateway (VGW)</td><td>One VPC, same region as VGW</td><td>One VIF per VGW per DX connection</td></tr>
+  <tr><td><strong>Transit VIF</strong></td><td>Direct Connect Gateway (DXGW)</td><td>Up to 6 TGWs, multi-account, multi-region</td><td>DXGW associated TGW prefixes must be non-overlapping</td></tr>
+  <tr><td><strong>Public VIF</strong></td><td>AWS public routing infrastructure</td><td>AWS public IP space (S3, DynamoDB public endpoints, etc.)</td><td>Cannot reach private VPC IPs; routes your own public IPs to AWS</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🌐 VPC Flow Log Status Codes</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Status</th><th>Meaning</th><th>Common Cause</th></tr>
+  <tr><td class="yes">ACCEPT</td><td>Traffic allowed by Security Group AND NACL</td><td>Normal traffic</td></tr>
+  <tr><td class="no">REJECT</td><td>Traffic blocked by Security Group or NACL</td><td>Missing SG rule or explicit NACL DENY</td></tr>
+  <tr><td style="color:var(--yellow);font-weight:600">SKIPDATA</td><td>Connection tracking table overflow — packets dropped</td><td>conntrack_allowance_exceeded; scale up instance or use NAT GW</td></tr>
+  <tr><td style="color:var(--muted)">NODATA</td><td>No traffic in capture window</td><td>Normal — not an error</td></tr>
+</table>
+</div>
+
+</div><!-- /tab-cheat -->
+
+<!-- ══ EXAM TIPS ══════════════════════════════════════════════════ -->
+<div id="tab-tips" class="tab-pane">
+
+<div class="tip-box">
+  <div class="tip-label">Tip — "MOST operationally efficient" questions</div>
+  Always points to the managed service or the solution requiring least ongoing manual work. StackSets beat custom scripts; Managed Prefix Lists beat per-SG CIDR updates; NAT Gateway beats NAT Instance; Firewall Manager beats per-account manual WAF config; TGW beats VPC peering meshes.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Preventive vs Detective controls</div>
+  <strong>Preventive</strong> stops the action before it happens: SCPs, NACL DENY, permission boundaries.<br>
+  <strong>Detective</strong> finds it after the fact: Config rules, GuardDuty findings, VPC Flow Logs, CloudTrail.<br><br>
+  If the question says <em>"prevent any instance from ever launching with X"</em> or <em>"prevent before it happens"</em> — the answer is an <strong>SCP</strong>, not a Config rule with auto-remediation. Config can only react after the resource exists.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — VPC Peering is NEVER transitive</div>
+  If A peers with B, and B peers with C — traffic from A <strong>cannot</strong> reach C through B. AWS drops it. The exam will describe exactly this scenario and the correct answer is always <strong>Transit Gateway</strong>. PrivateLink is also non-transitive — it exposes one service in one direction.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — BGP direction decoded</div>
+  <strong>Want AWS to prefer path X for outbound to on-prem?</strong> Tag routes on path X with community <strong>7224:7300</strong> (LP 300). Tag the backup path with 7224:7100 (LP 100).<br><br>
+  <strong>Want your on-prem routers to prefer path X for inbound from AWS?</strong> Use <strong>MED</strong> (lower = preferred) or <strong>AS_PATH prepend</strong> on the backup path (longer path = less preferred).<br><br>
+  <strong>AS_PATH prepend</strong> = you add your own ASN extra times to the path. More ASNs = longer = less preferred. Both sides see this.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — PrivateLink vs VPC Peering decision rule</div>
+  <strong>PrivateLink:</strong> overlapping CIDRs are fine; consumer can only reach the specific service (NLB/GWLB endpoint), not the whole VPC; scales to thousands of consumers; one-directional.<br>
+  <strong>VPC Peering:</strong> full bidirectional L3 connectivity; both VPCs must have non-overlapping CIDRs; does not scale to hundreds without TGW.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — BGP MD5 does NOT encrypt data</div>
+  BGP MD5 authentication only validates the identity of the BGP control-plane session peer. It does <strong>not</strong> encrypt data flowing over the Direct Connect connection. For data encryption:<br>
+  • <strong>MACsec</strong> — Layer 2 encryption; requires dedicated 10G or 100G DX port at a supported location<br>
+  • <strong>IPsec VPN over private VIF</strong> — Layer 3 encryption; works on all DX connection types
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Security Group referencing across accounts</div>
+  SG-to-SG rules work within the same VPC and across VPCs in <strong>same-region peering</strong>. They do <strong>NOT</strong> work in inter-region peering — use CIDR rules instead. In VPC sharing (RAM), participants can reference the VPC owner account's SGs, but <strong>not</strong> other participants' SGs.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Appliance Mode explained simply</div>
+  Without TGW Appliance Mode: TGW picks the cheapest AZ endpoint for each packet direction independently → forward packet goes through Appliance-A (AZ-a), return packet goes through Appliance-B (AZ-b). Stateful firewall drops the return because it never saw the connection.<br><br>
+  With Appliance Mode: TGW pins both directions of the same flow to the <strong>same AZ attachment</strong> → both packets hit the same appliance instance. Enable it on the inspection VPC TGW attachment.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — VPC Endpoint policy vs S3 bucket policy</div>
+  A bucket policy on your sensitive S3 bucket protects <em>that</em> bucket. It does <strong>not</strong> stop a compromised EC2 instance from exfiltrating data to an <em>external</em> attacker-owned bucket.<br><br>
+  A <strong>VPC endpoint policy</strong> on the S3 gateway endpoint applies to <em>all</em> S3 API calls through that endpoint. Use the <code>aws:ResourceAccount</code> condition to block calls to any bucket outside your account. Combine both for defense-in-depth.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Two-answer "Choose TWO" patterns</div>
+  <ul style="margin-top:6px;padding-left:18px;font-size:13px;line-height:1.8">
+    <li><strong>Centralized egress via TGW:</strong> spoke VPC subnet route 0/0 → TGW <em>and</em> TGW route table → egress VPC attachment</li>
+    <li><strong>VPC peering connectivity:</strong> route table entries in both VPCs <em>and</em> SG rules allowing peer CIDR</li>
+    <li><strong>Bidirectional hybrid DNS:</strong> inbound Resolver endpoint (on-prem → VPC) <em>and</em> outbound endpoint + forwarding rule (VPC → on-prem)</li>
+    <li><strong>Encrypt DX traffic:</strong> IPsec VPN over private VIF <em>or</em> MACsec — BGP MD5 does NOT count as encryption</li>
+  </ul>
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — CloudFront WAF scope mismatch</div>
+  A WAF Web ACL with <strong>CLOUDFRONT scope</strong> must be created in us-east-1 and can <em>only</em> attach to CloudFront distributions. A <strong>REGIONAL scope</strong> ACL attaches to ALB, API Gateway, AppSync, and Cognito. You cannot share one ACL between CloudFront and a regional ALB — they require separate Web ACLs.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Quick keyword-to-answer mapping</div>
+  <ul style="margin-top:6px;padding-left:18px;font-size:13px;line-height:1.8">
+    <li><em>"Automatically applied to newly created accounts"</em> → Firewall Manager or SCP at root OU</li>
+    <li><em>"Sub-second failover"</em> → BFD (not BGP timers, not CloudWatch alarms)</li>
+    <li><em>"No BGP / static routing only"</em> → cannot use ECMP on TGW VPN (ECMP requires BGP)</li>
+    <li><em>"Overlapping CIDRs between accounts"</em> → PrivateLink (not VPC peering, not TGW)</li>
+    <li><em>"Without any configuration on the instances"</em> → Traffic Mirroring, Flow Logs, or Reachability Analyzer</li>
+    <li><em>"Prevent X without modifying applications"</em> → SCP, WAF, or NACLs depending on layer</li>
+    <li><em>"Asymmetric routing / stateful appliances"</em> → TGW Appliance Mode</li>
+    <li><em>"SD-WAN appliances at high bandwidth with BGP"</em> → TGW Connect (GRE, up to 20 Gbps)</li>
+  </ul>
+</div>
+
+</div><!-- /tab-tips -->
 
 </div><!-- /app -->
 
