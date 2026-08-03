@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISC2 CC — Study Guide &amp; Flashcards</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #06b6d4; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --blue: #3498db; --yellow: #f39c12; --purple: #9b59b6;
+    --d1: #a855f7; --d2: #f59e0b; --d3: #3b82f6; --d4: #ef4444; --d5: #22c55e;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  .top-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 0; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+  .nav-brand { font-size: 13px; font-weight: 700; color: var(--accent); padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 4px; white-space: nowrap; }
+  .nav-tab { padding: 16px 20px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; color: var(--muted); transition: color .15s, border-color .15s; background: none; border-top: none; border-left: none; border-right: none; }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-spacer { flex: 1; }
+  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; transition: color .15s, border-color .15s; }
+  .nav-link:hover { color: var(--text); border-color: var(--muted); }
+
+  #app { max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .domain-section { margin-bottom: 40px; }
+  .domain-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px 10px 0 0; cursor: pointer; user-select: none; }
+  .domain-header:hover { border-color: var(--accent); }
+  .domain-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .domain-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .domain-pct { font-size: 12px; color: var(--muted); }
+  .chevron { color: var(--muted); transition: transform .2s; font-size: 12px; }
+  .domain-header.open .chevron { transform: rotate(180deg); }
+  .domain-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 24px; display: none; }
+  .domain-body.open { display: block; }
+
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .concept-card h4 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .concept-card ul { list-style: none; }
+  .concept-card li { font-size: 13px; color: var(--text); padding: 3px 0; padding-left: 14px; position: relative; }
+  .concept-card li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+  .concept-card .key { color: var(--accent); font-weight: 600; }
+
+  .trap-box { background: #1f1210; border: 1px solid #7f2020; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .trap-box .trap-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--red); margin-bottom: 6px; }
+  .tip-box  { background: #0e1f12; border: 1px solid #1f7f20; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; }
+  .tip-box  .tip-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--green); margin-bottom: 6px; }
+
+  .table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); font-weight: 700; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  td { padding: 9px 12px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: #1c1f2e; }
+  .yes { color: var(--green); font-weight: 600; }
+  .no  { color: var(--red); font-weight: 600; }
+  .val { color: var(--accent); font-weight: 600; }
+
+  .sg-heading { font-size: 14px; font-weight: 700; color: var(--text); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+  /* Flashcard styles */
+  .fc-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .fc-filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .15s; }
+  .fc-filter-btn:hover, .fc-filter-btn.active { color: #000; }
+  .fc-filter-btn.active.f-all { background: var(--accent); border-color: var(--accent); }
+  .fc-filter-btn.active.f-d1 { background: var(--d1); border-color: var(--d1); color:#fff; }
+  .fc-filter-btn.active.f-d2 { background: var(--d2); border-color: var(--d2); }
+  .fc-filter-btn.active.f-d3 { background: var(--d3); border-color: var(--d3); color:#fff; }
+  .fc-filter-btn.active.f-d4 { background: var(--d4); border-color: var(--d4); color:#fff; }
+  .fc-filter-btn.active.f-d5 { background: var(--d5); border-color: var(--d5); }
+  .fc-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .fc-prog-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .fc-prog-fill { height: 100%; background: var(--green); transition: width .3s; }
+  .fc-scene { width: 100%; perspective: 1000px; margin-bottom: 16px; cursor: pointer; }
+  .fc-card-wrap { position: relative; width: 100%; transition: transform 0.5s; transform-style: preserve-3d; min-height: 240px; }
+  .fc-card-wrap.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; width: 100%; min-height: 240px; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .fc-front { background: var(--surface); border: 1px solid var(--border); }
+  .fc-back  { background: #0e1f12; border: 1px solid #2a5a2a; transform: rotateY(180deg); }
+  .fc-category { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+  .fc-q { font-size: 17px; font-weight: 600; line-height: 1.5; }
+  .fc-a { font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+  .fc-detail { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .fc-hint { font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .fc-nav { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary   { background: var(--accent); color: #000; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-green     { background: var(--green); color: #000; }
+  .btn-muted     { background: var(--border); color: var(--muted); }
+  .fc-stats { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 12px; }
+  .fc-stat  { text-align: center; }
+  .fc-stat-val { font-size: 20px; font-weight: 700; }
+  .fc-stat-lbl { color: var(--muted); font-size: 11px; }
+  .fc-done-screen { text-align: center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .fc-done-screen h2 { font-size: 22px; margin-bottom: 8px; }
+  .fc-done-screen p { color: var(--muted); margin-bottom: 20px; }
+  @media(max-width:600px) { .fc-q { font-size: 15px; } .fc-a { font-size: 14px; } .fc-face { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">ISC2 CC Training</div>
+  <button class="nav-tab active" onclick="switchTab('guide')">📖 Study Guide</button>
+  <button class="nav-tab"        onclick="switchTab('flash')">🃏 Flashcards</button>
+  <button class="nav-tab"        onclick="switchTab('cheat')">📋 Cheat Sheet</button>
+  <button class="nav-tab"        onclick="switchTab('tips')">💡 Exam Tips</button>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="cc-quiz.html">← Practice Exam</a>
+</nav>
+
+<div id="app">
+
+<!-- ══════════════════════ STUDY GUIDE ══════════════════════ -->
+<div id="tab-guide" class="tab-pane active">
+
+  <!-- D1 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header open" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d1)"></div>
+      <div class="domain-title">Domain 1 — Security Principles</div>
+      <div class="domain-pct">26% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body open">
+
+      <div class="sg-heading">The CIA Triad</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Confidentiality</h4><ul>
+          <li>Prevents unauthorized disclosure of information</li>
+          <li>Achieved via encryption, access controls, need-to-know</li>
+          <li>Breach example: a database leak of unencrypted SSNs</li>
+        </ul></div>
+        <div class="concept-card"><h4>Integrity</h4><ul>
+          <li>Ensures data is accurate and unaltered except by authorized action</li>
+          <li>Achieved via hashing, digital signatures, version control</li>
+          <li>Breach example: an attacker silently modifies a bank balance</li>
+        </ul></div>
+        <div class="concept-card"><h4>Availability</h4><ul>
+          <li>Ensures authorized users can access data/systems when needed</li>
+          <li>Achieved via redundancy, failover, DDoS protection, backups</li>
+          <li>Breach example: a DDoS attack takes a website offline</li>
+        </ul></div>
+      </div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Additional concepts often paired with CIA: <strong>Non-repudiation</strong> (a party cannot deny an action — e.g., digital signatures) and <strong>Authenticity</strong> (data/identity is genuine). Neither is part of the original CIA triad but both appear on the exam alongside it.</div>
+
+      <div class="sg-heading">IAAA — Identification, Authentication, Authorization, Accounting</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Identification</h4><ul>
+          <li>A CLAIM of identity — e.g., typing a username</li>
+          <li>Not yet proven — anyone could type any username</li>
+        </ul></div>
+        <div class="concept-card"><h4>Authentication</h4><ul>
+          <li>PROVING the claimed identity is genuine</li>
+          <li>Factors: <span class="key">know</span> (password), <span class="key">have</span> (token), <span class="key">are</span> (biometric), <span class="key">somewhere you are</span> (location), <span class="key">something you do</span> (behavior)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Authorization</h4><ul>
+          <li>Determines WHAT an authenticated user may do or access</li>
+          <li>Occurs only after successful authentication</li>
+        </ul></div>
+        <div class="concept-card"><h4>Accounting (Auditing)</h4><ul>
+          <li>Logging/recording user actions for accountability</li>
+          <li>Supports investigations and non-repudiation</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Security Control Categories &amp; Types</div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>Know the <strong>two axes</strong>: Category (Technical, Administrative/Managerial, Physical) vs Type (Preventive, Detective, Corrective, Deterrent, Compensating, Directive). A camera is Physical + Detective. A policy is Administrative + Directive. A fence is Physical + Preventive/Deterrent.</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Control Types</h4><ul>
+          <li><span class="key">Preventive</span> — stops an incident (firewall, lock)</li>
+          <li><span class="key">Detective</span> — identifies an incident (camera, audit log)</li>
+          <li><span class="key">Corrective</span> — restores after incident (backup restore, patch)</li>
+          <li><span class="key">Deterrent</span> — discourages attack (warning sign, guard)</li>
+          <li><span class="key">Compensating</span> — alternative when primary control can't be used</li>
+          <li><span class="key">Directive</span> — instructs behavior (policy, procedure)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Control Categories</h4><ul>
+          <li><span class="key">Technical</span> — firewalls, encryption, IDS/IPS, MFA</li>
+          <li><span class="key">Administrative</span> — policies, risk assessments, awareness training</li>
+          <li><span class="key">Physical</span> — locks, fences, cameras, mantraps, badge readers</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Risk Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Core Terms</h4><ul>
+          <li><span class="key">Asset</span> — anything of value to protect</li>
+          <li><span class="key">Threat</span> — potential danger to an asset</li>
+          <li><span class="key">Vulnerability</span> — a weakness that could be exploited</li>
+          <li><span class="key">Risk</span> — the likelihood/impact of a threat exploiting a vulnerability</li>
+          <li><span class="key">Zero-day</span> — a vulnerability with no available patch, often actively exploited</li>
+        </ul></div>
+        <div class="concept-card"><h4>Risk Treatment Options</h4><ul>
+          <li><span class="key">Avoid</span> — stop the activity that causes the risk</li>
+          <li><span class="key">Mitigate</span> — add controls to reduce risk</li>
+          <li><span class="key">Transfer</span> — shift impact to a third party (insurance)</li>
+          <li><span class="key">Accept</span> — take no action; document the decision</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Governance: Policies, Standards, Procedures, Guidelines</div>
+      <div class="table-wrap"><table>
+        <tr><th>Document</th><th>Mandatory?</th><th>Purpose</th></tr>
+        <tr><td class="val">Policy</td><td class="yes">Mandatory</td><td>High-level statement of management's intent and expectations</td></tr>
+        <tr><td class="val">Standard</td><td class="yes">Mandatory</td><td>Specific, measurable requirements supporting a policy (e.g., "AES-256 required")</td></tr>
+        <tr><td class="val">Procedure</td><td class="yes">Mandatory</td><td>Step-by-step instructions to accomplish a task</td></tr>
+        <tr><td class="val">Guideline</td><td class="no">Recommended</td><td>Best-practice advice; not enforced</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Foundational Principles</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Least Privilege &amp; Need-to-know</h4><ul>
+          <li><span class="key">Least privilege</span> — minimum access needed for the job</li>
+          <li><span class="key">Need-to-know</span> — access limited to what's needed for the current task, even with clearance</li>
+        </ul></div>
+        <div class="concept-card"><h4>Separation of Duties &amp; Defense in Depth</h4><ul>
+          <li><span class="key">Separation of duties</span> — splits sensitive tasks across multiple people</li>
+          <li><span class="key">Defense in depth</span> — multiple overlapping layers of controls</li>
+        </ul></div>
+        <div class="concept-card"><h4>Due Diligence vs Due Care</h4><ul>
+          <li><span class="key">Due diligence</span> — researching risks/requirements BEFORE acting</li>
+          <li><span class="key">Due care</span> — taking reasonable action based on that research</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">(ISC)² Code of Ethics</div>
+      <div class="tip-box"><div class="tip-label">✓ Memorize in Order</div>
+        <strong>1.</strong> Protect society, the common good, necessary public trust and confidence, and the infrastructure.<br>
+        <strong>2.</strong> Act honorably, honestly, justly, responsibly, and legally.<br>
+        <strong>3.</strong> Provide diligent and competent service to principals.<br>
+        <strong>4.</strong> Advance and protect the profession.<br><br>
+        When canons conflict, apply them in this order of precedence — Canon 1 always wins.
+      </div>
+
+    </div><!-- /D1 body -->
+  </div><!-- /D1 -->
+
+  <!-- D2 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d2)"></div>
+      <div class="domain-title">Domain 2 — Business Continuity, Disaster Recovery &amp; Incident Response Concepts</div>
+      <div class="domain-pct">10% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">BCP vs DRP vs IR</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Business Continuity Plan (BCP)</h4><ul>
+          <li>Broadest scope — keeps the overall BUSINESS running</li>
+          <li>Covers people, processes, facilities, and technology</li>
+        </ul></div>
+        <div class="concept-card"><h4>Disaster Recovery Plan (DRP)</h4><ul>
+          <li>A subset of BCP focused specifically on restoring IT systems, data, and infrastructure</li>
+          <li>Answers: how do we get servers/applications back online?</li>
+        </ul></div>
+        <div class="concept-card"><h4>Incident Response (IR)</h4><ul>
+          <li>Focused, tactical response to a specific security event</li>
+          <li>Shorter-term and narrower in scope than BCP/DRP</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Business Impact Analysis (BIA) &amp; Key Metrics</div>
+      <div class="table-wrap"><table>
+        <tr><th>Metric</th><th>Definition</th></tr>
+        <tr><td class="val">RTO (Recovery Time Objective)</td><td>Maximum acceptable time to restore a system/process after disruption</td></tr>
+        <tr><td class="val">RPO (Recovery Point Objective)</td><td>Maximum acceptable amount of data loss, measured in time (drives backup frequency)</td></tr>
+        <tr><td class="val">MTD (Maximum Tolerable Downtime)</td><td>Absolute ceiling — beyond this, the business may not survive. RTO must be ≤ MTD</td></tr>
+        <tr><td class="val">MTBF (Mean Time Between Failures)</td><td>Average time a system operates before failing (reliability metric)</td></tr>
+        <tr><td class="val">MTTR (Mean Time To Repair)</td><td>Average time needed to repair a failed system and restore service</td></tr>
+      </table></div>
+      <div class="tip-box"><div class="tip-label">✓ Order of Planning</div>BIA is performed FIRST — it identifies critical functions and produces RTO/RPO/MTD targets. Those targets then drive the design of the BCP and DRP. You cannot write a meaningful recovery plan before knowing these numbers.</div>
+
+      <div class="sg-heading">Backups &amp; Redundancy</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Backup Types</h4><ul>
+          <li><span class="key">Full</span> — copies everything; slowest backup, fastest restore</li>
+          <li><span class="key">Incremental</span> — changes since the LAST backup (any type); fastest backup, slower restore (needs full + all increments)</li>
+          <li><span class="key">Differential</span> — changes since the LAST FULL backup; restore needs only the full + latest differential</li>
+        </ul></div>
+        <div class="concept-card"><h4>Resilience</h4><ul>
+          <li><span class="key">3-2-1 rule</span> — 3 copies, 2 media types, 1 offsite/offline</li>
+          <li><span class="key">Failover / High Availability</span> — redundant system automatically takes over on failure</li>
+          <li><span class="key">RAID</span> — disk redundancy to survive a drive failure</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Alternate Recovery Sites</div>
+      <div class="table-wrap"><table>
+        <tr><th>Site Type</th><th>Readiness</th><th>Recovery Speed</th><th>Cost</th></tr>
+        <tr><td class="val">Hot site</td><td>Fully operational, real-time data replication</td><td class="yes">Minutes</td><td class="no">Highest</td></tr>
+        <tr><td class="val">Warm site</td><td>Hardware present, data needs restoring</td><td>Hours</td><td>Moderate</td></tr>
+        <tr><td class="val">Cold site</td><td>Empty facility — power/HVAC only</td><td class="no">Days to weeks</td><td class="yes">Lowest</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Incident Response Lifecycle</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Six Phases (in order)</h4><ul>
+          <li><span class="key">1. Preparation</span> — IR plan, tools, training, contacts</li>
+          <li><span class="key">2. Detection &amp; Analysis</span> — identify that an incident occurred and its scope</li>
+          <li><span class="key">3. Containment</span> — limit the damage/spread</li>
+          <li><span class="key">4. Eradication</span> — remove the root cause</li>
+          <li><span class="key">5. Recovery</span> — restore systems to normal operation</li>
+          <li><span class="key">6. Lessons Learned</span> — post-incident review to improve defenses</li>
+        </ul></div>
+      </div>
+      <div class="trap-box"><div class="trap-label">⚠ Exam Trap</div>A common trap swaps the order — you must DETECT/ANALYZE the scope of an incident BEFORE you can properly CONTAIN it. Jumping straight to containment risks missing part of the compromise.</div>
+
+    </div>
+  </div>
+
+  <!-- D3 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d3)"></div>
+      <div class="domain-title">Domain 3 — Access Controls Concepts</div>
+      <div class="domain-pct">22% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Authentication Factors</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>The Five Factor Categories</h4><ul>
+          <li><span class="key">Something you know</span> — password, PIN</li>
+          <li><span class="key">Something you have</span> — smart card, token, phone</li>
+          <li><span class="key">Something you are</span> — fingerprint, retina, face (biometrics)</li>
+          <li><span class="key">Somewhere you are</span> — geolocation, IP range</li>
+          <li><span class="key">Something you do</span> — behavioral biometrics (keystroke dynamics, gait)</li>
+        </ul></div>
+        <div class="concept-card"><h4>MFA &amp; Biometric Metrics</h4><ul>
+          <li>MFA = two or more DIFFERENT factor categories (two passwords is NOT MFA)</li>
+          <li><span class="key">FAR</span> (False Acceptance Rate) — wrongly grants an impostor access</li>
+          <li><span class="key">FRR</span> (False Rejection Rate) — wrongly denies a legitimate user</li>
+          <li><span class="key">CER</span> (Crossover Error Rate) — point where FAR = FRR; lower CER = better system</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Access Control Models</div>
+      <div class="table-wrap"><table>
+        <tr><th>Model</th><th>Who Decides Access</th><th>Example</th></tr>
+        <tr><td class="val">DAC</td><td>Resource OWNER decides</td><td>Windows NTFS file permissions</td></tr>
+        <tr><td class="val">MAC</td><td>System enforces fixed labels/clearance — no discretion</td><td>Military classification (Top Secret, Secret)</td></tr>
+        <tr><td class="val">RBAC</td><td>Access tied to job ROLE</td><td>"HR Manager" role gets HR system access</td></tr>
+        <tr><td class="val">ABAC</td><td>Access based on ATTRIBUTES (time, location, device)</td><td>Access only during business hours from a managed device</td></tr>
+        <tr><td class="val">Rule-based</td><td>Predefined IF/THEN rules applied uniformly</td><td>Firewall ACL, router access list</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Physical Access Controls</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Common Physical Controls</h4><ul>
+          <li><span class="key">Mantrap</span> — two interlocking doors; prevents tailgating</li>
+          <li><span class="key">Bollard</span> — stops vehicle-based attacks</li>
+          <li><span class="key">Turnstile</span> — allows one person through at a time</li>
+          <li><span class="key">Fencing / lighting / CCTV / guards</span> — deterrent and detective layers</li>
+          <li><span class="key">Badge reader / smart card</span> — something-you-have physical credential</li>
+        </ul></div>
+        <div class="concept-card"><h4>Social Engineering Against Physical Controls</h4><ul>
+          <li><span class="key">Tailgating / Piggybacking</span> — following an authorized person through a secured door</li>
+          <li><span class="key">Shoulder surfing</span> — visually observing credentials being entered</li>
+          <li><span class="key">Dumpster diving</span> — retrieving sensitive discarded documents</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Logical Access &amp; Identity Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Core Concepts</h4><ul>
+          <li><span class="key">ACL</span> — list defining who may access an object and what they may do</li>
+          <li><span class="key">PAM</span> — vaults/monitors highly privileged accounts (admin, root)</li>
+          <li><span class="key">Provisioning/Deprovisioning</span> — timely account creation and, critically, IMMEDIATE disabling upon termination</li>
+        </ul></div>
+        <div class="concept-card"><h4>SSO &amp; Federation</h4><ul>
+          <li><span class="key">SSO</span> — authenticate once, access many systems; convenient but a single point of compromise</li>
+          <li><span class="key">Federation</span> — one org's Identity Provider is trusted by a partner Service Provider, without duplicate accounts</li>
+        </ul></div>
+        <div class="concept-card"><h4>Accountability Principles</h4><ul>
+          <li><span class="key">Least privilege</span> — minimum access for the job</li>
+          <li><span class="key">Need-to-know</span> — access limited to the current task</li>
+          <li><span class="key">Separation of duties</span> — no single person completes a sensitive process alone</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- D4 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d4)"></div>
+      <div class="domain-title">Domain 4 — Network Security</div>
+      <div class="domain-pct">24% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">OSI Model (7 Layers)</div>
+      <div class="table-wrap"><table>
+        <tr><th>#</th><th>Layer</th><th>Function</th><th>Examples</th></tr>
+        <tr><td class="val">7</td><td>Application</td><td>End-user services</td><td>HTTP, FTP, DNS, SMTP</td></tr>
+        <tr><td class="val">6</td><td>Presentation</td><td>Formatting, encryption, compression</td><td>SSL/TLS, JPEG, ASCII</td></tr>
+        <tr><td class="val">5</td><td>Session</td><td>Establishes/manages sessions</td><td>NetBIOS, RPC</td></tr>
+        <tr><td class="val">4</td><td>Transport</td><td>End-to-end delivery, reliability</td><td>TCP, UDP</td></tr>
+        <tr><td class="val">3</td><td>Network</td><td>Logical addressing &amp; routing</td><td>IP, routers</td></tr>
+        <tr><td class="val">2</td><td>Data Link</td><td>MAC addressing, framing</td><td>Switches, ARP</td></tr>
+        <tr><td class="val">1</td><td>Physical</td><td>Raw bit transmission</td><td>Cables, hubs, NICs</td></tr>
+      </table></div>
+      <div class="tip-box"><div class="tip-label">✓ Mnemonic</div>Top-down: <strong>A</strong>ll <strong>P</strong>eople <strong>S</strong>eem <strong>T</strong>o <strong>N</strong>eed <strong>D</strong>ata <strong>P</strong>rocessing (Application, Presentation, Session, Transport, Network, Data Link, Physical).</div>
+
+      <div class="sg-heading">TCP vs UDP</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>TCP</h4><ul>
+          <li>Connection-oriented — three-way handshake (SYN, SYN-ACK, ACK)</li>
+          <li>Reliable — guarantees delivery and order</li>
+          <li>Used for: web (HTTP/S), email, file transfer</li>
+        </ul></div>
+        <div class="concept-card"><h4>UDP</h4><ul>
+          <li>Connectionless — no handshake</li>
+          <li>Faster but no delivery guarantee</li>
+          <li>Used for: DNS queries, streaming, VoIP</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Network Devices &amp; Security Tools</div>
+      <div class="table-wrap"><table>
+        <tr><th>Device/Tool</th><th>OSI Layer</th><th>Function</th></tr>
+        <tr><td class="val">Hub</td><td>1 (Physical)</td><td>Broadcasts to all ports; legacy, no traffic intelligence</td></tr>
+        <tr><td class="val">Switch</td><td>2 (Data Link)</td><td>Forwards frames using MAC address tables</td></tr>
+        <tr><td class="val">Router</td><td>3 (Network)</td><td>Forwards packets between networks using IP addresses</td></tr>
+        <tr><td class="val">Firewall (stateful)</td><td>3/4</td><td>Tracks connection state; allows/denies based on rules and session context</td></tr>
+        <tr><td class="val">IDS</td><td>N/A (monitors)</td><td>Passive — detects and alerts only; cannot block traffic</td></tr>
+        <tr><td class="val">IPS</td><td>N/A (inline)</td><td>Active — sits inline and can block/drop malicious traffic</td></tr>
+      </table></div>
+
+      <div class="sg-heading">Segmentation &amp; Architecture</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Segmentation Techniques</h4><ul>
+          <li><span class="key">VLAN</span> — logically separates traffic and broadcast domains at Layer 2</li>
+          <li><span class="key">DMZ</span> — semi-trusted zone hosting public-facing services, isolated from the internal network</li>
+          <li><span class="key">NAT</span> — translates private internal IPs to a public IP for internet access</li>
+        </ul></div>
+        <div class="concept-card"><h4>Zero Trust</h4><ul>
+          <li>Core principle: <span class="key">"never trust, always verify"</span></li>
+          <li>No implicit trust based on network location (inside vs outside)</li>
+          <li>Every request is authenticated, authorized, and continuously validated</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Wireless Security &amp; Common Threats</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Wireless Protocols</h4><ul>
+          <li><span class="key">WEP</span> — broken; do not use</li>
+          <li><span class="key">WPA2</span> — strong, widely deployed (AES-CCMP)</li>
+          <li><span class="key">WPA3</span> — current standard; stronger handshake (SAE), resists offline attacks</li>
+          <li>Hiding SSID broadcast ≠ real security (security through obscurity)</li>
+        </ul></div>
+        <div class="concept-card"><h4>Common Network Attacks</h4><ul>
+          <li><span class="key">DoS</span> — single source floods/overwhelms a target</li>
+          <li><span class="key">DDoS</span> — many distributed sources (botnet) overwhelm a target</li>
+          <li><span class="key">On-path (MITM)</span> — attacker intercepts traffic between two parties</li>
+          <li><span class="key">Rogue access point</span> — unauthorized AP connected to the network</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Network Topologies</div>
+      <div class="table-wrap"><table>
+        <tr><th>Topology</th><th>Description</th><th>Key Trait</th></tr>
+        <tr><td class="val">Bus</td><td>All devices share a single central cable</td><td>Single cable failure can take down the network</td></tr>
+        <tr><td class="val">Star</td><td>All devices connect to a central switch/hub</td><td>Most common; central device is a single point of failure</td></tr>
+        <tr><td class="val">Ring</td><td>Devices connect in a closed loop</td><td>Data travels in one (or both) directions around the ring</td></tr>
+        <tr><td class="val">Mesh</td><td>Every device connects to every other device</td><td>Highest redundancy; highest cabling cost</td></tr>
+      </table></div>
+
+    </div>
+  </div>
+
+  <!-- D5 ─────────────────────────────────────────────────── -->
+  <div class="domain-section">
+    <div class="domain-header" onclick="toggleDomain(this)">
+      <div class="domain-dot" style="background:var(--d5)"></div>
+      <div class="domain-title">Domain 5 — Security Operations</div>
+      <div class="domain-pct">18% of exam</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="domain-body">
+
+      <div class="sg-heading">Data States &amp; Data Security</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Three Data States</h4><ul>
+          <li><span class="key">Data at rest</span> — stored on disk/database; protect with encryption</li>
+          <li><span class="key">Data in transit</span> — moving across a network; protect with TLS/VPN</li>
+          <li><span class="key">Data in use</span> — actively processed in memory; hardest state to protect</li>
+        </ul></div>
+        <div class="concept-card"><h4>Data Classification</h4><ul>
+          <li>Typical levels: Public → Internal → Confidential → Restricted</li>
+          <li>Higher classification = stricter handling, encryption, and access controls</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Cryptography Basics</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Symmetric Encryption</h4><ul>
+          <li>Same key encrypts and decrypts</li>
+          <li>Fast — used for bulk data (e.g., AES)</li>
+          <li>Key distribution is the main challenge</li>
+        </ul></div>
+        <div class="concept-card"><h4>Asymmetric Encryption</h4><ul>
+          <li>Public/private key pair — mathematically related</li>
+          <li>Slower — used for key exchange and digital signatures</li>
+          <li>Encrypt with the recipient's public key; only their private key decrypts</li>
+        </ul></div>
+        <div class="concept-card"><h4>Hashing</h4><ul>
+          <li>One-way — cannot be reversed to the original input</li>
+          <li>Verifies integrity — same input always produces the same output</li>
+          <li>Any change to input produces a completely different hash</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Logging, Monitoring &amp; Security Operations</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>SOC &amp; SIEM</h4><ul>
+          <li><span class="key">SOC</span> — team/facility that continuously monitors, detects, and responds to threats</li>
+          <li><span class="key">SIEM</span> — aggregates and correlates logs across systems for centralized visibility</li>
+          <li>Audit logs support accountability and post-incident investigation</li>
+        </ul></div>
+        <div class="concept-card"><h4>Event vs Incident</h4><ul>
+          <li><span class="key">Event</span> — any observable occurrence (a login, a file access)</li>
+          <li><span class="key">Incident</span> — a confirmed event that negatively impacts CIA and requires response</li>
+        </ul></div>
+      </div>
+
+      <div class="sg-heading">Configuration, Change &amp; Vulnerability Management</div>
+      <div class="concept-grid">
+        <div class="concept-card"><h4>Operational Hygiene</h4><ul>
+          <li><span class="key">Configuration baseline</span> — approved, secure standard configuration</li>
+          <li><span class="key">Change management</span> — review/approve/test/document changes before production</li>
+          <li><span class="key">Patch management</span> — timely fixes reduce exposure to known vulnerabilities</li>
+        </ul></div>
+        <div class="concept-card"><h4>Policies &amp; Awareness</h4><ul>
+          <li><span class="key">Acceptable Use Policy (AUP)</span> — defines permitted use of company systems</li>
+          <li><span class="key">Data retention policy</span> — how long data is kept and how it's destroyed</li>
+          <li><span class="key">Security awareness training</span> — helps all staff recognize phishing/social engineering</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /tab-guide -->
+
+<!-- ══════════════════════ FLASHCARDS ══════════════════════ -->
+<div id="tab-flash" class="tab-pane">
+  <div class="fc-controls">
+    <button class="fc-filter-btn f-all active" onclick="setFilter('all',this)">All Domains</button>
+    <button class="fc-filter-btn f-d1" onclick="setFilter('d1',this)">D1 – Security Principles</button>
+    <button class="fc-filter-btn f-d2" onclick="setFilter('d2',this)">D2 – BC/DR/IR</button>
+    <button class="fc-filter-btn f-d3" onclick="setFilter('d3',this)">D3 – Access Controls</button>
+    <button class="fc-filter-btn f-d4" onclick="setFilter('d4',this)">D4 – Network Security</button>
+    <button class="fc-filter-btn f-d5" onclick="setFilter('d5',this)">D5 – Security Operations</button>
+  </div>
+  <div class="fc-progress">
+    <span id="fc-counter">1 / 60</span>
+    <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-bar" style="width:0%"></div></div>
+    <span id="fc-learned-label">0 learned</span>
+  </div>
+  <div class="fc-scene" onclick="flipCard()">
+    <div class="fc-card-wrap" id="fc-card">
+      <div class="fc-face fc-front">
+        <div class="fc-category" id="fc-cat"></div>
+        <div class="fc-q" id="fc-q"></div>
+        <div class="fc-hint">Click to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-category" id="fc-cat2"></div>
+        <div class="fc-a" id="fc-a"></div>
+        <div class="fc-detail" id="fc-detail"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav" id="fc-nav">
+    <button class="btn btn-muted"      onclick="markLearned()">✓ Got It</button>
+    <button class="btn btn-secondary"  onclick="prevCard()">← Prev</button>
+    <button class="btn btn-secondary"  onclick="nextCard()">Next →</button>
+    <button class="btn btn-secondary"  onclick="shuffleDeck()">🔀 Shuffle</button>
+  </div>
+  <div class="fc-stats">
+    <div class="fc-stat"><div class="fc-stat-val" id="fc-total-ct">0</div><div class="fc-stat-lbl">Total Cards</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--green)" id="fc-learned-ct">0</div><div class="fc-stat-lbl">Learned</div></div>
+    <div class="fc-stat"><div class="fc-stat-val" style="color:var(--accent)" id="fc-remain-ct">0</div><div class="fc-stat-lbl">Remaining</div></div>
+  </div>
+</div>
+
+<!-- ══ CHEAT SHEET ════════════════════════════════════════════════ -->
+<div id="tab-cheat" class="tab-pane">
+
+<h2 class="sg-heading" style="font-size:16px;margin-top:0">🔌 Common Port Numbers</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Port(s)</th><th>Protocol / Service</th><th>Notes</th></tr>
+  <tr><td class="val">20 / 21</td><td>FTP</td><td>20 = data, 21 = control; unencrypted — use SFTP (22) or FTPS (990)</td></tr>
+  <tr><td class="val">22</td><td>SSH / SFTP / SCP</td><td>Encrypted remote shell and file transfer</td></tr>
+  <tr><td class="val">23</td><td>Telnet</td><td>Unencrypted — replaced by SSH</td></tr>
+  <tr><td class="val">25</td><td>SMTP</td><td>Server-to-server mail; 587 = client submission</td></tr>
+  <tr><td class="val">53</td><td>DNS</td><td>UDP (queries) and TCP (zone transfers, large responses)</td></tr>
+  <tr><td class="val">67 / 68</td><td>DHCP</td><td>67 = server, 68 = client; UDP broadcast</td></tr>
+  <tr><td class="val">80</td><td>HTTP</td><td>Unencrypted web traffic</td></tr>
+  <tr><td class="val">110</td><td>POP3</td><td>Retrieve email; 995 = POP3S (encrypted)</td></tr>
+  <tr><td class="val">143</td><td>IMAP</td><td>Email access; 993 = IMAPS (encrypted)</td></tr>
+  <tr><td class="val">161 / 162</td><td>SNMP</td><td>161 = poll/get, 162 = trap</td></tr>
+  <tr><td class="val">389 / 636</td><td>LDAP / LDAPS</td><td>Directory access; 636 adds TLS encryption</td></tr>
+  <tr><td class="val">443</td><td>HTTPS</td><td>TLS-encrypted web traffic</td></tr>
+  <tr><td class="val">445</td><td>SMB / CIFS</td><td>Windows file sharing</td></tr>
+  <tr><td class="val">3389</td><td>RDP</td><td>Remote Desktop; common attack target — restrict access</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔺 CIA Triad &amp; IAAA Quick Reference</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Concept</th><th>Definition</th></tr>
+  <tr><td class="val">Confidentiality</td><td>Prevents unauthorized disclosure of information</td></tr>
+  <tr><td class="val">Integrity</td><td>Ensures data is accurate and unaltered except by authorized action</td></tr>
+  <tr><td class="val">Availability</td><td>Ensures authorized users can access data/systems when needed</td></tr>
+  <tr><td class="val">Identification</td><td>Claiming an identity (username)</td></tr>
+  <tr><td class="val">Authentication</td><td>Proving the claimed identity (password, biometric, token)</td></tr>
+  <tr><td class="val">Authorization</td><td>Determining what an authenticated user may access/do</td></tr>
+  <tr><td class="val">Accounting</td><td>Logging user actions for accountability</td></tr>
+  <tr><td class="val">Non-repudiation</td><td>A party cannot deny having performed an action</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🔑 Access Control Models</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Model</th><th>Decision Maker</th><th>Example</th></tr>
+  <tr><td class="val">DAC</td><td>Resource owner</td><td>Windows NTFS permissions</td></tr>
+  <tr><td class="val">MAC</td><td>System-enforced labels/clearance</td><td>Military classification levels</td></tr>
+  <tr><td class="val">RBAC</td><td>Job role</td><td>"Help Desk Technician" role</td></tr>
+  <tr><td class="val">ABAC</td><td>Attributes (time, device, location)</td><td>Access only during business hours</td></tr>
+  <tr><td class="val">Rule-based</td><td>Predefined IF/THEN rules</td><td>Firewall / router ACL</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">🚨 Incident Response Lifecycle</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>#</th><th>Phase</th><th>Goal</th></tr>
+  <tr><td class="val">1</td><td>Preparation</td><td>IR plan, tools, training in place BEFORE an incident</td></tr>
+  <tr><td class="val">2</td><td>Detection &amp; Analysis</td><td>Identify that an incident occurred and determine scope</td></tr>
+  <tr><td class="val">3</td><td>Containment</td><td>Limit the damage and prevent further spread</td></tr>
+  <tr><td class="val">4</td><td>Eradication</td><td>Remove the root cause (malware, backdoor, vulnerability)</td></tr>
+  <tr><td class="val">5</td><td>Recovery</td><td>Restore affected systems to normal operation</td></tr>
+  <tr><td class="val">6</td><td>Lessons Learned</td><td>Post-incident review to improve future defenses</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">⏱ BC/DR Metrics</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Metric</th><th>Measures</th></tr>
+  <tr><td class="val">RTO</td><td>Max acceptable DOWNTIME to restore a system</td></tr>
+  <tr><td class="val">RPO</td><td>Max acceptable DATA LOSS, measured in time</td></tr>
+  <tr><td class="val">MTD</td><td>Absolute ceiling on downtime before the business is critically harmed (RTO ≤ MTD)</td></tr>
+  <tr><td class="val">MTBF</td><td>Average time between failures (reliability)</td></tr>
+  <tr><td class="val">MTTR</td><td>Average time to repair a failed system</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">📜 (ISC)² Code of Ethics Canons (in order of precedence)</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>#</th><th>Canon</th></tr>
+  <tr><td class="val">1</td><td>Protect society, the common good, necessary public trust and confidence, and the infrastructure</td></tr>
+  <tr><td class="val">2</td><td>Act honorably, honestly, justly, responsibly, and legally</td></tr>
+  <tr><td class="val">3</td><td>Provide diligent and competent service to principals</td></tr>
+  <tr><td class="val">4</td><td>Advance and protect the profession</td></tr>
+</table>
+</div>
+
+<h2 class="sg-heading">💾 Backup Types</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Type</th><th>Captures</th><th>Backup Speed</th><th>Restore Speed</th></tr>
+  <tr><td class="val">Full</td><td>Everything</td><td class="no">Slowest</td><td class="yes">Fastest (1 file set)</td></tr>
+  <tr><td class="val">Incremental</td><td>Changes since LAST backup (any type)</td><td class="yes">Fastest</td><td class="no">Slowest (full + every increment)</td></tr>
+  <tr><td class="val">Differential</td><td>Changes since LAST FULL backup</td><td>Moderate</td><td>Moderate (full + latest differential)</td></tr>
+</table>
+</div>
+
+</div><!-- /tab-cheat -->
+
+<!-- ══ EXAM TIPS ══════════════════════════════════════════════════ -->
+<div id="tab-tips" class="tab-pane">
+
+<div class="tip-box">
+  <div class="tip-label">Tip — IAAA happens in a fixed order</div>
+  <strong>I</strong>dentification → <strong>A</strong>uthentication → <strong>A</strong>uthorization → <strong>A</strong>ccounting.<br><br>
+  You claim who you are, prove it, are granted permissions, and your actions are logged. The exam loves to swap authentication and authorization in a scenario — remember authentication proves identity; authorization decides what you can do AFTER that identity is proven.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Control category vs control type</div>
+  Every control has BOTH a <em>category</em> (Technical, Administrative, Physical) AND a <em>type</em> (Preventive, Detective, Corrective, Deterrent, Compensating, Directive). A single control can be labeled with both — e.g., a security camera is Physical (category) + Detective (type). Questions often ask for just one axis — read carefully which one is being asked.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — (ISC)² Code of Ethics precedence order</div>
+  When two canons conflict, the LOWER-numbered canon always wins: (1) Protect society/infrastructure, (2) Act honorably/legally, (3) Provide diligent service, (4) Advance the profession. If a scenario asks "what should you do first," protecting society and the public trust outranks everything else.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — RTO vs RPO (most-confused pair on the exam)</div>
+  <strong>RTO</strong> = how long can the system be DOWN (time to restore service).<br>
+  <strong>RPO</strong> = how much DATA can you afford to lose (drives backup frequency).<br><br>
+  Memory aid: RPO looks backward in time (to the last good backup); RTO looks forward (how long until we're back up).
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — DAC, MAC, RBAC, ABAC in one line each</div>
+  <strong>DAC</strong> = owner decides. <strong>MAC</strong> = labels/clearance, no discretion. <strong>RBAC</strong> = access by job role. <strong>ABAC</strong> = access by attributes (time, device, location). If the question mentions "classification levels" or "clearance," the answer is MAC — not RBAC.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Least privilege vs need-to-know vs separation of duties</div>
+  <strong>Least privilege:</strong> minimum ACCESS RIGHTS needed for the job overall.<br>
+  <strong>Need-to-know:</strong> access limited to what's needed for the CURRENT TASK, even for cleared/authorized users.<br>
+  <strong>Separation of duties:</strong> splits a sensitive PROCESS across multiple people so no one can complete it alone.<br><br>
+  These are related but distinct — a scenario about splitting approval/execution of a task is separation of duties, not least privilege.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — IDS vs IPS</div>
+  <strong>IDS</strong> = Detective, passive, alerts only, out-of-band (cannot block).<br>
+  <strong>IPS</strong> = Preventive, active, inline, can block/drop traffic in real time.<br><br>
+  If the question says "blocks the traffic automatically," the answer is IPS, not IDS.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — FAR vs FRR in biometrics</div>
+  <strong>FAR (False Acceptance Rate):</strong> system wrongly LETS IN an impostor — the more dangerous error from a security standpoint.<br>
+  <strong>FRR (False Rejection Rate):</strong> system wrongly LOCKS OUT a legitimate user — an inconvenience, not a breach.<br><br>
+  The Crossover Error Rate (CER) is where FAR = FRR; a lower CER means a more accurate biometric system overall.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Symmetric vs asymmetric encryption direction</div>
+  <strong>Encrypt data</strong> → use the RECIPIENT'S public key (asymmetric) so only they can decrypt it with their private key.<br>
+  <strong>Symmetric</strong> encryption uses ONE shared key for both encrypt and decrypt — fast, but the key must be distributed securely first.<br><br>
+  Remember: public key = lock (anyone can lock it), private key = the only key that opens it.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — Hot site vs warm site vs cold site</div>
+  <strong>Hot site:</strong> fully operational, real-time data, near-instant failover — most expensive.<br>
+  <strong>Warm site:</strong> hardware ready, but data must be restored — takes hours.<br>
+  <strong>Cold site:</strong> empty shell (power/HVAC only) — takes days to weeks, cheapest.<br><br>
+  Cost and recovery speed are inversely related: faster recovery always costs more.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — Incremental vs differential backup</div>
+  <strong>Incremental:</strong> backs up changes since the LAST backup of ANY type — smallest/fastest backup, but restore requires the full backup plus every incremental in order.<br>
+  <strong>Differential:</strong> backs up changes since the LAST FULL backup only — restore only needs the full backup plus the most recent differential.
+</div>
+
+<div class="trap-box">
+  <div class="trap-label">Trap — TCP vs UDP</div>
+  <strong>TCP</strong> = connection-oriented, reliable, three-way handshake (used by HTTP/S, email, file transfer).<br>
+  <strong>UDP</strong> = connectionless, no delivery guarantee, faster (used by DNS queries, streaming, VoIP).<br><br>
+  If a scenario emphasizes speed over reliability (video streaming, real-time voice), the answer is UDP.
+</div>
+
+<div class="tip-box">
+  <div class="tip-label">Tip — CC exam scenario keyword shortcuts</div>
+  <ul style="margin-top:6px;padding-left:18px;font-size:13px;line-height:1.9">
+    <li><em>"Cannot deny sending a message"</em> → non-repudiation (digital signature)</li>
+    <li><em>"Following someone through a badge door"</em> → tailgating/piggybacking; mitigate with a mantrap</li>
+    <li><em>"Encrypt entire hard drive"</em> → protects data AT REST</li>
+    <li><em>"Encrypt traffic between browser and server"</em> → protects data IN TRANSIT (TLS)</li>
+    <li><em>"Blocks traffic automatically, sits inline"</em> → IPS, not IDS</li>
+    <li><em>"Access based on classification/clearance"</em> → MAC</li>
+    <li><em>"Only firewall rule matters, applied to everyone"</em> → Rule-based access control</li>
+    <li><em>"Never trust, always verify"</em> → Zero Trust</li>
+    <li><em>"Absolute limit before the business fails"</em> → MTD</li>
+    <li><em>"First step before writing a BCP/DRP"</em> → Business Impact Analysis (BIA)</li>
+  </ul>
+</div>
+
+</div><!-- /tab-tips -->
+
+</div><!-- /app -->
+
+<script>
+// ── Tab switching ──────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function toggleDomain(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ── Flashcard data ─────────────────────────────────────────
+const CARDS = [
+  // D1 – Security Principles
+  {d:'d1',cat:'D1 · CIA Triad',q:'What are the three components of the CIA triad?',a:'Confidentiality, Integrity, Availability',detail:'Confidentiality prevents unauthorized disclosure. Integrity ensures data is accurate/unaltered. Availability ensures authorized access when needed.'},
+  {d:'d1',cat:'D1 · CIA Triad',q:'What concept, often paired with CIA, ensures a person cannot deny having performed an action?',a:'Non-repudiation',detail:'Digital signatures are the classic mechanism — they cryptographically bind an action to a specific private key holder, who cannot credibly deny it later.'},
+  {d:'d1',cat:'D1 · IAAA',q:'What is the difference between identification and authentication?',a:'Identification is a CLAIM of identity (username). Authentication is PROVING that claim (password, biometric, token).',detail:'Anyone can type any username — that is unproven identification. Authentication supplies evidence that the claim is genuine.'},
+  {d:'d1',cat:'D1 · IAAA',q:'What is the correct order of the IAAA model?',a:'Identification → Authentication → Authorization → Accounting',detail:'You claim who you are, prove it, are granted permissions accordingly, and your actions are then logged for accountability.'},
+  {d:'d1',cat:'D1 · Controls',q:'What are the six security control TYPES?',a:'Preventive, Detective, Corrective, Deterrent, Compensating, Directive',detail:'Preventive stops, Detective identifies, Corrective restores, Deterrent discourages, Compensating substitutes, Directive instructs (policy).'},
+  {d:'d1',cat:'D1 · Controls',q:'A security camera is what category AND type of control?',a:'Physical (category) + Detective (type)',detail:'It physically exists at the site and records/detects incidents. It does not stop an attacker, so it is not preventive.'},
+  {d:'d1',cat:'D1 · Risk',q:'What are the four risk treatment options?',a:'Avoid, Mitigate, Transfer, Accept',detail:'Avoid = stop the risky activity. Mitigate = add controls. Transfer = shift impact (insurance). Accept = take no action, document the decision.'},
+  {d:'d1',cat:'D1 · Risk',q:'What is a zero-day vulnerability?',a:'A vulnerability with no available patch, often being actively exploited before defenders can respond',detail:'The term reflects that defenders have had "zero days" to prepare a fix once the flaw becomes known or exploited.'},
+  {d:'d1',cat:'D1 · Governance',q:'Rank policy, standard, procedure, and guideline from most to least mandatory.',a:'Policy = Standard = Procedure (all mandatory) > Guideline (recommended only)',detail:'Policies set intent, standards set specific mandatory requirements, procedures give mandatory steps. Guidelines are the only non-mandatory document type.'},
+  {d:'d1',cat:'D1 · Principles',q:'What is the difference between due diligence and due care?',a:'Due diligence = researching risks/requirements BEFORE acting. Due care = taking reasonable action based on that research.',detail:'Due diligence is the investigation; due care is the resulting responsible behavior. Both are needed to demonstrate reasonable security practice.'},
+  {d:'d1',cat:'D1 · Principles',q:'What is separation of duties?',a:'Splitting a sensitive task across multiple people so no single individual can complete it alone',detail:'Example: one person requests a payment, a different person approves it. Reduces fraud and error risk.'},
+  {d:'d1',cat:'D1 · Ethics',q:'What is the first (highest-precedence) canon of the (ISC)² Code of Ethics?',a:'Protect society, the common good, necessary public trust and confidence, and the infrastructure',detail:'When canons conflict, this one always takes precedence over acting honorably, providing diligent service, or advancing the profession.'},
+
+  // D2 – BC, DR & IR Concepts
+  {d:'d2',cat:'D2 · BCP/DRP',q:'What is the key difference between a BCP and a DRP?',a:'BCP keeps the overall BUSINESS running; DRP specifically restores IT systems and infrastructure.',detail:'BCP is the broader umbrella plan; DRP is a technical subset focused on recovering servers, applications, and data.'},
+  {d:'d2',cat:'D2 · BIA',q:'What does a Business Impact Analysis (BIA) produce?',a:'Identification of critical functions plus RTO, RPO, and MTD targets',detail:'The BIA must be completed BEFORE the BCP/DRP are written — you need these targets to design a meaningful recovery plan.'},
+  {d:'d2',cat:'D2 · Metrics',q:'What does RTO measure? What does RPO measure?',a:'RTO = max acceptable DOWNTIME. RPO = max acceptable DATA LOSS (measured in time).',detail:'RPO drives how frequently you must back up data. RTO drives how quickly systems must be restored.'},
+  {d:'d2',cat:'D2 · Metrics',q:'What is Maximum Tolerable Downtime (MTD) and how does it relate to RTO?',a:'MTD is the absolute ceiling on downtime before the business suffers critical/irreversible harm. RTO must always be ≤ MTD.',detail:'If your recovery time (RTO) exceeds MTD, the organization may not survive the outage.'},
+  {d:'d2',cat:'D2 · Backups',q:'What is the difference between an incremental and a differential backup?',a:'Incremental = changes since the LAST backup (any type). Differential = changes since the LAST FULL backup.',detail:'Incremental backups are smaller/faster but slower to restore (need every increment). Differential backups need only the full + latest differential to restore.'},
+  {d:'d2',cat:'D2 · Backups',q:'What is the 3-2-1 backup rule?',a:'3 copies of data, on 2 different media types, with 1 copy offsite/offline',detail:'The offsite/offline copy is critical ransomware protection — malware cannot reach or encrypt what it cannot access.'},
+  {d:'d2',cat:'D2 · Sites',q:'Rank hot, warm, and cold sites by recovery speed and cost.',a:'Hot site = fastest recovery, highest cost. Warm site = moderate. Cold site = slowest recovery, lowest cost.',detail:'A hot site has real-time replicated data ready to fail over to almost instantly. A cold site is an empty facility requiring full setup from scratch.'},
+  {d:'d2',cat:'D2 · IR',q:'List the six phases of the incident response lifecycle in order.',a:'Preparation → Detection & Analysis → Containment → Eradication → Recovery → Lessons Learned',detail:'A common exam trap places Containment before Detection & Analysis — you must understand the scope of an incident before you can properly contain it.'},
+  {d:'d2',cat:'D2 · IR',q:'What is the purpose of the "Lessons Learned" phase of incident response?',a:'A post-incident review to identify what happened, what worked, and how to improve defenses/processes going forward',detail:'This phase feeds back into "Preparation" for the next incident, closing the IR lifecycle loop.'},
+
+  // D3 – Access Controls Concepts
+  {d:'d3',cat:'D3 · Auth Factors',q:'Name the five authentication factor categories.',a:'Something you know, have, are, somewhere you are, something you do',detail:'Know = password. Have = token/smart card. Are = biometrics. Somewhere you are = geolocation. Something you do = behavioral biometrics (keystroke dynamics).'},
+  {d:'d3',cat:'D3 · Auth Factors',q:'What makes authentication "multi-factor" rather than just multiple credentials?',a:'MFA requires factors from two or more DIFFERENT categories, not just multiple pieces of the same category',detail:'Two passwords is still single-factor. A password plus a one-time code from a phone app is true MFA (know + have).'},
+  {d:'d3',cat:'D3 · Biometrics',q:'What is the difference between FAR and FRR?',a:'FAR (False Acceptance Rate) wrongly lets an impostor in. FRR (False Rejection Rate) wrongly locks out a legitimate user.',detail:'FAR is the more dangerous error from a security perspective. CER (Crossover Error Rate) is the point where FAR = FRR — lower CER means a more accurate system.'},
+  {d:'d3',cat:'D3 · Access Models',q:'In DAC, who decides who can access a resource?',a:'The resource owner',detail:'Contrast with MAC, where a central authority enforces fixed classification labels and owners have no discretion.'},
+  {d:'d3',cat:'D3 · Access Models',q:'What access control model is used for military classification systems (Top Secret, Secret, Confidential)?',a:'Mandatory Access Control (MAC)',detail:'MAC enforces labels/clearance centrally — individual users cannot override or grant access at their own discretion, unlike DAC.'},
+  {d:'d3',cat:'D3 · Access Models',q:'What access control model grants access based on job title, such as "HR Manager"?',a:'Role-Based Access Control (RBAC)',detail:'RBAC simplifies administration since permissions follow the role rather than being assigned individually to each person.'},
+  {d:'d3',cat:'D3 · Access Models',q:'What access control model grants access based on context like time of day, device, or location?',a:'Attribute-Based Access Control (ABAC)',detail:'ABAC provides more granular, context-aware decisions than role alone — e.g., only allowing access during business hours from a managed device.'},
+  {d:'d3',cat:'D3 · Physical',q:'What is a mantrap and what does it prevent?',a:'A small enclosed space with two interlocking doors; prevents tailgating/piggybacking by allowing only one authenticated person through at a time',detail:'Both doors cannot be open simultaneously, forcing single-person passage and authentication.'},
+  {d:'d3',cat:'D3 · Physical',q:'What physical control specifically stops vehicle-based attacks on a building?',a:'Bollards',detail:'Bollards are sturdy vertical posts designed to prevent a vehicle from ramming into an entrance, unlike turnstiles or mantraps which control pedestrians.'},
+  {d:'d3',cat:'D3 · Principles',q:'What is the difference between least privilege and need-to-know?',a:'Least privilege = minimum access rights overall for the job. Need-to-know = access limited to the current task, even for cleared users.',detail:'Need-to-know is a finer-grained application often layered on top of least privilege and clearance-based access.'},
+  {d:'d3',cat:'D3 · Identity',q:'What is a key risk of Single Sign-On (SSO)?',a:'If the SSO credential is compromised, an attacker may access every connected system',detail:'SSO improves usability but creates a single point of compromise — strong MFA on the SSO login is essential to offset this risk.'},
+
+  // D4 – Network Security
+  {d:'d4',cat:'D4 · OSI Model',q:'List the seven OSI layers from top to bottom.',a:'Application, Presentation, Session, Transport, Network, Data Link, Physical',detail:'Mnemonic: All People Seem To Need Data Processing.'},
+  {d:'d4',cat:'D4 · OSI Model',q:'At which OSI layer do switches operate? Routers?',a:'Switches = Layer 2 (Data Link, MAC addresses). Routers = Layer 3 (Network, IP addresses).',detail:'Switches forward frames within a local segment; routers forward packets between different networks.'},
+  {d:'d4',cat:'D4 · Protocols',q:'What is the key difference between TCP and UDP?',a:'TCP is connection-oriented and reliable (handshake, guaranteed delivery). UDP is connectionless with no delivery guarantee, but faster.',detail:'TCP is used for web/email/file transfer. UDP is used for DNS queries, streaming, and VoIP where speed matters more than guaranteed delivery.'},
+  {d:'d4',cat:'D4 · Devices',q:'What is the key difference between an IDS and an IPS?',a:'IDS passively monitors and alerts only. IPS sits inline and can actively block/drop malicious traffic.',detail:'IDS has zero impact on traffic flow but cannot stop an attack. IPS can stop attacks but becomes a potential bottleneck/failure point.'},
+  {d:'d4',cat:'D4 · Architecture',q:'What is the purpose of a DMZ?',a:'A semi-trusted network segment that hosts public-facing services, isolated from the internal trusted network',detail:'If a DMZ server is compromised, the attacker still has to breach another boundary to reach the internal network.'},
+  {d:'d4',cat:'D4 · Architecture',q:'What is the core principle of Zero Trust?',a:'"Never trust, always verify" — no implicit trust based on network location; every request must be authenticated and authorized',detail:'Traditional models trust anything "inside" the perimeter. Zero Trust treats every request, internal or external, as untrusted until verified.'},
+  {d:'d4',cat:'D4 · Wireless',q:'Which wireless security protocol is considered broken and should never be used?',a:'WEP (Wired Equivalent Privacy)',detail:'WEP has well-known cryptographic flaws crackable with widely available tools. Use WPA2 or WPA3 instead.'},
+  {d:'d4',cat:'D4 · Attacks',q:'What is the difference between a DoS and a DDoS attack?',a:'DoS comes from a single source. DDoS comes from many distributed sources, often a botnet.',detail:'DDoS is much harder to block since you cannot simply deny a single IP address — traffic comes from thousands of compromised hosts.'},
+  {d:'d4',cat:'D4 · Attacks',q:'What is an on-path (man-in-the-middle) attack?',a:'An attacker positions themselves between two communicating parties to intercept, read, or alter traffic without their knowledge',detail:'Strong encryption (TLS) and mutual authentication are the primary defenses against on-path attacks.'},
+  {d:'d4',cat:'D4 · Devices',q:'What is the primary function of NAT?',a:'Translates private internal IP addresses to a public IP address for internet communication',detail:'NAT also has the side benefit of hiding the organization\'s internal addressing scheme from external view.'},
+
+  // D5 – Security Operations
+  {d:'d5',cat:'D5 · Data States',q:'What are the three states of data and how is each typically protected?',a:'At rest (encryption), in transit (TLS/VPN), in use (memory protection — hardest to protect)',detail:'Full-disk encryption protects at rest. TLS protects in transit. Data in use lives in memory and is the most difficult state to fully secure.'},
+  {d:'d5',cat:'D5 · Cryptography',q:'What is the fundamental difference between symmetric and asymmetric encryption?',a:'Symmetric uses ONE shared key for both encryption and decryption. Asymmetric uses a mathematically related public/private key pair.',detail:'Symmetric (e.g., AES) is fast and used for bulk data. Asymmetric (e.g., RSA) is slower and used for key exchange and digital signatures.'},
+  {d:'d5',cat:'D5 · Cryptography',q:'What is the purpose of a cryptographic hash function?',a:'To verify data integrity by producing a fixed-size, one-way digest — not to provide confidentiality',detail:'Hashes cannot be reversed to recover the original input, and any change to the input produces a completely different hash.'},
+  {d:'d5',cat:'D5 · Monitoring',q:'What does a SIEM do?',a:'Aggregates and correlates log/event data from multiple sources to provide centralized visibility and support detection',detail:'A SIEM does not automatically respond to threats by itself — analysts (or a SOAR platform) act on the alerts it generates.'},
+  {d:'d5',cat:'D5 · Monitoring',q:'What is the difference between a security "event" and an "incident"?',a:'An event is any observable occurrence. An incident is a confirmed event that negatively impacts CIA and requires a response.',detail:'Most events are benign (a normal login). An incident represents a confirmed violation or imminent threat to security.'},
+  {d:'d5',cat:'D5 · Ops',q:'What is a configuration baseline?',a:'A documented, approved standard configuration that systems should be built and maintained against',detail:'Systems are periodically compared to the baseline to detect unauthorized changes or "configuration drift."'},
+  {d:'d5',cat:'D5 · Ops',q:'Why is a formal change management process important before modifying production systems?',a:'It ensures changes are reviewed, tested, approved, and documented, reducing the risk of outages or security gaps',detail:'Uncoordinated changes are a common cause of both outages and newly introduced vulnerabilities.'},
+  {d:'d5',cat:'D5 · Policies',q:'What does an Acceptable Use Policy (AUP) define?',a:'The rules and expectations for how employees may use organizational systems, networks, and devices',detail:'AUPs set clear boundaries on personal use, prohibited activities, and expectations of privacy on company equipment.'},
+  {d:'d5',cat:'D5 · Policies',q:'What does a data retention policy define?',a:'How long different types of data must be kept, and when/how it should be securely destroyed',detail:'Retention requirements are often driven by legal, regulatory, or business needs and vary by data classification.'},
+  {d:'d5',cat:'D5 · Vulnerability Mgmt',q:'Why are critical/high-severity vulnerabilities patched faster than low-severity ones?',a:'They pose greater risk of exploitation and impact, so risk-based vulnerability management prioritizes them first',detail:'Scoring systems like CVSS help organizations rank and prioritize remediation effort across a large number of findings.'},
+];
+
+// ── Flashcard engine ───────────────────────────────────────
+let deck = [], deckIdx = 0, learned = new Set(), activeFilter = 'all';
+
+function initDeck() {
+  deck = CARDS.filter(c => activeFilter === 'all' || c.d === activeFilter);
+  deckIdx = 0; learned.clear();
+  updateStats();
+  if (deck.length) showCard();
+}
+function shuffleDeck() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  deckIdx = 0; showCard();
+}
+function showCard() {
+  const remaining = deck.filter((_,i) => !learned.has(i));
+  if (!remaining.length) { showDone(); return; }
+  while (learned.has(deckIdx)) deckIdx = (deckIdx + 1) % deck.length;
+  const c = deck[deckIdx];
+  const wrap = document.getElementById('fc-card');
+  wrap.classList.remove('flipped');
+  document.getElementById('fc-cat').textContent   = c.cat;
+  document.getElementById('fc-cat2').textContent  = c.cat;
+  document.getElementById('fc-q').textContent     = c.q;
+  document.getElementById('fc-a').textContent     = c.a;
+  document.getElementById('fc-detail').textContent = c.detail || '';
+  const remainingIdxs = deck.map((_,i) => i).filter(i => !learned.has(i));
+  const pos = remainingIdxs.indexOf(deckIdx) + 1;
+  document.getElementById('fc-counter').textContent = `${pos} / ${remainingIdxs.length}`;
+  document.getElementById('fc-bar').style.width = ((learned.size / deck.length) * 100) + '%';
+  document.getElementById('fc-nav').style.display = 'flex';
+  updateStats();
+}
+function flipCard() {
+  document.getElementById('fc-card').classList.toggle('flipped');
+}
+function markLearned() {
+  learned.add(deckIdx);
+  nextCard();
+}
+function nextCard() {
+  let attempts = 0;
+  do { deckIdx = (deckIdx + 1) % deck.length; attempts++; }
+  while (learned.has(deckIdx) && attempts < deck.length);
+  showCard();
+}
+function prevCard() {
+  let attempts = 0;
+  do { deckIdx = (deckIdx - 1 + deck.length) % deck.length; attempts++; }
+  while (learned.has(deckIdx) && attempts < deck.length);
+  showCard();
+}
+function setFilter(f, btn) {
+  document.querySelectorAll('.fc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = f;
+  initDeck(); shuffleDeck();
+}
+function updateStats() {
+  const rem = deck.filter((_,i) => !learned.has(i)).length;
+  document.getElementById('fc-total-ct').textContent   = deck.length;
+  document.getElementById('fc-learned-ct').textContent = learned.size;
+  document.getElementById('fc-remain-ct').textContent  = rem;
+  document.getElementById('fc-learned-label').textContent = `${learned.size} learned`;
+}
+function showDone() {
+  document.getElementById('fc-nav').style.display = 'none';
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front" style="position:relative;transform:none;backface-visibility:visible">
+      <div class="fc-a">🎉 All cards learned!</div>
+      <div class="fc-detail" style="margin-top:8px;">You've gone through all cards in this filter.</div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="resetDeck()">Reset &amp; Repeat</button>
+    </div>`;
+}
+function resetDeck() {
+  learned.clear(); deckIdx = 0;
+  document.getElementById('fc-card').innerHTML = `
+    <div class="fc-face fc-front">
+      <div class="fc-category" id="fc-cat"></div>
+      <div class="fc-q" id="fc-q"></div>
+      <div class="fc-hint">Click to reveal answer</div>
+    </div>
+    <div class="fc-face fc-back">
+      <div class="fc-category" id="fc-cat2"></div>
+      <div class="fc-a" id="fc-a"></div>
+      <div class="fc-detail" id="fc-detail"></div>
+    </div>`;
+  document.getElementById('fc-card').onclick = flipCard;
+  document.getElementById('fc-nav').style.display = 'flex';
+  showCard();
+}
+
+document.addEventListener('DOMContentLoaded', () => { initDeck(); shuffleDeck(); });
+</script>
+</body>
+</html>

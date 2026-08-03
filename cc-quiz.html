@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISC2 Certified in Cybersecurity (CC) Practice Exam</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #252836; --border: #2e3248;
+    --accent: #06b6d4; --text: #e8eaf0; --muted: #8b92a8;
+    --green: #2ecc71; --red: #e74c3c; --yellow: #f39c12;
+    --d1: #a855f7; --d2: #f59e0b; --d3: #3b82f6; --d4: #ef4444; --d5: #22c55e;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+  #app { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  .exam-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .exam-title { font-size: 14px; font-weight: 600; color: var(--accent); }
+  .exam-meta { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+  #timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #timer.warning { color: var(--yellow); }
+  #timer.danger  { color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width .3s ease; }
+
+  .domain-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px;
+  }
+  .d1b { background: #2d1a44; color: var(--d1); }
+  .d2b { background: #2f2510; color: var(--d2); }
+  .d3b { background: #1a2744; color: var(--d3); }
+  .d4b { background: #2a1414; color: var(--d4); }
+  .d5b { background: #142814; color: var(--d5); }
+
+  .question-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 16px;
+  }
+  .question-num { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .question-text { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .multi-hint { font-size: 12px; color: var(--accent); margin-top: 6px; font-style: italic; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); }
+  .option.selected  { border-color: var(--accent); background: #0e2a2e; }
+  .option.correct   { border-color: var(--green); background: #122212; }
+  .option.incorrect { border-color: var(--red);   background: #221212; }
+  .option.disabled  { cursor: default; }
+  .option-letter {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--muted); transition: background .15s, color .15s;
+  }
+  .option.selected  .option-letter { background: var(--accent); color: #000; }
+  .option.correct   .option-letter { background: var(--green); color: #000; }
+  .option.incorrect .option-letter { background: var(--red);   color: #fff; }
+  .option-text { font-size: 14px; padding-top: 2px; }
+
+  .exp-block { margin-top: 16px; border-radius: 8px; overflow: hidden; font-size: 14px; }
+  .exp-section { padding: 14px 16px; }
+  .exp-section + .exp-section { border-top: 1px solid rgba(255,255,255,.06); }
+  .exp-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; }
+  .exp-correct  { background: #0e2218; }
+  .exp-correct  .exp-header { color: var(--green); }
+  .exp-wrong    { background: #220e0e; }
+  .exp-wrong    .exp-header { color: var(--red); }
+  .exp-neutral  { background: var(--surface2); }
+  .exp-neutral  .exp-header { color: var(--accent); }
+
+  .btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--red); color: #fff; }
+
+  .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .screen { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 40px 32px; text-align: center; }
+  .screen h1 { font-size: 24px; margin-bottom: 8px; }
+  .screen p  { color: var(--muted); margin-bottom: 20px; }
+  .sec-logo { font-size: 48px; margin-bottom: 16px; }
+
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; margin: 24px 0; }
+  .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .info-box .val { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .info-box .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .score-ring { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg  { fill: none; stroke: var(--border); stroke-width: 12; }
+  .score-ring .ring-val { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .ring-pct  { font-size: 32px; font-weight: 800; }
+  .ring-pass { font-size: 13px; font-weight: 600; margin-top: 2px; }
+
+  .domain-scores { margin: 24px 0; text-align: left; }
+  .domain-row { margin-bottom: 10px; }
+  .domain-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .domain-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .domain-fill { height: 100%; border-radius: 4px; }
+
+  .review-item { margin-bottom: 12px; }
+  .review-q { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .review-q:hover { border-color: var(--accent); }
+  .review-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .r-correct   { background: var(--green); color: #000; }
+  .r-incorrect { background: var(--red);   color: #fff; }
+  .r-skipped   { background: var(--muted); color: #000; }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .mode-card { background: var(--surface2); border: 2px solid var(--border); border-radius: 10px; padding: 18px; cursor: pointer; text-align: left; transition: border-color .15s; }
+  .mode-card:hover, .mode-card.active { border-color: var(--accent); }
+  .mode-card h3 { font-size: 15px; margin-bottom: 4px; }
+  .mode-card p  { font-size: 12px; color: var(--muted); }
+
+  .domain-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; justify-content: center; }
+  .domain-btn { padding: 7px 16px; border-radius: 20px; border: 2px solid var(--border); font-size: 13px; font-weight: 600; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .15s; }
+  .domain-btn.active { color: #fff; }
+  .domain-btn.all.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .domain-btn.d1.active  { background: var(--d1); border-color: var(--d1); }
+  .domain-btn.d2.active  { background: var(--d2); border-color: var(--d2); color: #000; }
+  .domain-btn.d3.active  { background: var(--d3); border-color: var(--d3); color: #fff; }
+  .domain-btn.d4.active  { background: var(--d4); border-color: var(--d4); }
+  .domain-btn.d5.active  { background: var(--d5); border-color: var(--d5); color: #000; }
+
+  @media(max-width:600px){ .mode-grid{grid-template-columns:1fr;} .exam-header{flex-direction:column;align-items:flex-start;} .question-card{padding:18px;} }
+</style>
+</head>
+<body>
+<nav style="background:#1a1d27;border-bottom:1px solid #2e3248;padding:10px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+  <span style="font-size:13px;font-weight:700;color:#8b92a8;margin-right:4px;">PRACTICE EXAMS</span>
+  <a href="index.html" style="padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;background:#2a1f0a;color:#FF9900;border:1px solid #FF9900;">☁️ AWS ANS-C01</a>
+  <a href="cisco-quiz.html" style="padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;background:#1a2744;color:#1d9bf0;border:1px solid #1d9bf0;">🌐 Cisco CCNA/ENARSI/SCOR</a>
+  <a href="security-plus-quiz.html" style="padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;background:#2a1414;color:#e74c3c;border:1px solid #e74c3c;">🔒 Security+</a>
+  <a href="cc-quiz.html" style="padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;background:#06b6d4;color:#000;">🛡️ ISC2 CC</a>
+</nav>
+<div id="app"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  QUESTION BANK  –  ISC2 Certified in Cybersecurity (CC)
+//  Domain 1: Security Principles (26%)
+//  Domain 2: Business Continuity, Disaster Recovery & Incident Response Concepts (10%)
+//  Domain 3: Access Controls Concepts (22%)
+//  Domain 4: Network Security (24%)
+//  Domain 5: Security Operations (18%)
+// ─────────────────────────────────────────────
+const QUESTIONS = [
+
+// ═══════════════════════════════════════
+//  DOMAIN 1 – SECURITY PRINCIPLES
+// ═══════════════════════════════════════
+{
+  id:1, domain:1,
+  q:"Which component of the CIA triad ensures that information has not been altered by unauthorized parties?",
+  opts:["Confidentiality","Integrity","Availability","Accountability"],
+  correct:[1],
+  exp:"Integrity ensures data remains accurate and unaltered except by authorized actions. Confidentiality protects data from unauthorized disclosure, and Availability ensures authorized access when needed."
+},
+{
+  id:2, domain:1,
+  q:"A company's e-commerce website must remain accessible to customers 24/7. Which principle of the CIA triad is the PRIMARY concern here?",
+  opts:["Confidentiality","Non-repudiation","Availability","Integrity"],
+  correct:[2],
+  exp:"Availability ensures systems and data are accessible to authorized users whenever needed. Uptime and resilience against outages/DoS attacks directly support availability."
+},
+{
+  id:3, domain:1,
+  q:"Encrypting a database of customer social security numbers primarily protects which CIA principle?",
+  opts:["Availability","Confidentiality","Integrity","Authentication"],
+  correct:[1],
+  exp:"Encryption prevents unauthorized parties from reading sensitive data, directly supporting confidentiality. It does not, by itself, guarantee the data hasn't been altered (integrity) or that it's accessible (availability)."
+},
+{
+  id:4, domain:1,
+  q:"In the IAAA model, what is the correct order in which these concepts occur when a user logs into a system?",
+  opts:["Authorization, Authentication, Identification, Accounting","Identification, Authentication, Authorization, Accounting","Accounting, Identification, Authorization, Authentication","Authentication, Identification, Accounting, Authorization"],
+  correct:[1],
+  exp:"A user first identifies themselves (username), then proves that identity (authentication, e.g., password), is then granted authorization (permissions), and actions are logged for accounting/auditing."
+},
+{
+  id:5, domain:1,
+  q:"What is the key difference between identification and authentication?",
+  opts:["Identification proves who you are; authentication is a claim of identity","Identification is a claim of identity; authentication proves that claim","They are interchangeable terms for the same process","Identification only applies to biometrics"],
+  correct:[1],
+  exp:"Identification is simply asserting an identity (e.g., typing a username). Authentication is the process of proving that the asserted identity is genuine (e.g., a password, PIN, or biometric)."
+},
+{
+  id:6, domain:1,
+  q:"A user denies having sent a specific email, but a digital signature proves they did. Which security concept does this demonstrate?",
+  opts:["Confidentiality","Availability","Non-repudiation","Authorization"],
+  correct:[2],
+  exp:"Non-repudiation ensures a party cannot deny having performed an action, such as sending a message or authorizing a transaction. Digital signatures are a common mechanism for providing non-repudiation."
+},
+{
+  id:7, domain:1,
+  q:"After a user successfully authenticates, the system checks whether they are permitted to view a specific file. Which IAAA component is being performed?",
+  opts:["Identification","Authentication","Authorization","Accounting"],
+  correct:[2],
+  exp:"Authorization determines what an authenticated user is permitted to do or access. It occurs only after authentication has confirmed the user's identity."
+},
+{
+  id:8, domain:1,
+  q:"A security camera that records activity at a facility entrance is an example of which TYPE of control?",
+  opts:["Preventive","Detective","Corrective","Directive"],
+  correct:[1],
+  exp:"Detective controls identify and record that an event occurred, such as a camera capturing footage. It does not stop the event from happening, which would make it preventive."
+},
+{
+  id:9, domain:1,
+  q:"A fence surrounding a data center is an example of which control CATEGORY?",
+  opts:["Technical","Administrative","Physical","Managerial"],
+  correct:[2],
+  exp:"Physical controls are tangible measures that protect facilities and equipment, such as fences, locks, and guards. Technical controls involve technology (firewalls, encryption); administrative controls involve policies and procedures."
+},
+{
+  id:10, domain:1,
+  q:"An organization decides to purchase cyber insurance instead of implementing additional technical controls for a low-probability, high-impact risk. Which risk treatment strategy is this?",
+  opts:["Risk avoidance","Risk mitigation","Risk transfer","Risk acceptance"],
+  correct:[2],
+  exp:"Risk transfer shifts the financial impact of a risk to a third party, such as an insurance company. Mitigation reduces the risk itself; acceptance takes no action; avoidance eliminates the activity causing the risk."
+},
+{
+  id:11, domain:1,
+  q:"A company decides to discontinue a risky business activity entirely rather than manage the associated risk. Which risk treatment does this represent?",
+  opts:["Risk mitigation","Risk avoidance","Risk transfer","Risk acceptance"],
+  correct:[1],
+  exp:"Risk avoidance eliminates the risk by not engaging in the activity that creates it. This is different from mitigation, which reduces risk while still performing the activity."
+},
+{
+  id:12, domain:1,
+  q:"Which formula best represents the relationship between a threat, a vulnerability, and risk?",
+  opts:["Risk = Threat + Control","Risk = Vulnerability − Control","Risk = Threat × Vulnerability","Risk = Asset − Threat"],
+  correct:[2],
+  exp:"Risk arises from the combination of a threat (a potential danger) and a vulnerability (a weakness that the threat could exploit). Without both present together, there is no meaningful risk."
+},
+{
+  id:13, domain:1,
+  q:"An unpatched web server has a known flaw that an attacker could exploit. What term describes this flaw itself?",
+  opts:["Threat","Vulnerability","Risk","Exploit"],
+  correct:[1],
+  exp:"A vulnerability is a weakness in a system that could be exploited. The attacker attempting to exploit it is the threat actor; the unpatched flaw itself is the vulnerability."
+},
+{
+  id:14, domain:1,
+  q:"A newly discovered software flaw for which no patch yet exists, and which is actively being exploited, is known as a:",
+  opts:["Zero-day vulnerability","Legacy vulnerability","False positive","Compensating control"],
+  correct:[0],
+  exp:"A zero-day vulnerability is one that is unknown to the vendor (or for which no patch exists yet), giving defenders \"zero days\" to prepare before it may be exploited."
+},
+{
+  id:15, domain:1,
+  q:"According to the (ISC)² Code of Ethics, which canon takes PRECEDENCE over the others when they conflict?",
+  opts:["Advance and protect the profession","Provide diligent and competent service to principals","Act honorably, honestly, justly, responsibly, and legally","Protect society, the common good, necessary public trust and confidence, and the infrastructure"],
+  correct:[3],
+  exp:"The (ISC)² Code of Ethics canons are applied in order of precedence. \"Protect society, the common good, necessary public trust and confidence, and the infrastructure\" is the first and highest-priority canon."
+},
+{
+  id:16, domain:1,
+  q:"Which of the following is one of the four canons of the (ISC)² Code of Ethics?",
+  opts:["Maximize shareholder profit above all else","Advance and protect the profession","Report only to law enforcement, never to management","Avoid all forms of public disclosure of vulnerabilities"],
+  correct:[1],
+  exp:"The four canons are: protect society/common good/infrastructure; act honorably, honestly, justly, responsibly, and legally; provide diligent and competent service to principals; and advance and protect the profession."
+},
+{
+  id:17, domain:1,
+  q:"How does privacy differ from security in an information systems context?",
+  opts:["Privacy and security are identical concepts","Privacy governs how personal data is collected and used; security protects data and systems from unauthorized access","Security only applies to physical assets; privacy only applies to digital assets","Privacy is a subset of availability"],
+  correct:[1],
+  exp:"Security focuses on protecting the confidentiality, integrity, and availability of information and systems. Privacy focuses specifically on the proper collection, use, and disclosure of personal information, though the two disciplines overlap and support each other."
+},
+{
+  id:18, domain:1,
+  q:"A CISO researches applicable regulations and implements reasonable safeguards before an incident occurs. This best demonstrates which concept?",
+  opts:["Due diligence","Due care","Risk acceptance","Non-repudiation"],
+  correct:[0],
+  exp:"Due diligence is the ongoing research and investigation performed to understand risks and requirements before acting. Due care is then the reasonable action taken based on that knowledge to protect the organization."
+},
+{
+  id:19, domain:1,
+  q:"Which of the following correctly orders governance documents from MOST to LEAST mandatory?",
+  opts:["Guideline > Standard > Policy > Procedure","Policy > Standard > Procedure > Guideline","Procedure > Policy > Guideline > Standard","Standard > Guideline > Policy > Procedure"],
+  correct:[1],
+  exp:"A policy is a high-level, mandatory statement of management intent. Standards provide mandatory specific requirements supporting the policy. Procedures are mandatory step-by-step instructions. Guidelines are recommended, non-mandatory best practices."
+},
+{
+  id:20, domain:1,
+  q:"What is the PRIMARY purpose of an organizational security policy?",
+  opts:["To provide optional recommendations employees may choose to follow","To document a high-level, mandatory statement of management's intent regarding security","To list step-by-step technical configuration instructions","To record the results of a single risk assessment"],
+  correct:[1],
+  exp:"A security policy is a formal, high-level document approved by management that defines the organization's security expectations and is mandatory for all applicable employees to follow."
+},
+{
+  id:21, domain:1,
+  q:"A document that recommends, but does not require, using a password manager is an example of a:",
+  opts:["Policy","Standard","Guideline","Procedure"],
+  correct:[2],
+  exp:"Guidelines offer recommended best practices that are not mandatory, unlike policies, standards, and procedures, which must be followed."
+},
+{
+  id:22, domain:1,
+  q:"Granting an employee access to only the specific files and systems required for their current job duties is an application of which principle?",
+  opts:["Separation of duties","Least privilege","Defense in depth","Non-repudiation"],
+  correct:[1],
+  exp:"Least privilege means users are granted only the minimum access necessary to perform their job functions, limiting potential damage from error, misuse, or compromise."
+},
+{
+  id:23, domain:1,
+  q:"Requiring one employee to initiate a wire transfer and a different employee to approve it is an example of:",
+  opts:["Least privilege","Separation of duties","Defense in depth","Risk transfer"],
+  correct:[1],
+  exp:"Separation of duties divides critical tasks among multiple people so no single individual can complete a sensitive process alone, reducing the risk of fraud or error."
+},
+{
+  id:24, domain:1,
+  q:"An organization deploys a firewall, an IDS, endpoint antivirus, and security awareness training together rather than relying on any single control. This strategy is known as:",
+  opts:["Security through obscurity","Defense in depth","Risk avoidance","Single point of failure"],
+  correct:[1],
+  exp:"Defense in depth uses multiple, overlapping layers of security controls so that if one layer fails, others still provide protection."
+},
+{
+  id:25, domain:1,
+  q:"A security analyst compares an organization's current controls against a recognized framework to identify missing safeguards. This activity is called a:",
+  opts:["Gap analysis","Penetration test","Business impact analysis","Vulnerability exploit"],
+  correct:[0],
+  exp:"A gap analysis compares the current state of controls to a desired standard or framework to identify deficiencies that need to be addressed."
+},
+{
+  id:26, domain:1,
+  q:"A cybersecurity professional discovers that a colleague is accessing systems outside their authorized scope out of curiosity. According to the (ISC)² Code of Ethics, what is the MOST appropriate action?",
+  opts:["Ignore it since no data was stolen","Report the behavior through proper organizational or professional channels","Confront the colleague privately and take no further action","Publicly post about the incident on social media"],
+  correct:[1],
+  exp:"The Code of Ethics obligates members to act honorably and protect society and the profession. Unauthorized access, even out of curiosity, should be reported through appropriate organizational or professional channels rather than ignored or handled informally."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 2 – BC, DR & IR CONCEPTS
+// ═══════════════════════════════════════
+{
+  id:27, domain:2,
+  q:"What is the PRIMARY difference between a Business Continuity Plan (BCP) and a Disaster Recovery Plan (DRP)?",
+  opts:["BCP focuses only on IT systems; DRP focuses on the entire business","BCP ensures the overall business keeps operating during a disruption; DRP focuses on restoring IT systems and infrastructure","They are identical documents required by different regulations","DRP is created only after a disaster occurs"],
+  correct:[1],
+  exp:"A BCP is the broader plan ensuring critical business functions continue during and after a disruption. A DRP is a subset focused specifically on recovering IT systems, applications, and data."
+},
+{
+  id:28, domain:2,
+  q:"What is the PRIMARY purpose of a Business Impact Analysis (BIA)?",
+  opts:["To identify critical business functions and the impact of their disruption","To configure firewall rules for critical servers","To train employees on phishing awareness","To encrypt sensitive data at rest"],
+  correct:[0],
+  exp:"A BIA identifies critical business processes, their dependencies, and the operational and financial impact if they are disrupted. Its outputs (like RTO and RPO) drive BCP/DRP planning."
+},
+{
+  id:29, domain:2,
+  q:"What does Recovery Time Objective (RTO) measure?",
+  opts:["The maximum acceptable amount of data loss measured in time","The maximum acceptable length of time a system can be down before recovery","The average time between system failures","The time it takes to detect an incident"],
+  correct:[1],
+  exp:"RTO is the target maximum duration a system or process can be unavailable after a disruption before it must be restored to avoid unacceptable business impact."
+},
+{
+  id:30, domain:2,
+  q:"What does Recovery Point Objective (RPO) measure?",
+  opts:["The maximum acceptable downtime","The maximum acceptable amount of data loss, measured as a point in time","The physical distance to a backup site","The total cost of a disaster"],
+  correct:[1],
+  exp:"RPO defines the maximum acceptable amount of data loss measured in time — for example, an RPO of 1 hour means backups must occur at least hourly so no more than an hour of data could be lost."
+},
+{
+  id:31, domain:2,
+  q:"An organization determines that if a critical system is down longer than 8 hours, the company could face bankruptcy. This absolute limit is known as the:",
+  opts:["Recovery Point Objective (RPO)","Mean Time Between Failures (MTBF)","Maximum Tolerable Downtime (MTD)","Service Level Agreement (SLA)"],
+  correct:[2],
+  exp:"Maximum Tolerable Downtime (MTD) is the absolute maximum time a business function can be unavailable before causing unacceptable or irreversible harm to the organization. RTO must always be less than or equal to MTD."
+},
+{
+  id:32, domain:2,
+  q:"Which backup type captures only the data that has changed since the LAST backup of any type (full or incremental)?",
+  opts:["Full backup","Differential backup","Incremental backup","Snapshot backup"],
+  correct:[2],
+  exp:"An incremental backup captures only changes since the most recent backup of any type, resulting in smaller, faster backups but requiring the full backup plus every incremental in the chain to restore."
+},
+{
+  id:33, domain:2,
+  q:"A company keeps three copies of its data, stored on two different media types, with one copy kept offsite. This best describes the:",
+  opts:["3-2-1 backup rule","CIA triad","Defense in depth model","RAID 5 configuration"],
+  correct:[0],
+  exp:"The 3-2-1 backup rule recommends 3 copies of data, on 2 different media types, with 1 copy stored offsite (or offline/air-gapped), providing resilience against hardware failure, site disasters, and ransomware."
+},
+{
+  id:34, domain:2,
+  q:"Configuring a second, redundant server to automatically take over if the primary server fails is an example of:",
+  opts:["Failover / high availability","Data classification","Least privilege","Non-repudiation"],
+  correct:[0],
+  exp:"Failover and high-availability configurations use redundant components so that if one fails, another automatically continues providing service, minimizing downtime."
+},
+{
+  id:35, domain:2,
+  q:"Which of the following correctly lists the phases of the incident response process in order?",
+  opts:["Containment, Preparation, Eradication, Detection, Recovery, Lessons Learned","Preparation, Detection & Analysis, Containment, Eradication, Recovery, Lessons Learned","Detection, Preparation, Recovery, Containment, Eradication, Lessons Learned","Eradication, Containment, Preparation, Detection, Lessons Learned, Recovery"],
+  correct:[1],
+  exp:"The standard incident response lifecycle is: Preparation, Detection & Analysis, Containment, Eradication, Recovery, and Lessons Learned. Skipping or reordering these steps (e.g., containing before identifying scope) can worsen the outcome."
+},
+{
+  id:36, domain:2,
+  q:"A fully equipped alternate site with real-time data replication that can take over operations almost immediately is known as a:",
+  opts:["Cold site","Warm site","Hot site","Reciprocal site"],
+  correct:[2],
+  exp:"A hot site is a fully operational duplicate facility with current data, allowing near-immediate failover. A warm site has hardware but requires data restoration; a cold site is an empty facility requiring full setup."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 3 – ACCESS CONTROLS CONCEPTS
+// ═══════════════════════════════════════
+{
+  id:37, domain:3,
+  q:"Which of the following is an example of the \"something you know\" authentication factor?",
+  opts:["Fingerprint","Password or PIN","Smart card","Security token"],
+  correct:[1],
+  exp:"\"Something you know\" refers to knowledge-based factors like passwords, PINs, or security questions. Fingerprints are \"something you are,\" and smart cards/tokens are \"something you have.\""
+},
+{
+  id:38, domain:3,
+  q:"A user logs in with a password and then must also enter a one-time code from a mobile authenticator app. This is an example of:",
+  opts:["Single-factor authentication","Multi-factor authentication (MFA)","Single sign-on (SSO)","Federation"],
+  correct:[1],
+  exp:"MFA requires two or more DIFFERENT categories of authentication factors — here, something you know (password) plus something you have (the device generating the code)."
+},
+{
+  id:39, domain:3,
+  q:"What is the PRIMARY purpose of a mantrap at a secure facility entrance?",
+  opts:["To provide emergency lighting","To prevent tailgating by allowing only one authenticated person through at a time","To record video footage of visitors","To distribute network cabling"],
+  correct:[1],
+  exp:"A mantrap is a small enclosed space with two interlocking doors; only one door can open at a time, ensuring a single authenticated individual passes through and preventing tailgating/piggybacking."
+},
+{
+  id:40, domain:3,
+  q:"In Discretionary Access Control (DAC), who determines who else can access a resource?",
+  opts:["A central security administrator only","The system enforces fixed classification labels","The owner of the resource","Access is granted randomly by the system"],
+  correct:[2],
+  exp:"In DAC, the owner of a resource has the discretion to grant or restrict access to other users, as seen in typical file system permissions (e.g., Windows NTFS)."
+},
+{
+  id:41, domain:3,
+  q:"Which access control model enforces access based on classification labels (such as Top Secret, Secret, Confidential) and is commonly used in military and government systems?",
+  opts:["Discretionary Access Control (DAC)","Mandatory Access Control (MAC)","Role-Based Access Control (RBAC)","Attribute-Based Access Control (ABAC)"],
+  correct:[1],
+  exp:"Mandatory Access Control (MAC) enforces access based on fixed security labels and clearances set by a central authority; individual users/owners cannot override these classifications, unlike in DAC."
+},
+{
+  id:42, domain:3,
+  q:"An organization grants access to systems based on an employee's job title, such as \"HR Manager\" or \"Help Desk Technician.\" This is an example of:",
+  opts:["Mandatory Access Control (MAC)","Role-Based Access Control (RBAC)","Rule-Based Access Control","Discretionary Access Control (DAC)"],
+  correct:[1],
+  exp:"Role-Based Access Control (RBAC) assigns permissions according to a user's role within the organization, simplifying administration since access follows job function rather than being set per individual."
+},
+{
+  id:43, domain:3,
+  q:"A firewall that grants or denies traffic based on predefined rules such as \"block all traffic from a specific IP address\" is applying which access control model?",
+  opts:["Role-Based Access Control","Rule-Based Access Control","Discretionary Access Control","Mandatory Access Control"],
+  correct:[1],
+  exp:"Rule-Based Access Control applies a set of predefined rules (often IF/THEN logic) uniformly to all subjects and objects, as commonly seen in firewall ACLs and router access lists."
+},
+{
+  id:44, domain:3,
+  q:"A system grants access to a financial application only during business hours and only from company-managed devices. Which access control model does this represent?",
+  opts:["Discretionary Access Control (DAC)","Mandatory Access Control (MAC)","Attribute-Based Access Control (ABAC)","Role-Based Access Control (RBAC)"],
+  correct:[2],
+  exp:"Attribute-Based Access Control (ABAC) grants access based on a combination of attributes — such as time of day, device posture, and location — providing more granular, context-aware decisions than role alone."
+},
+{
+  id:45, domain:3,
+  q:"A database administrator is given access only to the specific tables required for their assigned tasks, not the entire database. This illustrates:",
+  opts:["Separation of duties","Least privilege","Defense in depth","Federation"],
+  correct:[1],
+  exp:"Least privilege restricts each user's access to only what is strictly necessary to perform their job, reducing the potential impact of a compromised or malicious account."
+},
+{
+  id:46, domain:3,
+  q:"Restricting access to sensitive information so that only individuals who require it to perform their specific job duties can view it — even if they hold the appropriate clearance — is known as:",
+  opts:["Need-to-know","Least privilege","Non-repudiation","Role-based access control"],
+  correct:[0],
+  exp:"Need-to-know is closely related to least privilege but specifically emphasizes that even authorized/cleared individuals should only access information relevant to their current task or role."
+},
+{
+  id:47, domain:3,
+  q:"Requiring separate individuals to request, approve, and process a purchase order helps prevent fraud by applying which concept?",
+  opts:["Least privilege","Separation of duties","Need-to-know","Defense in depth"],
+  correct:[1],
+  exp:"Separation of duties splits a sensitive process across multiple people so that no single individual can complete the entire transaction alone, reducing opportunities for fraud or error."
+},
+{
+  id:48, domain:3,
+  q:"What is the PRIMARY purpose of a Privileged Access Management (PAM) solution?",
+  opts:["To manage guest Wi-Fi access","To vault, monitor, and control access to highly privileged accounts such as domain administrators","To provide antivirus signature updates","To encrypt data at rest"],
+  correct:[1],
+  exp:"PAM solutions secure, manage, and monitor accounts with elevated privileges (e.g., root, domain admin), often through credential vaulting, session recording, and just-in-time access, to reduce the risk from compromised admin credentials."
+},
+{
+  id:49, domain:3,
+  q:"A biometric fingerprint scanner occasionally denies access to an authorized employee whose finger is registered. This measurement is known as the:",
+  opts:["False Acceptance Rate (FAR)","False Rejection Rate (FRR)","Crossover Error Rate (CER)","Throughput rate"],
+  correct:[1],
+  exp:"The False Rejection Rate (FRR) measures how often a biometric system incorrectly denies access to an authorized/enrolled user. The False Acceptance Rate (FAR) is the opposite — incorrectly granting access to an unauthorized person."
+},
+{
+  id:50, domain:3,
+  q:"Analyzing how a person types on a keyboard (rhythm and speed) to help verify identity is an example of which authentication factor?",
+  opts:["Something you know","Something you have","Something you are","Something you do (behavioral biometrics)"],
+  correct:[3],
+  exp:"Behavioral biometrics, such as keystroke dynamics or gait analysis, fall under \"something you do\" — patterns based on how a person performs an action, distinct from physical traits (\"something you are\")."
+},
+{
+  id:51, domain:3,
+  q:"Which physical security control is specifically designed to stop a vehicle from ramming into a building entrance?",
+  opts:["Bollard","Turnstile","Mantrap","Security badge"],
+  correct:[0],
+  exp:"Bollards are sturdy vertical posts installed to stop vehicle-borne attacks from reaching a structure. Turnstiles and mantraps control pedestrian, not vehicle, access."
+},
+{
+  id:52, domain:3,
+  q:"An unauthorized person follows closely behind an authorized employee through a badge-controlled door without presenting their own credentials. This is known as:",
+  opts:["Shoulder surfing","Tailgating (piggybacking)","Dumpster diving","Pretexting"],
+  correct:[1],
+  exp:"Tailgating (also called piggybacking) occurs when an unauthorized individual follows an authorized person through a secured entry point, bypassing physical access controls."
+},
+{
+  id:53, domain:3,
+  q:"What type of physical access credential typically contains an embedded chip and can be used with a card reader for building entry?",
+  opts:["Smart card / proximity badge","CAPTCHA","Digital certificate revocation list","One-time password token"],
+  correct:[0],
+  exp:"Smart cards and proximity badges contain embedded chips or RFID technology that communicate with a card reader to authenticate the holder for physical access."
+},
+{
+  id:54, domain:3,
+  q:"What is the function of an Access Control List (ACL) applied to a file or network resource?",
+  opts:["It encrypts the file automatically","It defines which subjects (users/groups) are permitted or denied specific types of access to an object","It backs up the file to an offsite location","It hashes the file for integrity verification"],
+  correct:[1],
+  exp:"An ACL is a list of permissions attached to a resource specifying which users or groups may access it and what actions (read, write, execute, etc.) they are permitted to perform."
+},
+{
+  id:55, domain:3,
+  q:"Why is it critical for an organization to immediately deprovision (disable) a terminated employee's accounts?",
+  opts:["To reduce the number of licenses the company must pay for","To prevent the former employee from retaining unauthorized access to systems and data","To comply with backup retention schedules","To free up disk space on the file server"],
+  correct:[1],
+  exp:"Prompt deprovisioning upon termination prevents a former employee from using still-active credentials to access company systems or data, closing a common insider-threat window."
+},
+{
+  id:56, domain:3,
+  q:"Which practice is now generally recommended as MORE effective for password security than simply enforcing complex character requirements?",
+  opts:["Requiring passwords to be changed every 30 days regardless of compromise","Using longer passphrases combined with multi-factor authentication","Disabling account lockout thresholds","Allowing unlimited login attempts"],
+  correct:[1],
+  exp:"Modern guidance (e.g., NIST) favors longer passphrases over forced complexity/rotation, combined with MFA, since long passphrases are harder to brute-force and MFA mitigates the impact of a stolen password."
+},
+{
+  id:57, domain:3,
+  q:"What is a key security risk associated with Single Sign-On (SSO)?",
+  opts:["Users must remember more passwords than before","If the SSO credential is compromised, an attacker may gain access to multiple connected systems","SSO eliminates the need for any authentication","SSO only works with biometric authentication"],
+  correct:[1],
+  exp:"While SSO improves usability by requiring one authentication for multiple systems, it also creates a single point of compromise — if the SSO credential is stolen, the attacker may access every connected application."
+},
+{
+  id:58, domain:3,
+  q:"What does identity federation allow an organization to do?",
+  opts:["Encrypt data shared between two databases","Trust and accept authentication performed by a partner organization's identity provider, without creating a duplicate local account","Automatically patch vulnerable systems","Physically secure a shared data center"],
+  correct:[1],
+  exp:"Federation allows organizations to extend trust so that a user authenticated by one organization's identity provider (IdP) can access resources at a partner organization (service provider) without needing separate credentials there."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 4 – NETWORK SECURITY
+// ═══════════════════════════════════════
+{
+  id:59, domain:4,
+  q:"Which layer of the OSI model is responsible for logical addressing and routing between networks?",
+  opts:["Data Link Layer (Layer 2)","Network Layer (Layer 3)","Transport Layer (Layer 4)","Session Layer (Layer 5)"],
+  correct:[1],
+  exp:"The Network layer (Layer 3) handles logical addressing (IP addresses) and routing of packets between different networks. Layer 2 handles physical/MAC addressing on a local segment."
+},
+{
+  id:60, domain:4,
+  q:"At which layer of the OSI model do switches typically operate, using MAC addresses to forward frames?",
+  opts:["Physical Layer (Layer 1)","Data Link Layer (Layer 2)","Network Layer (Layer 3)","Application Layer (Layer 7)"],
+  correct:[1],
+  exp:"Switches operate at Layer 2 (Data Link), forwarding frames based on MAC addresses within a local network segment. Routers operate at Layer 3, forwarding packets based on IP addresses."
+},
+{
+  id:61, domain:4,
+  q:"Which OSI layer is responsible for end-to-end connections and includes protocols such as TCP and UDP?",
+  opts:["Network Layer","Transport Layer","Session Layer","Presentation Layer"],
+  correct:[1],
+  exp:"The Transport layer (Layer 4) manages end-to-end communication, including segmentation, flow control, and reliability. TCP (connection-oriented) and UDP (connectionless) both operate at this layer."
+},
+{
+  id:62, domain:4,
+  q:"Which of the following is a key characteristic that distinguishes TCP from UDP?",
+  opts:["TCP is connectionless; UDP is connection-oriented","TCP establishes a connection and guarantees delivery; UDP is connectionless and does not guarantee delivery","UDP always encrypts its payload; TCP never does","TCP cannot be used for web traffic"],
+  correct:[1],
+  exp:"TCP uses a three-way handshake to establish a reliable, ordered connection and guarantees delivery through acknowledgments and retransmission. UDP is connectionless, faster, but offers no delivery guarantee — used for things like streaming and DNS queries."
+},
+{
+  id:63, domain:4,
+  q:"Which port is the default for unencrypted HTTP web traffic?",
+  opts:["Port 21","Port 25","Port 80","Port 443"],
+  correct:[2],
+  exp:"Port 80 is the standard port for unencrypted HTTP traffic. Port 443 is used for encrypted HTTPS (TLS) traffic."
+},
+{
+  id:64, domain:4,
+  q:"Which port is used by default for encrypted HTTPS traffic?",
+  opts:["Port 22","Port 80","Port 143","Port 443"],
+  correct:[3],
+  exp:"Port 443 is the standard port for HTTPS, which wraps HTTP traffic in TLS encryption to protect confidentiality and integrity in transit."
+},
+{
+  id:65, domain:4,
+  q:"Which port does the Secure Shell (SSH) protocol use by default for encrypted remote administration?",
+  opts:["Port 22","Port 23","Port 53","Port 3389"],
+  correct:[0],
+  exp:"SSH uses TCP port 22 by default, providing an encrypted channel for remote command-line administration — a secure replacement for the unencrypted Telnet protocol (port 23)."
+},
+{
+  id:66, domain:4,
+  q:"Which service, typically running on port 53, translates domain names like example.com into IP addresses?",
+  opts:["DHCP","DNS","SNMP","LDAP"],
+  correct:[1],
+  exp:"DNS (Domain Name System), operating primarily on port 53, resolves human-readable domain names into IP addresses that computers use to route traffic."
+},
+{
+  id:67, domain:4,
+  q:"What is the PRIMARY difference between a stateful firewall and a simple packet-filtering firewall?",
+  opts:["A stateful firewall tracks the state of active connections and makes decisions based on connection context; a packet-filtering firewall evaluates each packet independently","A packet-filtering firewall can inspect encrypted traffic; a stateful firewall cannot","A stateful firewall only works with UDP; packet-filtering only works with TCP","There is no meaningful difference"],
+  correct:[0],
+  exp:"A stateful firewall maintains a table of active connections and evaluates traffic based on whether it belongs to an established, legitimate session. A basic packet-filtering firewall inspects each packet in isolation against static rules, without context."
+},
+{
+  id:68, domain:4,
+  q:"What is the PRIMARY purpose of a Demilitarized Zone (DMZ) in network architecture?",
+  opts:["To provide a physically isolated network with no internet access at all","To host publicly accessible services in a separate, semi-trusted segment isolated from the internal network","To store backup tapes","To connect two data centers directly over dark fiber"],
+  correct:[1],
+  exp:"A DMZ is a buffer network segment that hosts internet-facing services (e.g., web servers, email gateways) separately from the trusted internal network, limiting exposure if a public-facing server is compromised."
+},
+{
+  id:69, domain:4,
+  q:"What is the PRIMARY benefit of segmenting a network into multiple VLANs?",
+  opts:["It eliminates the need for firewalls entirely","It logically separates traffic and limits the scope of broadcast domains and potential lateral movement","It automatically encrypts all traffic on the network","It increases the physical distance between switches"],
+  correct:[1],
+  exp:"VLANs logically divide a physical network into separate broadcast domains, improving performance and limiting how far an attacker or malware can move laterally if one segment is compromised."
+},
+{
+  id:70, domain:4,
+  q:"What is the key difference between an Intrusion Detection System (IDS) and an Intrusion Prevention System (IPS)?",
+  opts:["An IDS actively blocks malicious traffic inline; an IPS only generates alerts","An IPS actively blocks/drops malicious traffic inline; an IDS passively monitors and alerts only","They are functionally identical","An IDS only works on wireless networks"],
+  correct:[1],
+  exp:"An IDS passively monitors traffic and generates alerts when it detects suspicious activity, but does not block traffic. An IPS sits inline in the traffic path and can actively block or drop malicious traffic in real time."
+},
+{
+  id:71, domain:4,
+  q:"What does a Virtual Private Network (VPN) primarily provide for remote users connecting over the internet?",
+  opts:["Faster internet speeds","An encrypted tunnel that protects the confidentiality and integrity of traffic over an untrusted network","Automatic malware removal","Unlimited bandwidth"],
+  correct:[1],
+  exp:"A VPN creates an encrypted tunnel between the remote user (or site) and the destination network, protecting data in transit over an untrusted network such as the public internet."
+},
+{
+  id:72, domain:4,
+  q:"Which wireless security protocol is considered fundamentally broken and should no longer be used?",
+  opts:["WPA3","WPA2","WEP","802.1X"],
+  correct:[2],
+  exp:"WEP (Wired Equivalent Privacy) has well-known cryptographic weaknesses and can be cracked quickly with widely available tools. WPA2 and WPA3 are modern, significantly stronger replacements."
+},
+{
+  id:73, domain:4,
+  q:"Disabling SSID broadcast on a wireless access point is often mistakenly believed to be a strong security measure. Why is this insufficient on its own?",
+  opts:["It permanently disables the Wi-Fi network","The SSID can still be discovered by capturing wireless traffic, so it provides only minimal security through obscurity","It automatically enables WPA3 encryption","It blocks all devices from connecting to the network"],
+  correct:[1],
+  exp:"Hiding the SSID only removes it from casual broadcast beacons — the network name is still transmitted in other wireless management frames and can be captured by an attacker with basic tools. It is security through obscurity, not a substantive control."
+},
+{
+  id:74, domain:4,
+  q:"In which network topology does every device connect to a central device such as a switch, so that failure of one device does not affect the others?",
+  opts:["Bus topology","Ring topology","Star topology","Mesh topology"],
+  correct:[2],
+  exp:"In a star topology, all devices connect to a central point (like a switch). A failure in one connected device or cable typically does not bring down the rest of the network, though failure of the central device can be a single point of failure."
+},
+{
+  id:75, domain:4,
+  q:"What is the primary difference between a DoS attack and a DDoS attack?",
+  opts:["A DoS attack always targets web servers; DDoS targets only email servers","A DoS attack originates from a single source; a DDoS attack originates from multiple distributed sources, often a botnet","DDoS attacks are always legal penetration tests","There is no difference"],
+  correct:[1],
+  exp:"A Denial-of-Service (DoS) attack comes from a single attacking system, while a Distributed Denial-of-Service (DDoS) attack uses many distributed systems (often a botnet) to overwhelm a target, making it harder to block by simply denying one source."
+},
+{
+  id:76, domain:4,
+  q:"An attacker intercepts communication between two parties and can view or alter the data without either party's knowledge. This is known as a(n):",
+  opts:["On-path (man-in-the-middle) attack","Brute-force attack","Social engineering attack","Zero-day attack"],
+  correct:[0],
+  exp:"An on-path (man-in-the-middle) attack positions the attacker between two communicating parties, allowing them to intercept, read, or modify traffic without the parties' knowledge, unless protected by strong encryption and authentication."
+},
+{
+  id:77, domain:4,
+  q:"An employee sets up an unauthorized wireless access point in the office to make it easier to connect their personal devices. This unmanaged device is known as a:",
+  opts:["Honeypot","Rogue access point","DMZ host","Bastion host"],
+  correct:[1],
+  exp:"A rogue access point is any unauthorized wireless access point connected to the network, often bypassing security controls and creating a significant, unmonitored entry point for attackers."
+},
+{
+  id:78, domain:4,
+  q:"What is the PRIMARY function of Network Address Translation (NAT)?",
+  opts:["To encrypt traffic leaving the network","To translate private internal IP addresses to a public IP address (and vice versa) for internet communication","To provide domain name resolution","To authenticate wireless clients"],
+  correct:[1],
+  exp:"NAT allows devices with private (internal) IP addresses to communicate with external networks like the internet by translating those addresses to a public IP, which also has the side benefit of hiding internal addressing schemes."
+},
+{
+  id:79, domain:4,
+  q:"What is the core principle behind a Zero Trust security model?",
+  opts:["Trust all devices inside the corporate network perimeter by default","Never trust, always verify — every access request must be authenticated and authorized, regardless of network location","Only external users need to be authenticated","Firewalls are no longer necessary"],
+  correct:[1],
+  exp:"Zero Trust rejects the traditional assumption that anything inside the network perimeter is automatically trusted. Instead, every request — internal or external — must be verified based on identity, device posture, and context before access is granted."
+},
+{
+  id:80, domain:4,
+  q:"What is a key security benefit of segmenting a network into smaller zones?",
+  opts:["It guarantees 100% protection against all attacks","It limits an attacker's ability to move laterally if one segment is compromised","It eliminates the need for endpoint security software","It increases the total available bandwidth"],
+  correct:[1],
+  exp:"Network segmentation confines a potential breach to a smaller portion of the network, making it harder for an attacker to pivot from a compromised system to critical assets elsewhere in the environment."
+},
+{
+  id:81, domain:4,
+  q:"A network administrator configures a router to permit only traffic from a specific subnet to reach an internal server, and denies everything else. This is an example of a(n):",
+  opts:["VPN configuration","Access Control List (ACL)","VLAN trunk","DNS zone transfer"],
+  correct:[1],
+  exp:"A router or firewall Access Control List (ACL) is a set of rules that explicitly permit or deny traffic based on criteria such as source/destination IP address, port, or protocol."
+},
+{
+  id:82, domain:4,
+  q:"Which network topology connects every device directly to every other device, providing high redundancy but at a higher cabling cost?",
+  opts:["Bus topology","Star topology","Mesh topology","Ring topology"],
+  correct:[2],
+  exp:"A full mesh topology connects every node directly to every other node, providing maximum redundancy since there's no single point of failure, though it requires significantly more cabling/connections than star or bus topologies."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 5 – SECURITY OPERATIONS
+// ═══════════════════════════════════════
+{
+  id:83, domain:5,
+  q:"Data that is actively being processed in a system's memory (RAM) is considered to be in which data state?",
+  opts:["Data at rest","Data in transit","Data in use","Data in archive"],
+  correct:[2],
+  exp:"Data in use refers to data actively being processed or accessed in memory or by an application. Data at rest is stored on disk; data in transit is moving across a network."
+},
+{
+  id:84, domain:5,
+  q:"Encrypting files stored on a laptop's hard drive protects data in which state?",
+  opts:["Data in transit","Data at rest","Data in use","Data in motion"],
+  correct:[1],
+  exp:"Data at rest refers to data stored on a physical or virtual storage medium, such as a hard drive or database. Full-disk encryption is a common control protecting data at rest, especially on portable devices."
+},
+{
+  id:85, domain:5,
+  q:"What is the PRIMARY purpose of a data classification scheme (e.g., Public, Internal, Confidential, Restricted)?",
+  opts:["To determine which employees receive raises","To ensure data receives handling and protection appropriate to its sensitivity","To assign IP addresses to devices","To schedule network maintenance windows"],
+  correct:[1],
+  exp:"Data classification labels information according to its sensitivity so that appropriate handling, storage, and protection controls (such as encryption or access restrictions) can be applied consistently across the organization."
+},
+{
+  id:86, domain:5,
+  q:"According to a typical data classification policy, how should data labeled \"Restricted\" or \"Confidential\" generally be handled compared to data labeled \"Public\"?",
+  opts:["Identically, since classification does not affect handling","With significantly stricter access controls, encryption, and handling procedures","With no encryption, since encryption is unnecessary for sensitive data","Only through printed physical copies"],
+  correct:[1],
+  exp:"Higher classification levels (Confidential, Restricted) require stronger protective measures — such as encryption, stricter access controls, and limited distribution — compared to Public data, which requires minimal protection."
+},
+{
+  id:87, domain:5,
+  q:"What is the fundamental difference between symmetric and asymmetric encryption?",
+  opts:["Symmetric encryption uses the same key to encrypt and decrypt; asymmetric encryption uses a mathematically related public/private key pair","Asymmetric encryption is always faster than symmetric encryption","Symmetric encryption cannot be used for data at rest","Asymmetric encryption does not require any keys"],
+  correct:[0],
+  exp:"Symmetric encryption uses a single shared key for both encryption and decryption (fast, used for bulk data). Asymmetric encryption uses a public/private key pair — data encrypted with one key can only be decrypted with its paired key (slower, often used for key exchange and digital signatures)."
+},
+{
+  id:88, domain:5,
+  q:"What is the PRIMARY purpose of a cryptographic hash function such as SHA-256?",
+  opts:["To encrypt data so it can later be decrypted","To verify data integrity by producing a fixed-size, unique-per-input value that cannot practically be reversed","To compress large files for storage","To authenticate wireless clients"],
+  correct:[1],
+  exp:"A hash function produces a fixed-length digest from input data. It is one-way (not reversible) and any change to the input produces a different hash, making hashes ideal for verifying that data has not been altered (integrity), not for confidentiality."
+},
+{
+  id:89, domain:5,
+  q:"What is the primary function of a Security Information and Event Management (SIEM) system?",
+  opts:["To physically secure server rooms","To aggregate and correlate log and event data from multiple sources to support detection and analysis","To automatically patch operating systems","To manage employee payroll"],
+  correct:[1],
+  exp:"A SIEM collects, normalizes, and correlates log data from across the environment (firewalls, servers, endpoints, applications) to provide centralized visibility and help analysts detect suspicious activity."
+},
+{
+  id:90, domain:5,
+  q:"Why is timely patch management critical to an organization's security posture?",
+  opts:["It guarantees systems will never be compromised","It reduces the window of exposure to known vulnerabilities that attackers could otherwise exploit","It replaces the need for firewalls","It is only relevant for mobile devices"],
+  correct:[1],
+  exp:"Patch management applies vendor-released fixes for known vulnerabilities. Timely patching reduces the amount of time systems remain exposed to publicly known flaws that attackers frequently target."
+},
+{
+  id:91, domain:5,
+  q:"What is a security configuration baseline?",
+  opts:["A random sample of user passwords","A documented, approved standard configuration that systems should be built and maintained against","The average network bandwidth usage over a month","A backup schedule for critical databases"],
+  correct:[1],
+  exp:"A configuration baseline defines the approved, secure settings a system should have (e.g., disabled unnecessary services, required security settings). Systems are compared against this baseline to detect unauthorized or insecure changes (configuration drift)."
+},
+{
+  id:92, domain:5,
+  q:"What is the PRIMARY purpose of a formal change management process before modifying a production system?",
+  opts:["To slow down IT operations unnecessarily","To ensure changes are reviewed, approved, tested, and documented to minimize the risk of unintended impact","To eliminate the need for backups","To automatically encrypt all data"],
+  correct:[1],
+  exp:"Change management ensures that modifications to production systems are properly reviewed, tested, approved, and documented, reducing the risk of outages, security gaps, or conflicts introduced by uncoordinated changes."
+},
+{
+  id:93, domain:5,
+  q:"What is the main goal of ongoing security awareness training for all employees?",
+  opts:["To train only IT staff on advanced penetration testing techniques","To help all employees recognize and appropriately respond to threats such as phishing and social engineering","To satisfy a one-time legal requirement with no ongoing value","To replace the need for technical security controls entirely"],
+  correct:[1],
+  exp:"Security awareness training helps the broader workforce — not just IT staff — recognize common threats like phishing, social engineering, and unsafe practices, reducing the likelihood of a successful human-targeted attack."
+},
+{
+  id:94, domain:5,
+  q:"What does an Acceptable Use Policy (AUP) define?",
+  opts:["The technical specifications of the corporate firewall","The rules and expectations for how employees may use organizational systems, networks, and devices","The organization's disaster recovery site location","The encryption algorithm used for backups"],
+  correct:[1],
+  exp:"An Acceptable Use Policy defines what is and is not permitted when employees use company-provided systems, networks, email, and internet access, helping set clear expectations and reduce misuse."
+},
+{
+  id:95, domain:5,
+  q:"Why do organizations typically prioritize patching critical and high-severity vulnerabilities faster than low-severity ones?",
+  opts:["Low-severity vulnerabilities are never patched","Critical/high-severity vulnerabilities generally pose a greater risk of exploitation and impact, warranting faster remediation","All vulnerabilities must be patched within 24 hours regardless of severity","Vulnerability severity has no bearing on remediation timelines"],
+  correct:[1],
+  exp:"Vulnerability management programs typically use a risk-based approach (informed by scoring systems like CVSS) so that vulnerabilities with the greatest potential impact and likelihood of exploitation are remediated first."
+},
+{
+  id:96, domain:5,
+  q:"What is the PRIMARY purpose of maintaining detailed audit logs of user activity on a system?",
+  opts:["To increase storage costs intentionally","To provide accountability and support investigation by recording who did what and when","To replace the need for authentication","To automatically block malicious users"],
+  correct:[1],
+  exp:"Audit logs record user and system activity, supporting accountability (tying actions to specific identities) and enabling investigators to reconstruct events during an incident or compliance review."
+},
+{
+  id:97, domain:5,
+  q:"What is the purpose of a data retention policy?",
+  opts:["To specify how long different types of data must be kept and when it should be securely destroyed","To determine employee vacation schedules","To configure firewall rule priorities","To define wireless encryption standards"],
+  correct:[0],
+  exp:"A data retention policy defines how long various categories of data must be retained to meet legal, regulatory, or business requirements, and establishes when and how data should be securely disposed of afterward."
+},
+{
+  id:98, domain:5,
+  q:"What is the PRIMARY role of a Security Operations Center (SOC)?",
+  opts:["To design marketing campaigns","To continuously monitor, detect, analyze, and respond to cybersecurity events and incidents","To manage the organization's payroll system","To negotiate vendor contracts"],
+  correct:[1],
+  exp:"A SOC is a centralized team (and/or facility) responsible for continuous monitoring of an organization's security posture, detecting and analyzing potential threats, and coordinating incident response."
+},
+{
+  id:99, domain:5,
+  q:"What is the key difference between a security \"event\" and a security \"incident\"?",
+  opts:["An event and an incident are exactly the same thing","An event is any observable occurrence in a system; an incident is an event (or series of events) that has been confirmed to negatively impact confidentiality, integrity, or availability","An incident always involves a natural disaster","An event only refers to hardware failures"],
+  correct:[1],
+  exp:"An event is simply something observable happening in a system (a login, a file access, a network connection). An incident is a subset of events that represents a confirmed violation or imminent threat to security, requiring a response."
+},
+{
+  id:100, domain:5,
+  q:"What is the PRIMARY security benefit of using TLS to protect data in transit, such as during a web transaction?",
+  opts:["It permanently stores the data in an encrypted database","It encrypts data as it travels across the network, protecting its confidentiality and integrity from interception or tampering","It automatically classifies the data's sensitivity level","It eliminates the need for user authentication"],
+  correct:[1],
+  exp:"Transport Layer Security (TLS) encrypts data while it moves across a network (data in transit), protecting it from eavesdropping and tampering by anyone intercepting the traffic between the client and server."
+},
+
+]; // end QUESTIONS
+
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+const DOMAIN_NAMES = {
+  1: "Security Principles",
+  2: "Business Continuity, Disaster Recovery & Incident Response Concepts",
+  3: "Access Controls Concepts",
+  4: "Network Security",
+  5: "Security Operations"
+};
+const DOMAIN_COLORS = { 1:'#a855f7', 2:'#f59e0b', 3:'#3b82f6', 4:'#ef4444', 5:'#22c55e' };
+const DOMAIN_CLASSES = { 1:'d1b', 2:'d2b', 3:'d3b', 4:'d4b', 5:'d5b' };
+const PASS_SCORE = 70;
+const EXAM_MINUTES = 120;
+const EXAM_QUESTIONS = 100; // drawn randomly from the full pool each attempt
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let state = {
+  screen: 'start',       // start | exam | results
+  mode: 'timed',         // timed | practice
+  filterDomain: 0,       // 0 = all
+  questions: [],
+  answers: {},           // id → [selectedIndices]
+  submitted: {},         // id → bool
+  current: 0,
+  timerSec: EXAM_MINUTES * 60,
+  timerInterval: null,
+  reviewFilter: 'all'
+};
+
+function filteredQuestions() {
+  return state.filterDomain === 0
+    ? QUESTIONS
+    : QUESTIONS.filter(q => q.domain === state.filterDomain);
+}
+
+function startExam() {
+  clearInterval(state.timerInterval);
+  const qs = [...filteredQuestions()];
+  for (let i = qs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [qs[i], qs[j]] = [qs[j], qs[i]];
+  }
+  state.questions = qs.slice(0, EXAM_QUESTIONS);
+  state.answers = {};
+  state.submitted = {};
+  state.current = 0;
+  state.timerSec = EXAM_MINUTES * 60;
+  state.screen = 'exam';
+  render();
+  if (state.mode === 'timed') startTimer();
+}
+
+function startTimer() {
+  state.timerInterval = setInterval(() => {
+    state.timerSec--;
+    updateTimer();
+    if (state.timerSec <= 0) { clearInterval(state.timerInterval); submitAll(); }
+  }, 1000);
+}
+
+function updateTimer() {
+  const el = document.getElementById('timer');
+  if (!el) return;
+  const m = Math.floor(state.timerSec / 60), s = state.timerSec % 60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = state.timerSec < 300 ? 'danger' : state.timerSec < 600 ? 'warning' : '';
+}
+
+function toggleAnswer(qid, idx, isMulti) {
+  const q = state.questions.find(x => x.id === qid);
+  if (state.submitted[qid]) return;
+  if (!state.answers[qid]) state.answers[qid] = [];
+  const sel = state.answers[qid];
+  if (isMulti) {
+    const pos = sel.indexOf(idx);
+    if (pos === -1) sel.push(idx); else sel.splice(pos, 1);
+  } else {
+    state.answers[qid] = [idx];
+    if (state.mode === 'practice') submitAnswer(qid);
+  }
+  render();
+}
+
+function submitAnswer(qid) {
+  if (!state.answers[qid] || state.answers[qid].length === 0) return;
+  state.submitted[qid] = true;
+  render();
+}
+
+function submitAll() {
+  clearInterval(state.timerInterval);
+  state.screen = 'results';
+  render();
+}
+
+function isCorrect(qid) {
+  const q = state.questions.find(x => x.id === qid);
+  const ans = state.answers[qid] || [];
+  if (ans.length !== q.correct.length) return false;
+  return q.correct.every(c => ans.includes(c)) && ans.every(a => q.correct.includes(a));
+}
+
+function calcScore() {
+  let correct = 0;
+  state.questions.forEach(q => { if (isCorrect(q.id)) correct++; });
+  return { correct, total: state.questions.length, pct: Math.round(correct / state.questions.length * 100) };
+}
+
+function calcDomainScores() {
+  const domains = {};
+  state.questions.forEach(q => {
+    if (!domains[q.domain]) domains[q.domain] = { correct: 0, total: 0 };
+    domains[q.domain].total++;
+    if (isCorrect(q.id)) domains[q.domain].correct++;
+  });
+  return domains;
+}
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  if (state.screen === 'start') app.innerHTML = renderStart();
+  else if (state.screen === 'exam') app.innerHTML = renderExam();
+  else app.innerHTML = renderResults();
+  attachEvents();
+  if (state.screen === 'exam' && state.mode === 'timed') updateTimer();
+}
+
+function renderStart() {
+  const domainBtns = [0,1,2,3,4,5].map(d => {
+    const active = state.filterDomain === d ? 'active' : '';
+    const cls = d === 0 ? 'all' : `d${d}`;
+    const label = d === 0 ? 'All Domains' : `Domain ${d}`;
+    return `<button class="domain-btn ${cls} ${active}" data-domain="${d}">${label}</button>`;
+  }).join('');
+  const count = filteredQuestions().length;
+  return `
+    <div class="screen">
+      <div class="sec-logo">🛡️</div>
+      <h1>ISC2 Certified in Cybersecurity (CC)</h1>
+      <p>Practice Exam &nbsp;·&nbsp; ${EXAM_QUESTIONS} questions per attempt &nbsp;·&nbsp; ${QUESTIONS.length}-question pool &nbsp;·&nbsp; 5 Domains</p>
+      <div class="info-grid">
+        <div class="info-box"><div class="val">${EXAM_QUESTIONS}</div><div class="lbl">Per Attempt</div></div>
+        <div class="info-box"><div class="val">${QUESTIONS.length}</div><div class="lbl">Question Pool</div></div>
+        <div class="info-box"><div class="val">${EXAM_MINUTES}m</div><div class="lbl">Time Limit</div></div>
+        <div class="info-box"><div class="val">${PASS_SCORE}%</div><div class="lbl">Pass Score</div></div>
+      </div>
+      <div class="mode-grid">
+        <div class="mode-card ${state.mode==='timed'?'active':''}" data-mode="timed">
+          <h3>⏱ Timed Mode</h3>
+          <p>${EXAM_MINUTES}-minute countdown. Simulates real exam conditions.</p>
+        </div>
+        <div class="mode-card ${state.mode==='practice'?'active':''}" data-mode="practice">
+          <h3>📖 Practice Mode</h3>
+          <p>Instant feedback and explanations after each answer. No time limit.</p>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;font-size:13px;color:var(--muted);">Filter by domain:</div>
+      <div class="domain-filter">${domainBtns}</div>
+      <br>
+      <button class="btn btn-primary" id="startBtn" style="font-size:16px;padding:14px 36px;">Start Exam</button>
+      <p style="margin-top:20px;font-size:13px;opacity:0.7;">Not ready to test yet? <a href="cc-study.html" style="color:var(--accent);text-decoration:none;font-weight:600;">Open ISC2 CC Study Guide &amp; Flashcards →</a></p>
+    </div>`;
+}
+
+function renderExam() {
+  const q = state.questions[state.current];
+  const sel = state.answers[q.id] || [];
+  const submitted = state.submitted[q.id];
+  const isMulti = q.multi;
+  const pct = ((state.current) / state.questions.length * 100).toFixed(1);
+
+  const opts = q.opts.map((o, i) => {
+    let cls = 'option';
+    if (submitted) {
+      cls += ' disabled';
+      if (q.correct.includes(i)) cls += ' correct';
+      else if (sel.includes(i)) cls += ' incorrect';
+    } else if (sel.includes(i)) cls += ' selected';
+    const letter = String.fromCharCode(65 + i);
+    return `<div class="${cls}" data-qid="${q.id}" data-idx="${i}">
+      <div class="option-letter">${letter}</div>
+      <div class="option-text">${o}</div>
+    </div>`;
+  }).join('');
+
+  let exp = '';
+  if (submitted) {
+    const correct = isCorrect(q.id);
+    exp = `<div class="exp-block">
+      <div class="exp-section ${correct ? 'exp-correct' : 'exp-wrong'}">
+        <div class="exp-header">${correct ? '✓ Correct' : '✗ Incorrect'}</div>
+        <div>${q.exp}</div>
+      </div></div>`;
+  }
+
+  const answered = Object.keys(state.answers).filter(id => state.answers[id].length > 0).length;
+
+  return `
+    <div class="exam-header">
+      <div class="exam-title">🛡️ ISC2 Certified in Cybersecurity (CC)</div>
+      <div class="exam-meta">
+        <div class="stat"><div class="stat-val">${state.current + 1}/${state.questions.length}</div><div class="stat-lbl">Question</div></div>
+        <div class="stat"><div class="stat-val">${answered}</div><div class="stat-lbl">Answered</div></div>
+        ${state.mode === 'timed' ? `<div class="stat"><div id="timer" class="stat-val">--:--</div><div class="stat-lbl">Remaining</div></div>` : ''}
+        <button class="btn btn-danger" id="submitAllBtn" style="font-size:12px;padding:8px 16px;">Submit Exam</button>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <div class="question-num">Question ${state.current + 1} of ${state.questions.length}</div>
+      <span class="domain-badge ${DOMAIN_CLASSES[q.domain]}">Domain ${q.domain}: ${DOMAIN_NAMES[q.domain]}</span>
+      <div class="question-text">${q.q}</div>
+      ${isMulti ? '<div class="multi-hint">Select ALL that apply</div>' : ''}
+      <div class="options">${opts}</div>
+      ${exp}
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" ${state.current === 0 ? 'disabled' : ''}>← Previous</button>
+      <div style="display:flex;gap:8px;">
+        ${submitted || state.mode !== 'timed' ? '' : `<button class="btn btn-secondary" id="skipBtn">Skip</button>`}
+        ${!submitted && isMulti && (state.answers[q.id]||[]).length > 0 ? `<button class="btn btn-primary" id="submitBtn">Check Answer</button>` : ''}
+      </div>
+      <button class="btn btn-secondary" id="nextBtn" ${state.current === state.questions.length - 1 ? 'disabled' : ''}>Next →</button>
+    </div>`;
+}
+
+function renderResults() {
+  const { correct, total, pct } = calcScore();
+  const passed = pct >= PASS_SCORE;
+  const circumference = 2 * Math.PI * 54;
+  const dashOffset = circumference * (1 - pct / 100);
+  const ringColor = passed ? '#2ecc71' : '#e74c3c';
+  const domainScores = calcDomainScores();
+
+  const domainBars = Object.entries(domainScores).map(([d, s]) => {
+    const dpct = Math.round(s.correct / s.total * 100);
+    return `<div class="domain-row">
+      <div class="domain-label">
+        <span>Domain ${d}: ${DOMAIN_NAMES[d]}</span>
+        <span>${s.correct}/${s.total} (${dpct}%)</span>
+      </div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${dpct}%;background:${DOMAIN_COLORS[d]}"></div></div>
+    </div>`;
+  }).join('');
+
+  const filterBtns = ['all','correct','incorrect','skipped'].map(f =>
+    `<button class="btn btn-secondary review-filter ${state.reviewFilter===f?'active':''}" data-filter="${f}" style="${state.reviewFilter===f?'border-color:var(--accent);':''}">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`
+  ).join('');
+
+  const reviewItems = state.questions.filter(q => {
+    const f = state.reviewFilter;
+    const answered = state.submitted[q.id];
+    const correct = isCorrect(q.id);
+    const skipped = !answered;
+    if (f === 'all') return true;
+    if (f === 'correct') return correct;
+    if (f === 'incorrect') return answered && !correct;
+    if (f === 'skipped') return skipped;
+    return true;
+  }).map(q => {
+    const answered = state.submitted[q.id];
+    const correct = isCorrect(q.id);
+    const skipped = !answered;
+    const iconCls = skipped ? 'r-skipped' : correct ? 'r-correct' : 'r-incorrect';
+    const icon = skipped ? '?' : correct ? '✓' : '✗';
+    return `<div class="review-item">
+      <div class="review-q" data-goto="${state.questions.indexOf(q)}">
+        <div class="review-icon ${iconCls}">${icon}</div>
+        <div><strong>Q${state.questions.indexOf(q)+1}.</strong> ${q.q.substring(0,100)}${q.q.length>100?'…':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="screen" style="margin-bottom:24px;">
+      <h1>${passed ? '🎉 Passed!' : '📝 Not Passed'}</h1>
+      <p>ISC2 Certified in Cybersecurity (CC) Practice Results</p>
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120" width="160" height="160">
+          <circle class="ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="ring-val" cx="60" cy="60" r="54"
+            stroke="${ringColor}"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${dashOffset}"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct" style="color:${ringColor}">${pct}%</div>
+          <div class="ring-pass" style="color:${ringColor}">${passed ? 'PASS' : 'FAIL'}</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-box"><div class="val" style="color:var(--green)">${correct}</div><div class="lbl">Correct</div></div>
+        <div class="info-box"><div class="val" style="color:var(--red)">${total - correct}</div><div class="lbl">Incorrect</div></div>
+        <div class="info-box"><div class="val">${total}</div><div class="lbl">Total</div></div>
+        <div class="info-box"><div class="val" style="color:${passed?'var(--green)':'var(--red)'}">${PASS_SCORE}%</div><div class="lbl">Passing Score</div></div>
+      </div>
+      <div class="domain-scores">${domainBars}</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="retryBtn">Retake Exam</button>
+        <button class="btn btn-secondary" id="backStartBtn">Back to Start</button>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;">
+      <h2 style="margin-bottom:16px;font-size:18px;">Question Review</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">${filterBtns}</div>
+      ${reviewItems}
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  EVENTS
+// ─────────────────────────────────────────────
+function attachEvents() {
+  document.querySelectorAll('[data-mode]').forEach(el => {
+    el.addEventListener('click', () => { state.mode = el.dataset.mode; render(); });
+  });
+  document.querySelectorAll('[data-domain]').forEach(el => {
+    el.addEventListener('click', () => { state.filterDomain = parseInt(el.dataset.domain); render(); });
+  });
+  document.getElementById('startBtn')?.addEventListener('click', startExam);
+  document.getElementById('submitAllBtn')?.addEventListener('click', () => {
+    if (confirm('Submit the exam? Unanswered questions will be marked as skipped.')) submitAll();
+  });
+  document.getElementById('submitBtn')?.addEventListener('click', () => {
+    const q = state.questions[state.current];
+    submitAnswer(q.id);
+  });
+  document.getElementById('prevBtn')?.addEventListener('click', () => { state.current = Math.max(0, state.current - 1); render(); });
+  document.getElementById('nextBtn')?.addEventListener('click', () => { state.current = Math.min(state.questions.length - 1, state.current + 1); render(); });
+  document.getElementById('skipBtn')?.addEventListener('click', () => { state.current = Math.min(state.questions.length - 1, state.current + 1); render(); });
+  document.querySelectorAll('.option').forEach(el => {
+    el.addEventListener('click', () => {
+      const qid = parseInt(el.dataset.qid);
+      const idx = parseInt(el.dataset.idx);
+      const q = state.questions.find(x => x.id === qid);
+      toggleAnswer(qid, idx, q.multi);
+    });
+  });
+  document.getElementById('retryBtn')?.addEventListener('click', startExam);
+  document.getElementById('backStartBtn')?.addEventListener('click', () => {
+    clearInterval(state.timerInterval);
+    state.screen = 'start';
+    render();
+  });
+  document.querySelectorAll('.review-filter').forEach(el => {
+    el.addEventListener('click', () => { state.reviewFilter = el.dataset.filter; render(); });
+  });
+  document.querySelectorAll('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.current = parseInt(el.dataset.goto);
+      state.screen = 'exam';
+      render();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
