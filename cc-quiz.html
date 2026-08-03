@@ -886,6 +886,726 @@ const QUESTIONS = [
   exp:"Transport Layer Security (TLS) encrypts data while it moves across a network (data in transit), protecting it from eavesdropping and tampering by anyone intercepting the traffic between the client and server."
 },
 
+// ═══════════════════════════════════════
+//  DOMAIN 1 ADDITIONAL – SECURITY PRINCIPLES
+// ═══════════════════════════════════════
+{
+  id:101, domain:1,
+  q:"Which control TYPE would a locked server room door be classified as?",
+  opts:["Detective","Preventive","Corrective","Compensating"],
+  correct:[1],
+  exp:"A lock actively stops unauthorized entry before it happens, making it a preventive control. Detective controls identify events after the fact; corrective controls remediate; compensating controls substitute when the primary control isn't feasible."
+},
+{
+  id:102, domain:1,
+  q:"A ransomware attack encrypts a hospital's patient records, making them completely inaccessible to staff. Which component of the CIA triad is PRIMARILY violated?",
+  opts:["Confidentiality","Integrity","Availability","Non-repudiation"],
+  correct:[2],
+  exp:"Ransomware's core impact is denying legitimate access to data — a direct violation of availability. Confidentiality would be violated if the data were also stolen/disclosed; integrity would be violated if the data were altered rather than simply locked."
+},
+{
+  id:103, domain:1,
+  q:"An attacker breaches a database and silently changes account balances without being detected immediately. Which CIA principle is PRIMARILY violated?",
+  opts:["Confidentiality","Integrity","Availability","Authorization"],
+  correct:[1],
+  exp:"Integrity is violated when data is altered without authorization. The data remains accessible (availability intact) and may not even be disclosed (confidentiality intact), but its accuracy has been compromised."
+},
+{
+  id:104, domain:1,
+  q:"A company posts a warning sign at its facility entrance stating that the premises are under 24-hour video surveillance. What TYPE of control is this sign?",
+  opts:["Preventive","Detective","Deterrent","Corrective"],
+  correct:[2],
+  exp:"A warning sign is a deterrent control — it discourages an attacker from attempting an intrusion by making the risk of detection known, but it does not physically stop or detect anything on its own."
+},
+{
+  id:105, domain:1,
+  q:"After a server outage, an administrator restores the affected system from a recent backup. What TYPE of control does this action represent?",
+  opts:["Preventive","Detective","Corrective","Deterrent"],
+  correct:[2],
+  exp:"Restoring from backup repairs the damage after an incident has occurred, making it a corrective control. Backups themselves are often considered part of a broader recovery strategy that supports corrective action."
+},
+{
+  id:106, domain:1,
+  q:"What is the key difference between qualitative and quantitative risk assessment?",
+  opts:["Qualitative assigns dollar values to risk; quantitative uses subjective ratings like High/Medium/Low","Qualitative uses subjective ratings like High/Medium/Low; quantitative assigns numerical/dollar values to risk","They are identical approaches with different names","Quantitative assessment is always faster to perform"],
+  correct:[1],
+  exp:"Qualitative risk assessment uses descriptive/subjective scales (High, Medium, Low) to rate risk, while quantitative assessment assigns specific numerical values (such as dollar amounts via ALE) to enable more precise cost-benefit comparisons."
+},
+{
+  id:107, domain:1,
+  q:"A company documents a specific risk, decides to take no further action, and has a manager formally sign off on that decision. Which risk treatment does this represent?",
+  opts:["Risk avoidance","Risk mitigation","Risk transfer","Risk acceptance"],
+  correct:[3],
+  exp:"Risk acceptance involves acknowledging a risk and consciously choosing not to apply additional controls, typically requiring formal documentation and management sign-off to ensure accountability for the decision."
+},
+{
+  id:108, domain:1,
+  q:"What is the purpose of a risk register in an organization's risk management program?",
+  opts:["To store employee login credentials","To centrally document identified risks, their severity, owners, and treatment status","To list all approved vendors","To record network device configurations"],
+  correct:[1],
+  exp:"A risk register is a living document that tracks identified risks along with their assessed severity, assigned owner, and current treatment status, providing visibility for ongoing risk management decisions."
+},
+{
+  id:109, domain:1,
+  q:"What is the purpose of threat modeling during system design?",
+  opts:["To identify potential threats and attack vectors early, so appropriate countermeasures can be designed in from the start","To physically secure a data center","To create marketing materials for a new product","To calculate employee salaries"],
+  correct:[0],
+  exp:"Threat modeling systematically identifies potential threats, vulnerabilities, and attack vectors during the design phase, allowing security controls to be built into a system from the outset rather than added afterward."
+},
+{
+  id:110, domain:1,
+  q:"Which of the following best exemplifies the (ISC)² Code of Ethics canon 'Provide diligent and competent service to principals'?",
+  opts:["Publicly criticizing a competitor's certification program","Continuously maintaining and updating one's technical skills to serve clients/employers effectively","Refusing to ever change jobs","Ignoring a client's explicit instructions when convenient"],
+  correct:[1],
+  exp:"This canon emphasizes competence and diligence in serving one's employer or clients, which includes staying current with skills and knowledge and consistently applying them responsibly on the principal's behalf."
+},
+{
+  id:111, domain:1,
+  q:"A security practitioner discovers that their employer is knowingly violating a law related to data protection. According to general ethical obligations, what is the MOST appropriate FIRST step?",
+  opts:["Immediately leak the information to the press","Report the concern through appropriate internal channels (e.g., legal, compliance, or ethics reporting mechanisms)","Ignore it since it is not the practitioner's job","Confront company leadership publicly on social media"],
+  correct:[1],
+  exp:"Ethical obligations generally call for reporting concerns through proper internal channels first — such as legal, compliance, or an ethics hotline — rather than immediately escalating externally, preserving both due process and professionalism."
+},
+{
+  id:112, domain:1,
+  q:"What does the term 'Personally Identifiable Information (PII)' refer to?",
+  opts:["Any information that can be used to uniquely identify, contact, or locate a specific individual","Only a person's name and nothing else","Publicly available corporate financial statements","Server hardware specifications"],
+  correct:[0],
+  exp:"PII includes any data that can identify a specific individual, either alone or combined with other information — examples include names, Social Security numbers, addresses, and biometric data. Protecting PII is a core focus of privacy programs."
+},
+{
+  id:113, domain:1,
+  q:"A company's password standard requires a minimum of 14 characters, while a separate document merely suggests using a password manager. What are these two documents, respectively?",
+  opts:["Both are policies","A standard, followed by a guideline","A guideline, followed by a standard","Both are procedures"],
+  correct:[1],
+  exp:"A specific, mandatory requirement (14-character minimum) is a standard. A suggestion that is not mandatory (using a password manager) is a guideline. Standards must be followed; guidelines are optional best practices."
+},
+{
+  id:114, domain:1,
+  q:"Which of the following is an example of an administrative (managerial) control, as opposed to a technical or physical control?",
+  opts:["A firewall","A background check policy for new hires","A server room lock","Data encryption"],
+  correct:[1],
+  exp:"A background check policy is an administrative/managerial control — a process or procedure established by management. Firewalls and encryption are technical controls; a lock is a physical control."
+},
+{
+  id:115, domain:1,
+  q:"In a software development organization, requiring that the developer who writes code cannot also be the person who approves and deploys it to production is an example of:",
+  opts:["Least privilege","Separation of duties","Defense in depth","Risk transfer"],
+  correct:[1],
+  exp:"This is a classic separation of duties control in DevOps/software environments, ensuring no single individual can introduce and deploy malicious or flawed code without independent review."
+},
+{
+  id:116, domain:1,
+  q:"An organization combines a locked server room (physical), a firewall (technical), and a security awareness training program (administrative) to protect its network. This combined strategy illustrates:",
+  opts:["Security through obscurity","Defense in depth","Risk acceptance","Single point of failure"],
+  correct:[1],
+  exp:"Defense in depth layers multiple different types of controls — physical, technical, and administrative — so that if one layer fails or is bypassed, other layers still provide protection."
+},
+{
+  id:117, domain:1,
+  q:"What is the difference between an asset's 'inherent risk' and its 'residual risk'?",
+  opts:["Inherent risk is the risk level after controls are applied; residual risk is the risk level before any controls","Inherent risk is the risk level before any controls are applied; residual risk is the risk level that remains after controls are applied","They are the same concept with different names","Residual risk is always zero once a policy is written"],
+  correct:[1],
+  exp:"Inherent risk represents the raw risk level with no mitigating controls in place. Residual risk is what remains after controls have been applied — the goal of risk mitigation is to reduce inherent risk down to an acceptable residual level."
+},
+{
+  id:118, domain:1,
+  q:"What is the primary purpose of an organization's data classification policy in relation to confidentiality?",
+  opts:["To assign a sensitivity level to information so appropriate confidentiality protections can be applied","To determine employee work schedules","To configure network switches","To calculate ALE for insurance purposes"],
+  correct:[0],
+  exp:"Data classification labels (e.g., Public, Internal, Confidential, Restricted) drive how strictly confidentiality must be protected for a given piece of information, ensuring resources are focused on the most sensitive data."
+},
+{
+  id:119, domain:1,
+  q:"Which of the following best describes 'security through obscurity' as a flawed security strategy?",
+  opts:["Relying on the secrecy of a system's design or implementation, rather than robust controls, as the primary means of protection","Using strong encryption to protect data confidentiality","Implementing multiple layers of independent security controls","Requiring multi-factor authentication for all users"],
+  correct:[0],
+  exp:"Security through obscurity relies on attackers not knowing how a system works, rather than on genuinely robust controls. It should never be the primary defense, since the secret can eventually be discovered or reverse-engineered."
+},
+{
+  id:120, domain:1,
+  q:"What is the purpose of a 'security exception' process within governance?",
+  opts:["To permanently repeal a security policy","To formally document and approve a temporary, justified deviation from a standard or policy, along with any compensating controls","To fire an employee who violates policy","To eliminate the need for any future audits"],
+  correct:[1],
+  exp:"An exception process allows a documented, approved, and time-bound deviation from policy when a legitimate business need exists, often paired with compensating controls to manage the resulting risk."
+},
+{
+  id:121, domain:1,
+  q:"A financial institution requires that any wire transfer above a certain dollar threshold be approved by two different authorized employees. This is a direct application of which principle?",
+  opts:["Least privilege","Separation of duties","Non-repudiation","Risk avoidance"],
+  correct:[1],
+  exp:"Requiring dual approval for high-value transactions is a classic separation of duties control, preventing any single employee from unilaterally executing a large fraudulent or erroneous transaction."
+},
+{
+  id:122, domain:1,
+  q:"What best distinguishes a 'threat' from a 'threat actor'?",
+  opts:["A threat actor is the entity or individual capable of causing harm; a threat is the potential danger or event itself that could exploit a vulnerability","They are identical terms","A threat actor is always a piece of malware","A threat only applies to insider risks"],
+  correct:[0],
+  exp:"A threat actor (e.g., a hacker group, insider, or nation-state) is the entity behind a potential attack. A threat is the broader potential danger or event (e.g., 'unauthorized data exfiltration') that the actor might carry out."
+},
+{
+  id:123, domain:1,
+  q:"Why is it important to periodically review and update an organization's security policies?",
+  opts:["Policies never need to be updated once written","To ensure policies remain aligned with current threats, technology, regulations, and business operations","To increase the total page count of the policy manual","To satisfy printing vendor contracts"],
+  correct:[1],
+  exp:"Security policies must evolve alongside changes in the threat landscape, adopted technologies, applicable laws/regulations, and the organization's operations to remain effective and relevant."
+},
+{
+  id:124, domain:1,
+  q:"An IT administrator is given full domain administrator rights even though their daily tasks only require resetting user passwords. What principle is being violated?",
+  opts:["Separation of duties","Least privilege","Non-repudiation","Defense in depth"],
+  correct:[1],
+  exp:"Granting far more access than is required for a person's actual job duties violates least privilege, unnecessarily increasing the potential impact if that account is compromised or misused."
+},
+{
+  id:125, domain:1,
+  q:"What is the difference between a security policy's 'purpose' statement and its 'scope' statement?",
+  opts:["Purpose explains WHY the policy exists; scope defines WHO/WHAT the policy applies to","They mean exactly the same thing","Scope explains why the policy exists; purpose defines who it applies to","Neither is a standard part of a security policy"],
+  correct:[0],
+  exp:"The purpose section explains the policy's objective and rationale, while the scope section defines the boundaries of applicability — which systems, personnel, or business units the policy governs."
+},
+{
+  id:126, domain:1,
+  q:"A company suffers a data breach and later discovers it failed to apply a patch that had been available for eight months. From a due care perspective, what does this suggest?",
+  opts:["The company exercised appropriate due care","The company likely failed to exercise due care by not acting on known, available information in a timely manner","Due care is irrelevant to patch management","Due care only applies to physical security"],
+  correct:[1],
+  exp:"Due care requires taking reasonable action based on known risks and available information. Failing to apply a patch that had been available for many months suggests a lapse in the reasonable, ongoing diligence expected of the organization."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 2 ADDITIONAL – BC, DR & IR CONCEPTS
+// ═══════════════════════════════════════
+{
+  id:127, domain:2,
+  q:"Which backup type captures only the changes made since the LAST FULL backup (not since the last backup of any type)?",
+  opts:["Full backup","Incremental backup","Differential backup","Snapshot backup"],
+  correct:[2],
+  exp:"A differential backup captures all changes since the most recent full backup. Unlike incremental backups, restoring only requires the full backup plus the latest differential — not every differential in between."
+},
+{
+  id:128, domain:2,
+  q:"An organization maintains an alternate recovery site with hardware already installed, but data must be restored from backups before operations can resume, taking several hours. What TYPE of site is this?",
+  opts:["Hot site","Warm site","Cold site","Mirror site"],
+  correct:[1],
+  exp:"A warm site has hardware ready but is not continuously synced with live data, requiring a restore process that typically takes hours — a middle ground between the near-instant hot site and the empty-shell cold site."
+},
+{
+  id:129, domain:2,
+  q:"An organization's disaster recovery site consists of an empty facility with power and HVAC but no installed servers or network equipment. What TYPE of site is this?",
+  opts:["Hot site","Warm site","Cold site","Hybrid site"],
+  correct:[2],
+  exp:"A cold site provides only basic infrastructure (power, cooling, space) with no pre-installed equipment, requiring the organization to bring in and configure all hardware from scratch — the slowest and cheapest recovery option."
+},
+{
+  id:130, domain:2,
+  q:"During incident response, what is the PRIMARY goal of the 'Containment' phase?",
+  opts:["To identify that an incident has occurred","To limit the scope and spread of the incident to prevent further damage","To permanently remove the root cause of the incident","To conduct a post-incident review"],
+  correct:[1],
+  exp:"Containment focuses on isolating affected systems and limiting further damage or spread — for example, disconnecting an infected host from the network — before moving on to eradicating the root cause."
+},
+{
+  id:131, domain:2,
+  q:"During incident response, what is the PRIMARY goal of the 'Eradication' phase?",
+  opts:["To detect that an incident occurred","To limit the spread of the incident","To remove the root cause of the incident, such as malware or a compromised account","To restore normal business operations"],
+  correct:[2],
+  exp:"Eradication focuses on completely removing the cause of the incident — deleting malware, closing the exploited vulnerability, disabling compromised accounts — before systems are restored to production in the Recovery phase."
+},
+{
+  id:132, domain:2,
+  q:"What is the PRIMARY value of conducting a 'Lessons Learned' review after an incident is resolved?",
+  opts:["It has no real value and is often skipped","It identifies what worked well and what didn't, driving improvements to future prevention, detection, and response","It assigns blame to specific employees","It is only required for compliance audits"],
+  correct:[1],
+  exp:"The Lessons Learned phase captures insights about the incident's cause, response effectiveness, and gaps, feeding improvements back into policies, controls, and future incident response preparation."
+},
+{
+  id:133, domain:2,
+  q:"A data center uses two independent power feeds and backup generators so that a single power failure does not cause an outage. This is an example of:",
+  opts:["Data classification","Redundancy","Least privilege","Non-repudiation"],
+  correct:[1],
+  exp:"Redundancy involves duplicating critical components (like power feeds) so that the failure of one does not cause a service disruption, supporting overall system availability and resilience."
+},
+{
+  id:134, domain:2,
+  q:"What is the difference between a tabletop exercise and a full-scale (full interruption) BCP test?",
+  opts:["A tabletop exercise is a discussion-based walkthrough of the plan; a full-scale test actually executes the plan, potentially disrupting live operations","They are identical exercises","A full-scale test never involves real systems","A tabletop exercise is always more disruptive than a full-scale test"],
+  correct:[0],
+  exp:"A tabletop exercise is a low-risk, discussion-based walkthrough where participants talk through their roles and the plan's steps. A full-scale test actually executes the recovery plan against real (or near-real) systems, which is more thorough but riskier and more disruptive."
+},
+{
+  id:135, domain:2,
+  q:"What is the difference between MTBF (Mean Time Between Failures) and MTTR (Mean Time To Repair)?",
+  opts:["MTBF measures how often a system fails; MTTR measures how long it takes to fix it once it does","They measure the exact same thing","MTTR is always longer than MTBF","MTBF only applies to software, not hardware"],
+  correct:[0],
+  exp:"MTBF is a reliability metric indicating the average time a system operates before failing. MTTR indicates the average time required to repair the system and restore it to operation after a failure occurs."
+},
+{
+  id:136, domain:2,
+  q:"Why must a Business Impact Analysis (BIA) be completed before finalizing a Business Continuity Plan (BCP)?",
+  opts:["The BIA is optional and can be skipped entirely","The BIA identifies critical functions and produces the RTO/RPO/MTD targets that the BCP is specifically designed to meet","The BCP must be written first to justify conducting a BIA","There is no required order between the two"],
+  correct:[1],
+  exp:"The BIA establishes which business functions are critical and defines recovery targets (RTO, RPO, MTD). Without this information, the BCP would have no basis for determining what level of recovery capability is actually required."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 3 ADDITIONAL – ACCESS CONTROLS CONCEPTS
+// ═══════════════════════════════════════
+{
+  id:137, domain:3,
+  q:"An employee uses a physical hardware token that generates a rotating six-digit code to log into a corporate VPN. This represents which authentication factor?",
+  opts:["Something you know","Something you have","Something you are","Somewhere you are"],
+  correct:[1],
+  exp:"A hardware token is a physical object the user possesses, making it a 'something you have' factor. If it were combined with a password (something you know), that combination would constitute true MFA."
+},
+{
+  id:138, domain:3,
+  q:"A data center restricts entry using a retina scanner that checks the unique pattern of blood vessels in an employee's eye. This is an example of which authentication factor?",
+  opts:["Something you know","Something you have","Something you are","Something you do"],
+  correct:[2],
+  exp:"Retina scanning is a biometric method based on a unique physical characteristic of the individual, making it a 'something you are' factor, distinct from behavioral ('something you do') biometrics like keystroke dynamics."
+},
+{
+  id:139, domain:3,
+  q:"A company's mobile application blocks login attempts that originate outside of its home country, based on the device's GPS coordinates. This is an example of which authentication factor?",
+  opts:["Something you know","Something you have","Somewhere you are","Something you do"],
+  correct:[2],
+  exp:"Restricting access based on physical location (geolocation/geofencing) is the 'somewhere you are' authentication factor, adding contextual risk-based control beyond traditional knowledge or possession factors."
+},
+{
+  id:140, domain:3,
+  q:"A biometric access control system occasionally grants entry to someone who is NOT actually enrolled in the system. This error is measured by the:",
+  opts:["False Rejection Rate (FRR)","False Acceptance Rate (FAR)","Crossover Error Rate (CER) only","Mean Time Between Failures (MTBF)"],
+  correct:[1],
+  exp:"The False Acceptance Rate (FAR) measures how often a biometric system incorrectly grants access to an unauthorized/unenrolled individual — generally considered the more dangerous error type from a security standpoint."
+},
+{
+  id:141, domain:3,
+  q:"What does a lower Crossover Error Rate (CER) indicate about a biometric authentication system?",
+  opts:["The system is less accurate overall","The system is more accurate overall, since FAR and FRR are both lower at the point they intersect","The system does not use biometrics at all","The system has no false acceptance errors whatsoever"],
+  correct:[1],
+  exp:"CER is the point where the False Acceptance Rate and False Rejection Rate are equal. A lower CER indicates a more accurate biometric system overall, since both error types are minimized at that intersection point."
+},
+{
+  id:142, domain:3,
+  q:"In a Mandatory Access Control (MAC) environment, can an individual data owner grant another user access to their file at their own discretion?",
+  opts:["Yes, always, since owners control their own data","No — access is determined by centrally enforced classification labels and clearances, not by individual owner discretion","Only on weekends","Only if the file is marked Public"],
+  correct:[1],
+  exp:"MAC's defining characteristic is that access decisions are made by a central authority through fixed labels and clearances — individual owners cannot override this, which is precisely what distinguishes MAC from DAC."
+},
+{
+  id:143, domain:3,
+  q:"A hospital grants nurses access to patient charts based on their assigned role, but ALSO restricts that access to only the specific ward/unit where the nurse is currently scheduled to work. Which access control model does the ADDITIONAL restriction represent?",
+  opts:["Pure RBAC only","Attribute-Based Access Control (ABAC), layered on top of role","Mandatory Access Control (MAC) only","Discretionary Access Control (DAC) only"],
+  correct:[1],
+  exp:"While the base access is role-based (RBAC), adding a contextual restriction based on an attribute (current ward assignment) introduces ABAC, since access now depends on more than just the role alone."
+},
+{
+  id:144, domain:3,
+  q:"How does Rule-Based Access Control differ from Role-Based Access Control, despite the similar name?",
+  opts:["They are the exact same model","Rule-Based Access Control applies predefined IF/THEN rules uniformly to all subjects (e.g., firewall ACLs); Role-Based Access Control grants permissions according to a user's assigned job role","Role-Based Access Control only applies to physical security","Rule-Based Access Control requires biometric authentication"],
+  correct:[1],
+  exp:"Despite the similar-sounding names, Rule-Based Access Control applies static, uniform rules (such as time-of-day restrictions or firewall ACLs) to everyone, while Role-Based Access Control ties permissions specifically to a user's organizational role."
+},
+{
+  id:145, domain:3,
+  q:"What is the purpose of a turnstile as a physical access control?",
+  opts:["To capture video footage of visitors","To physically allow only one person to pass through at a time after presenting valid credentials, helping prevent tailgating","To detect smoke and fire","To broadcast a wireless network signal"],
+  correct:[1],
+  exp:"A turnstile mechanically restricts passage to one authenticated individual at a time, serving as a preventive physical control against tailgating, similar in purpose to a mantrap but typically used for higher-traffic areas."
+},
+{
+  id:146, domain:3,
+  q:"A security guard stationed at a building entrance checks photo identification before allowing anyone to enter. What category and type of control does this represent?",
+  opts:["Technical, Detective","Physical, Preventive","Administrative, Corrective","Technical, Compensating"],
+  correct:[1],
+  exp:"A security guard is a physical control (a person physically present at the site) performing a preventive function by actively stopping unauthorized individuals from entering before they gain access."
+},
+{
+  id:147, domain:3,
+  q:"What TYPE of control is a closed-circuit television (CCTV) camera system PRIMARILY considered?",
+  opts:["Preventive","Detective","Corrective","Compensating"],
+  correct:[1],
+  exp:"CCTV cameras primarily detect and record activity for later review or real-time monitoring; they do not physically stop an intruder on their own, which is why they are classified as detective rather than preventive controls."
+},
+{
+  id:148, domain:3,
+  q:"A tall perimeter fence topped with barbed wire around a data center primarily serves what purpose?",
+  opts:["To detect intrusions after they occur","To deter and physically impede unauthorized entry attempts","To record video evidence","To provide network connectivity"],
+  correct:[1],
+  exp:"A fence acts as both a deterrent (discouraging attempts) and a preventive/physical barrier (making unauthorized entry more difficult), directly supporting perimeter security at a facility."
+},
+{
+  id:149, domain:3,
+  q:"What does a 'deny by default, permit by exception' approach mean when configuring an Access Control List (ACL)?",
+  opts:["All traffic/access is allowed unless specifically blocked","All traffic/access is blocked unless specifically and explicitly permitted","Only administrators are ever denied access","ACLs cannot implement this approach"],
+  correct:[1],
+  exp:"A deny-by-default posture blocks everything except traffic or access explicitly permitted by a rule, which is considered a more secure baseline than allow-by-default, since anything not explicitly needed is automatically blocked."
+},
+{
+  id:150, domain:3,
+  q:"What does the term 'provisioning' refer to in identity and access management?",
+  opts:["Permanently deleting a user's account","The process of creating a new user account and granting the appropriate initial access rights when someone joins an organization or changes roles","Reviewing audit logs for suspicious activity","Encrypting a hard drive"],
+  correct:[1],
+  exp:"Provisioning is the process of creating accounts and assigning appropriate access when a person joins the organization or changes roles — the counterpart to deprovisioning, which removes access when it's no longer needed."
+},
+{
+  id:151, domain:3,
+  q:"What is the security purpose of an account lockout policy after a set number of failed login attempts?",
+  opts:["To permanently disable an account with no way to recover it","To slow down or block brute-force and password-guessing attacks by temporarily disabling an account after repeated failed attempts","To automatically grant elevated privileges to the account","To encrypt the account's stored password"],
+  correct:[1],
+  exp:"Account lockout policies limit the number of consecutive failed login attempts before temporarily disabling an account, making brute-force and guessing attacks significantly less effective."
+},
+{
+  id:152, domain:3,
+  q:"According to modern password guidance, which factor generally contributes MORE to password strength: length or complexity (mixing character types)?",
+  opts:["Complexity contributes far more than length","Length generally contributes more to resistance against brute-force attacks than complexity alone","Neither length nor complexity matters if MFA is used","Passwords should always be exactly 8 characters"],
+  correct:[1],
+  exp:"Increasing password length exponentially increases the number of possible combinations an attacker must try, generally providing more resistance to brute-force attacks than adding complexity requirements alone — hence the modern shift toward encouraging long passphrases."
+},
+{
+  id:153, domain:3,
+  q:"What is the purpose of session recording within a Privileged Access Management (PAM) solution?",
+  opts:["To automatically delete privileged accounts after use","To create an auditable record of exactly what actions a privileged user performed during a session, supporting accountability and incident investigation","To encrypt data at rest","To provide guest Wi-Fi access"],
+  correct:[1],
+  exp:"Session recording captures the specific commands and actions taken during a privileged session, providing a detailed audit trail that supports accountability, compliance, and forensic investigation if misuse is suspected."
+},
+{
+  id:154, domain:3,
+  q:"What does 'just-in-time (JIT) access' refer to in privileged access management?",
+  opts:["Granting permanent standing access to all administrators at all times","Granting elevated/privileged access only for a limited, specific time window when it is actually needed, rather than as a persistent standing privilege","Automatically granting access to any user who requests it, with no approval required","A biometric authentication method"],
+  correct:[1],
+  exp:"Just-in-time access provisions elevated privileges temporarily, only when needed for a specific task, and automatically revokes them afterward — reducing the attack surface compared to always-on (standing) privileged access."
+},
+{
+  id:155, domain:3,
+  q:"What is the security benefit of a 'zero standing privileges' approach to privileged accounts?",
+  opts:["It grants all users permanent administrator rights","It eliminates persistent, always-on elevated access, requiring privileges to be requested and granted only when needed, minimizing the window an attacker could exploit a compromised privileged account","It disables all user accounts permanently","It removes the need for any authentication"],
+  correct:[1],
+  exp:"Zero standing privileges means no account retains elevated access by default at all times — privileges are granted on-demand and revoked afterward, significantly shrinking the opportunity for an attacker to abuse a persistently privileged account."
+},
+{
+  id:156, domain:3,
+  q:"An employee must swipe a physical badge AND enter a PIN at a secure facility's door before it unlocks. Which combination of authentication factors does this represent?",
+  opts:["Something you know + something you know (not true MFA)","Something you have + something you know (true MFA)","Something you are + somewhere you are","Something you do + something you have"],
+  correct:[1],
+  exp:"The badge is 'something you have,' and the PIN is 'something you know' — two different factor categories, satisfying the requirement for true multi-factor authentication."
+},
+{
+  id:157, domain:3,
+  q:"An attacker watches over an employee's shoulder in a coffee shop to observe them typing their laptop password. What is this technique called?",
+  opts:["Shoulder surfing","Tailgating","Pretexting","Dumpster diving"],
+  correct:[0],
+  exp:"Shoulder surfing is the technique of directly observing someone entering sensitive information (like a password or PIN) by looking over their shoulder or from a nearby vantage point."
+},
+{
+  id:158, domain:3,
+  q:"An attacker searches through an organization's discarded trash for sensitive documents, such as printed reports or password sticky notes. What is this technique called?",
+  opts:["Dumpster diving","Shoulder surfing","Tailgating","Baiting"],
+  correct:[0],
+  exp:"Dumpster diving involves physically searching through discarded trash or recycling for sensitive information that was not properly destroyed, such as printed documents, notes, or old hardware."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 4 ADDITIONAL – NETWORK SECURITY
+// ═══════════════════════════════════════
+{
+  id:159, domain:4,
+  q:"Which OSI layer is responsible for the transmission of raw, unstructured bit streams over a physical medium such as a cable?",
+  opts:["Physical Layer (Layer 1)","Data Link Layer (Layer 2)","Network Layer (Layer 3)","Session Layer (Layer 5)"],
+  correct:[0],
+  exp:"The Physical layer (Layer 1) deals with the actual transmission of raw bits over physical media — cables, radio frequencies, connectors — with no awareness of addressing or logical structure."
+},
+{
+  id:160, domain:4,
+  q:"Which OSI layer includes protocols like HTTP, FTP, and DNS that directly support end-user applications?",
+  opts:["Transport Layer (Layer 4)","Network Layer (Layer 3)","Application Layer (Layer 7)","Data Link Layer (Layer 2)"],
+  correct:[2],
+  exp:"The Application layer (Layer 7) is the topmost OSI layer, providing network services directly to end-user applications such as web browsers (HTTP) and email clients (SMTP)."
+},
+{
+  id:161, domain:4,
+  q:"Which OSI layer is responsible for establishing, maintaining, and terminating communication sessions between two devices?",
+  opts:["Session Layer (Layer 5)","Presentation Layer (Layer 6)","Transport Layer (Layer 4)","Physical Layer (Layer 1)"],
+  correct:[0],
+  exp:"The Session layer (Layer 5) manages the dialogue/session between two communicating devices, including establishing, synchronizing, and terminating that session — distinct from the Presentation layer, which handles data formatting/encryption."
+},
+{
+  id:162, domain:4,
+  q:"Which port is the default for SMTP, used for server-to-server email transmission?",
+  opts:["Port 21","Port 25","Port 53","Port 143"],
+  correct:[1],
+  exp:"SMTP (Simple Mail Transfer Protocol) uses port 25 by default for relaying email between mail servers. Port 587 is commonly used for client mail submission with authentication."
+},
+{
+  id:163, domain:4,
+  q:"Which protocol and port combination is used by default to retrieve email while typically leaving a copy on the mail server for access from multiple devices?",
+  opts:["POP3, port 110","IMAP, port 143","SMTP, port 25","DNS, port 53"],
+  correct:[1],
+  exp:"IMAP (Internet Message Access Protocol), on port 143 by default, synchronizes email state across multiple devices by keeping messages on the server. POP3 (port 110) traditionally downloads and often removes messages from the server."
+},
+{
+  id:164, domain:4,
+  q:"Which port is used by default for Microsoft's Remote Desktop Protocol (RDP), a common target for attackers if exposed directly to the internet?",
+  opts:["Port 22","Port 443","Port 3389","Port 53"],
+  correct:[2],
+  exp:"RDP uses TCP port 3389 by default. Exposing RDP directly to the internet without additional protections (VPN, MFA, IP restrictions) is a frequent and serious security risk targeted by attackers and ransomware operators."
+},
+{
+  id:165, domain:4,
+  q:"Which protocol, running on port 445, is commonly used for Windows file and printer sharing and has historically been targeted by significant worms and ransomware?",
+  opts:["SMB (Server Message Block)","LDAP","SNMP","RDP"],
+  correct:[0],
+  exp:"SMB on port 445 handles Windows file/printer sharing. Vulnerabilities in SMB implementations have been exploited by major malware outbreaks such as WannaCry, making it a high-priority port to restrict from untrusted networks."
+},
+{
+  id:166, domain:4,
+  q:"In a bus network topology, what is the primary risk associated with the single shared cable connecting all devices?",
+  opts:["It provides the highest possible redundancy","A single break or fault in the shared cable can disrupt communication for the entire network segment","It requires the most cabling of any topology","It automatically encrypts all traffic"],
+  correct:[1],
+  exp:"In a bus topology, all devices share a single central cable. A break anywhere along that cable can disrupt or completely halt communications for the devices connected to it, making it the least fault-tolerant common topology."
+},
+{
+  id:167, domain:4,
+  q:"In a ring network topology, how does data typically travel between connected devices?",
+  opts:["Data travels only through a central switch","Data passes from one device to the next around a closed loop until it reaches its destination","Data is broadcast to every device on a shared cable simultaneously","Devices are not physically connected to each other at all"],
+  correct:[1],
+  exp:"In a ring topology, each device connects to exactly two neighboring devices, forming a closed loop. Data travels around the ring, passing through intermediate devices, until it reaches its intended destination."
+},
+{
+  id:168, domain:4,
+  q:"What is a key security improvement that WPA3 provides over WPA2 for wireless networks?",
+  opts:["WPA3 removes the need for any password at all","WPA3 uses Simultaneous Authentication of Equals (SAE), which better resists offline dictionary/brute-force attacks against the handshake compared to WPA2's four-way handshake","WPA3 is identical to WEP","WPA3 only works on wired networks"],
+  correct:[1],
+  exp:"WPA3 replaces WPA2's pre-shared key exchange with SAE (Simultaneous Authentication of Equals, based on the Dragonfly handshake), which is significantly more resistant to offline password-guessing attacks even if a weak passphrase is used."
+},
+{
+  id:169, domain:4,
+  q:"What is the purpose of 802.1X in a network access control scenario?",
+  opts:["To provide port-based network access control, requiring devices to authenticate (often via a RADIUS server) before being granted full network access","To encrypt data at rest","To provide DNS name resolution","To assign public IP addresses to internal devices"],
+  correct:[0],
+  exp:"802.1X provides port-based authentication, requiring a supplicant (device) to authenticate through an authenticator (switch/AP) to an authentication server (typically RADIUS) before being granted access to the network beyond a restricted state."
+},
+{
+  id:170, domain:4,
+  q:"What does an 'implicit deny' rule at the end of a firewall's rule set accomplish?",
+  opts:["It explicitly allows all remaining traffic not matched by earlier rules","It blocks all traffic that does not match any of the explicitly defined allow rules above it","It only applies to outbound traffic","It disables the firewall entirely"],
+  correct:[1],
+  exp:"An implicit deny (deny-by-default) rule ensures that any traffic not explicitly permitted by a prior rule is automatically blocked, providing a secure default posture rather than accidentally allowing unanticipated traffic."
+},
+{
+  id:171, domain:4,
+  q:"What is the key difference between a network hub and a network switch?",
+  opts:["A hub intelligently forwards traffic only to the intended recipient port; a switch broadcasts to all ports","A hub broadcasts incoming traffic to all connected ports; a switch intelligently forwards traffic only to the port associated with the destination MAC address","They are identical devices with different names","A switch operates only at Layer 1"],
+  correct:[1],
+  exp:"A hub is a simple Layer 1 device that repeats incoming signals to every connected port, creating a shared collision domain. A switch operates at Layer 2, using MAC address tables to forward frames only to the specific port where the destination device resides."
+},
+{
+  id:172, domain:4,
+  q:"What is the PRIMARY function of a router in a network?",
+  opts:["To forward frames within a single local network segment using MAC addresses","To forward packets between different networks based on IP addresses, often determining the best path","To provide wireless-only connectivity","To physically secure a server room"],
+  correct:[1],
+  exp:"Routers operate at Layer 3, connecting distinct networks and forwarding packets between them based on destination IP addresses, often using routing protocols or tables to determine the optimal path."
+},
+{
+  id:173, domain:4,
+  q:"What is a key security benefit of subnetting a large flat network into smaller subnets?",
+  opts:["It guarantees encryption of all traffic automatically","It reduces broadcast traffic and allows more granular access control/segmentation between smaller groups of hosts","It eliminates the need for firewalls","It increases the total number of public IP addresses available"],
+  correct:[1],
+  exp:"Subnetting divides a network into smaller logical segments, reducing broadcast domain size and enabling more granular security controls (such as firewall rules) between different groups of hosts, similar in spirit to VLAN segmentation."
+},
+{
+  id:174, domain:4,
+  q:"Which of the following IP address ranges is reserved for PRIVATE (internal) network use, as defined by RFC 1918, and is not routable on the public internet?",
+  opts:["8.8.8.0/24","192.168.0.0/16","1.1.1.0/24","203.0.113.0/24"],
+  correct:[1],
+  exp:"192.168.0.0/16 (along with 10.0.0.0/8 and 172.16.0.0/12) is reserved by RFC 1918 for private internal networks. These addresses are not routable on the public internet and require NAT to communicate externally."
+},
+{
+  id:175, domain:4,
+  q:"An attacker sets up a wireless access point using the exact same SSID as a coffee shop's legitimate Wi-Fi network, hoping customers will connect to it instead. What is this specific technique called?",
+  opts:["Evil twin attack","WPS brute-force attack","VLAN hopping","ARP spoofing"],
+  correct:[0],
+  exp:"An evil twin attack impersonates a legitimate network's SSID to trick users into connecting to the attacker's rogue access point instead, allowing the attacker to intercept or manipulate their traffic."
+},
+{
+  id:176, domain:4,
+  q:"What is the fundamental difference between a site-to-site VPN and a remote access VPN?",
+  opts:["A site-to-site VPN connects two entire networks (e.g., two office locations) together; a remote access VPN connects an individual user's device to a network","They are identical in function and setup","A remote access VPN can only be used on wired connections","A site-to-site VPN never uses encryption"],
+  correct:[0],
+  exp:"A site-to-site VPN creates a persistent encrypted tunnel between two networks (such as a branch office and headquarters), while a remote access VPN allows individual remote users to securely connect their devices to a network from anywhere."
+},
+{
+  id:177, domain:4,
+  q:"Placing a firewall between the finance department's network segment and the rest of the corporate network is an example of:",
+  opts:["Network segmentation to limit access between zones of differing sensitivity","A Zero Trust violation","Risk acceptance","VLAN hopping"],
+  correct:[0],
+  exp:"Placing a firewall between network zones enforces segmentation, restricting traffic between areas of differing sensitivity (like finance systems) and the broader corporate network, limiting the blast radius of a potential compromise."
+},
+{
+  id:178, domain:4,
+  q:"What is the purpose of a network packet sniffer/analyzer, such as Wireshark, from a defensive security perspective?",
+  opts:["To automatically block all malicious traffic","To capture and analyze network traffic for troubleshooting, monitoring, or detecting suspicious/anomalous activity","To physically repair damaged network cables","To assign IP addresses via DHCP"],
+  correct:[1],
+  exp:"Packet sniffers/analyzers capture and inspect network traffic, which defenders use for troubleshooting connectivity issues, performance monitoring, and identifying signs of suspicious or malicious activity on the network."
+},
+{
+  id:179, domain:4,
+  q:"What is the PRIMARY function of a network load balancer in supporting availability?",
+  opts:["To encrypt all traffic passing through it","To distribute incoming traffic across multiple servers, preventing any single server from being overwhelmed and improving overall resilience","To provide DNS name resolution","To physically secure network cabling"],
+  correct:[1],
+  exp:"A load balancer distributes incoming requests across multiple backend servers, both improving performance and providing resilience — if one server fails, traffic is automatically redirected to the remaining healthy servers, supporting availability."
+},
+{
+  id:180, domain:4,
+  q:"An organization places a non-compliant or unauthenticated device into a restricted 'quarantine VLAN' with limited network access until it passes a security posture check. This is a function of:",
+  opts:["Network Access Control (NAC)","A Content Delivery Network (CDN)","DNS caching","A load balancer"],
+  correct:[0],
+  exp:"Network Access Control (NAC) evaluates a device's security posture (patch level, antivirus status, etc.) before granting full network access, often placing non-compliant devices into a restricted quarantine VLAN until they meet requirements."
+},
+{
+  id:181, domain:4,
+  q:"Why is Telnet considered an insecure protocol for remote administration compared to SSH?",
+  opts:["Telnet transmits all data, including credentials, in unencrypted plaintext, while SSH encrypts the entire session","Telnet is actually more secure than SSH","Telnet does not use a network connection at all","SSH cannot be used for remote administration"],
+  correct:[0],
+  exp:"Telnet sends all data — including usernames and passwords — as unencrypted plaintext, making it easy for anyone capturing network traffic to intercept credentials. SSH encrypts the entire session, protecting confidentiality and integrity."
+},
+{
+  id:182, domain:4,
+  q:"A company's Zero Trust implementation requires continuous verification of a device's health and the user's identity for every single resource request, even for users already inside the corporate office. What core Zero Trust principle does this reflect?",
+  opts:["Implicit trust for internal network locations","Never trust, always verify — regardless of network location","Perimeter-only security","Security through obscurity"],
+  correct:[1],
+  exp:"Zero Trust rejects the assumption that being on the internal network implies trustworthiness. Instead, every access request — no matter where it originates — must be continuously authenticated, authorized, and validated."
+},
+
+// ═══════════════════════════════════════
+//  DOMAIN 5 ADDITIONAL – SECURITY OPERATIONS
+// ═══════════════════════════════════════
+{
+  id:183, domain:5,
+  q:"A customer submits their credit card number through a company's checkout webpage over an HTTPS connection. What data state is the credit card number in AS it travels from the customer's browser to the server?",
+  opts:["Data at rest","Data in transit","Data in use","Data in archive"],
+  correct:[1],
+  exp:"Data actively moving across a network — such as during an HTTPS transaction — is considered data in transit. TLS/HTTPS is the primary control protecting its confidentiality and integrity while traveling between the client and server."
+},
+{
+  id:184, domain:5,
+  q:"What does full-disk encryption (FDE) protect against, specifically, if a laptop is lost or stolen while powered off?",
+  opts:["It prevents the laptop from ever being turned on again","It prevents someone without the decryption key from reading the data stored on the disk, even if they remove the drive and access it directly","It protects data only while the laptop is connected to Wi-Fi","It automatically notifies the owner of the laptop's location"],
+  correct:[1],
+  exp:"Full-disk encryption protects data at rest by rendering the entire disk unreadable without the correct decryption key/credentials, meaning that even physically removing the drive and connecting it to another machine won't expose the data."
+},
+{
+  id:185, domain:5,
+  q:"A company replaces real credit card numbers displayed in its internal reporting tool with a random, non-mathematically-related placeholder value, while the real values are stored securely elsewhere. What technique is this?",
+  opts:["Hashing","Tokenization","Digital signing","Load balancing"],
+  correct:[1],
+  exp:"Tokenization replaces sensitive data with a non-sensitive placeholder (token) that has no direct mathematical relationship to the original value, reducing exposure of the real data across systems that don't need to see it."
+},
+{
+  id:186, domain:5,
+  q:"What is the PRIMARY purpose of a digital signature applied to a software update package?",
+  opts:["To compress the update file for faster download","To verify the update's integrity and authenticate that it truly came from the claimed publisher, before it is installed","To encrypt the update so it cannot be installed by anyone","To automatically patch unrelated vulnerabilities"],
+  correct:[1],
+  exp:"A digital signature allows the recipient to verify both that the software has not been tampered with (integrity) and that it genuinely originated from the claimed publisher (authentication), helping prevent the installation of maliciously modified updates."
+},
+{
+  id:187, domain:5,
+  q:"What does an HMAC (Hash-based Message Authentication Code) provide that a plain cryptographic hash alone does not?",
+  opts:["Confidentiality of the message content","Integrity AND authenticity, by combining a hash function with a shared secret key","Faster network transmission speeds","Automatic key exchange"],
+  correct:[1],
+  exp:"A plain hash only verifies that data hasn't changed. An HMAC combines a hash function with a shared secret key, so it also verifies that the message came from someone who possesses that key — adding authenticity in addition to integrity."
+},
+{
+  id:188, domain:5,
+  q:"Why is periodic cryptographic key rotation considered a security best practice?",
+  opts:["It has no real security benefit and only adds operational overhead","It limits the amount of data exposed if a key is ever compromised and reduces the window of opportunity for cryptanalysis against a single key","It is required to make encryption algorithms function at all","It eliminates the need for access controls"],
+  correct:[1],
+  exp:"Regularly rotating cryptographic keys limits how much data could be exposed by a single compromised key and reduces the amount of ciphertext available under any one key, making certain cryptanalytic attacks more difficult."
+},
+{
+  id:189, domain:5,
+  q:"How does a SOAR platform typically extend the capabilities of a SIEM?",
+  opts:["SOAR replaces the need for any log collection at all","SOAR automates response actions (such as isolating a host or blocking an IP) based on alerts, whereas a SIEM primarily aggregates and correlates logs for human analysis","SOAR and SIEM are exactly the same technology","SOAR only works with physical security systems"],
+  correct:[1],
+  exp:"A SIEM focuses on collecting, correlating, and alerting on log/event data for analysts to review. A SOAR (Security Orchestration, Automation, and Response) platform builds on this by automating standardized response actions through playbooks, reducing manual analyst workload."
+},
+{
+  id:190, domain:5,
+  q:"Why is correlating log data from multiple different sources (firewalls, servers, endpoints) more valuable than reviewing each log source in isolation?",
+  opts:["It is not more valuable; isolated review is always sufficient","Correlation can reveal a broader attack pattern or campaign that would not be apparent from any single log source alone","It reduces the total number of logs that must ever be stored","It automatically deletes old log entries"],
+  correct:[1],
+  exp:"An attacker's activity often leaves partial traces across multiple systems. Correlating these disparate log sources can reveal a coordinated attack pattern (like a login from an unusual location followed by data access) that would be missed reviewing any single source alone."
+},
+{
+  id:191, domain:5,
+  q:"Why should a security patch typically be tested in a non-production environment before being deployed organization-wide?",
+  opts:["Testing is unnecessary and slows down critical security fixes","To identify potential compatibility issues or unintended side effects before the patch impacts live business operations","Patches never need testing since vendors guarantee compatibility","Testing eliminates the need for a rollback plan"],
+  correct:[1],
+  exp:"Patches can sometimes introduce compatibility issues or break existing functionality. Testing in a controlled, non-production environment first helps catch these problems before they affect live systems, balancing security urgency with operational stability."
+},
+{
+  id:192, domain:5,
+  q:"What is a key advantage of continuous (or near-continuous) vulnerability scanning over a purely periodic (e.g., quarterly) scanning schedule?",
+  opts:["Continuous scanning guarantees zero vulnerabilities will ever exist","Continuous scanning reduces the window of time that newly introduced vulnerabilities remain undetected between scans","Periodic scanning is always more thorough than continuous scanning","Continuous scanning eliminates the need for patch management"],
+  correct:[1],
+  exp:"With purely periodic scanning, a vulnerability introduced right after a scan could remain undetected for the entire interval until the next scan. Continuous or more frequent scanning shrinks this detection gap significantly."
+},
+{
+  id:193, domain:5,
+  q:"Why should backup data itself be encrypted, in addition to encrypting the original production data?",
+  opts:["Backup encryption is unnecessary if production data is already encrypted","Backups may be stored on portable media or offsite/cloud locations with different physical security, so protecting the backup independently prevents exposure if it is lost, stolen, or improperly accessed","Encrypting backups makes them impossible to restore","Backups are never a target for attackers"],
+  correct:[1],
+  exp:"Backup copies are often stored in different locations (offsite, cloud, removable media) with potentially weaker physical controls than production systems. Encrypting backups independently ensures the data remains protected even if the backup medium itself is compromised."
+},
+{
+  id:194, domain:5,
+  q:"An organization needs to securely dispose of old solid-state drives (SSDs) containing sensitive data. Why is traditional magnetic degaussing NOT an effective method for SSDs?",
+  opts:["Degaussing works perfectly on all storage media types, including SSDs","Degaussing relies on disrupting magnetic fields, but SSDs store data electronically (not magnetically), so degaussing has no effect on them","SSDs cannot be destroyed by any method","Degaussing is only used for optical media like DVDs"],
+  correct:[1],
+  exp:"Degaussing works by disrupting the magnetic fields used to store data on traditional magnetic media like HDDs and tapes. Since SSDs store data electronically via flash memory rather than magnetically, degaussing has no effect — physical destruction or cryptographic erasure is required instead."
+},
+{
+  id:195, domain:5,
+  q:"What is the PRIMARY purpose of maintaining an accurate, up-to-date IT asset inventory?",
+  opts:["To determine employee vacation schedules","To know what hardware, software, and systems exist in the environment, which is foundational to effective vulnerability management, patching, and risk assessment","To automatically generate marketing reports","To configure wireless access points"],
+  correct:[1],
+  exp:"You cannot effectively secure, patch, or assess risk for assets you don't know exist. An accurate asset inventory is a foundational security operations control that underpins vulnerability management and overall risk visibility."
+},
+{
+  id:196, domain:5,
+  q:"Why do security teams often report specific metrics (such as mean time to detect, mean time to respond, and patch compliance rate) to organizational leadership?",
+  opts:["Metrics are only useful for marketing purposes","Metrics provide leadership with objective, measurable insight into the security program's effectiveness and help justify resourcing decisions","Metrics replace the need for any technical controls","Leadership never needs this information"],
+  correct:[1],
+  exp:"Security metrics translate technical activity into measurable indicators that help non-technical leadership understand the program's effectiveness, track improvement over time, and make informed decisions about budget and staffing."
+},
+{
+  id:197, domain:5,
+  q:"Why do organizations typically classify security incidents into severity tiers (e.g., Low, Medium, High, Critical) as part of their incident response process?",
+  opts:["Severity tiers have no practical impact on operations","Tiering helps prioritize response resources, escalation urgency, and communication requirements based on the incident's actual business impact","All incidents must always be treated identically regardless of impact","Severity tiers are only used for compliance paperwork"],
+  correct:[1],
+  exp:"Classifying incidents by severity ensures that response resources, escalation paths, and communication urgency are proportionate to the actual business impact, so a minor issue doesn't consume the same emergency response as a critical breach."
+},
+{
+  id:198, domain:5,
+  q:"What is the purpose of maintaining a documented 'chain of custody' for digital evidence collected during an investigation?",
+  opts:["To determine which vendor supplied the storage device","To provide a documented, unbroken record of who handled evidence and when, preserving its integrity and admissibility for potential legal or disciplinary action","To speed up data restoration from backup","To assign IP addresses to forensic workstations"],
+  correct:[1],
+  exp:"Chain of custody documentation tracks every person who handled a piece of evidence and when, demonstrating that it was not altered or tampered with — critical for the evidence to remain credible and admissible in legal or HR proceedings."
+},
+{
+  id:199, domain:5,
+  q:"What does the security hardening principle of 'least functionality' recommend for a server configuration?",
+  opts:["Installing every available service and feature by default for convenience","Disabling or removing unnecessary services, features, and software that are not required for the system's intended purpose, reducing the attack surface","Enabling remote administration on all default ports","Running the server without any operating system updates"],
+  correct:[1],
+  exp:"Least functionality (part of system hardening) means configuring a system with only the services, ports, and software genuinely required for its role, minimizing the number of potential entry points an attacker could exploit."
+},
+{
+  id:200, domain:5,
+  q:"What is the goal of 'continuous monitoring' as an ongoing security operations practice?",
+  opts:["Performing a single, one-time security assessment before go-live and never revisiting it","Ongoing, ideally automated, observation of systems and controls over time to promptly detect new vulnerabilities, misconfigurations, or suspicious activity","Manually reviewing logs once per year","Disabling all logging to save storage space"],
+  correct:[1],
+  exp:"Continuous monitoring shifts security from a point-in-time assessment to an ongoing process, using automated tools and processes to promptly detect new vulnerabilities, configuration drift, or suspicious activity as they arise rather than waiting for periodic reviews."
+},
+
 ]; // end QUESTIONS
 
 // ─────────────────────────────────────────────
